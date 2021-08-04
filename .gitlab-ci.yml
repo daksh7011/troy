@@ -20,7 +20,7 @@ cache:
 compile:
   stage: compile
   script:
-    - ./gradlew assemble
+    - ./gradlew --build-cache assemble
   allow_failure: false
 
 test:
