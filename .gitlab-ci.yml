@@ -1,4 +1,8 @@
-image: openjdk:11-jdk
+image: gradle:alpine
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
 
 stages:
   - compile
