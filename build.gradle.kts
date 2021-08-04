@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.5.10"
+    id("org.jmailen.kotlinter") version "3.4.5"
 }
 
 group = "in.technowolf"
@@ -24,4 +25,16 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
+}
+
+tasks.check {
+    dependsOn("installKotlinterPrePushHook")
+}
+
+kotlinter {
+    ignoreFailures = false
+    indentSize = 4
+    reporters = arrayOf("checkstyle", "plain")
+    experimentalRules = false
+    disabledRules = arrayOf("no-wildcard-imports")
 }
