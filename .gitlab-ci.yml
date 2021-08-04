@@ -27,7 +27,7 @@ test:
 code_style:
   stage: test
   script:
-    - ./gradlew ktlint
+    - ./gradlew lintKotlin
   artifacts:
     paths:
       - build/ktlint.xml
