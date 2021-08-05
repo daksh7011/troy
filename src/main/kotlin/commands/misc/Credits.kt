@@ -34,7 +34,6 @@ class Credits : TroyExtension() {
                                 value = it.embedUrl()
                             }
                         }
-
                     }
                 } else {
                     channel.createMessage("`${arguments.command}` command is credited to no one. It just appeared.")
