@@ -1,0 +1,23 @@
+# General notes for creating your own .env
+#
+# Create a file with name .env and fill it up with necessary keys.
+#
+# Notes:
+# - Do not have spaces in env value. Use Double Quotes to wrap a string with spaces.
+# - Wherever it is true or false, Pass either true or false.
+# - Some commands will not work without proper key/data
+# - For now, Only one Owner ID is supported.
+#
+ownerId=owner snowflake
+prefix=prefix for bot
+token=bot-token
+isDebug=true or false
+redditUsername:username for reddit
+redditUsername=Reddit Username for app
+redditPassword=Reddit Password
+redditAppId=Reddit App ID
+redditAppSecret=Reddit App Secret
+redditUserAgent=Reddit user agent
+stackoverflowApiKey=your stackoverflow key goes here.
+geniusApiKey=your genius api key, It is optional though
+openWeatherKey=your open weather key
