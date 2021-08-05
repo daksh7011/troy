@@ -6,7 +6,7 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 
 class BaseMessageCommand<T : Arguments>(extension: Extension, arguments: (() -> T)? = null) :
     MessageCommand<T>(extension, arguments) {
-    val credits: Credits = Credits()
+    val credits: MutableList<Credits> = mutableListOf(Credits())
 }
 
 data class Credits(
