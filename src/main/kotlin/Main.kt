@@ -1,26 +1,22 @@
-import com.kotlindiscord.kord.extensions.ExtensibleBot
-import dev.kord.common.entity.PresenceStatus
-import extensions.CreditsExtension
-import extensions.TestExtension
+import core.getTroy
+import dev.kord.core.event.message.MessageCreateEvent
+import dev.kord.gateway.PrivilegedIntent
+import utils.Extensions.containsF
+import utils.Extensions.containsNigga
+import utils.Extensions.isNotBot
 
+@OptIn(PrivilegedIntent::class)
 suspend fun main() {
-    val bot = ExtensibleBot("ODcxODM2ODY5NDkzNjYxNzM2.YQhHWw.xjVBmvqBGnQm8k9tz8ae7hlxasI") {
-        messageCommands {
-            defaultPrefix = "!"
-            invokeOnMention = true
+    val troy = getTroy()
+    troy.on<MessageCreateEvent> {
+        if (message.containsF() && message.isNotBot()) {
+            message.channel.createMessage("f")
         }
-        slashCommands {
-            enabled = true
-        }
-        extensions {
-            add(::TestExtension)
-            add(::CreditsExtension)
-        }
-        presence {
-            status = PresenceStatus.Online
-            playing("with anime tiddies!")
+        if (message.containsNigga() && message.isNotBot()) {
+            message.channel.createMessage("Why do I have to remind you everytime?, It's aggiN")
         }
     }
-    bot.start()
+    troy.start()
 // perm id 260382391511
 }
+
