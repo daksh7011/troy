@@ -17,11 +17,13 @@ repositories {
         name = "Kotlin Discord"
         url = uri("https://maven.kotlindiscord.com/repository/maven-public/")
     }
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
 }
 
 dependencies {
     implementation("dev.kord:kord-core:0.7.4")
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.1")
+    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.4-RC2")
+    implementation("io.ktor:ktor-client-core:1.6.2")
     implementation("org.slf4j:slf4j-simple:1.7.30")
 }
 

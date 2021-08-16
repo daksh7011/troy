@@ -8,7 +8,6 @@ import core.TroyExtension
 import dev.kord.common.annotation.KordPreview
 import utils.DataProvider
 import utils.Extensions.isOwner
-import java.lang.Math.floor
 
 @OptIn(KordPreview::class)
 class Burn : TroyExtension() {
@@ -30,7 +29,7 @@ class Burn : TroyExtension() {
             action {
                 with(arguments) {
                     val burnList = DataProvider.getBurnData()
-                    val randomBurn = burnList[floor(Math.random() * burnList.size).toInt()]
+                    val randomBurn = burnList[kotlin.math.floor(Math.random() * burnList.size).toInt()]
                     if (user.id.isOwner()) {
                         message.channel.createMessage("You can't hurt the god, But here's one for you.")
                         message.respond(randomBurn)
