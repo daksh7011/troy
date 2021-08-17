@@ -21,5 +21,4 @@ suspend fun main() {
         }
     }
     troy.start()
-// perm id 260382391511
 }

@@ -9,6 +9,9 @@ import dev.kord.core.behavior.channel.createEmbed
 import utils.Extensions.getEmbedFooter
 
 class Poll : TroyExtension() {
+
+    private val reactions = listOf("1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟")
+
     override val name: String
         get() = "poll"
 
@@ -22,7 +25,6 @@ class Poll : TroyExtension() {
             name = "poll"
             description = "Gives a poll for the options"
             action {
-                val reactions = listOf("1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟")
                 val sentEmbed = message.channel.createEmbed {
                     title = "Poll for ${arguments.title}"
                     footer = message.getEmbedFooter()
