@@ -7,9 +7,6 @@ import kotlin.math.floor
 
 class Flip : TroyExtension() {
 
-    private val result = if (floor(Math.random() * 2).toInt() == 0) "heads"
-    else "tails"
-
     override val name: String
         get() = "flip"
 
@@ -18,6 +15,8 @@ class Flip : TroyExtension() {
             name = "flip"
             description = "Flips a coin for you."
             action {
+                val result = if (floor(Math.random() * 2).toInt() == 0) "heads"
+                else "tails"
                 message.channel.createMessage("It's $result")
             }
         }
@@ -28,6 +27,8 @@ class Flip : TroyExtension() {
             guild(getTestGuildSnowflake())
             action {
                 publicFollowUp {
+                    val result = if (floor(Math.random() * 2).toInt() == 0) "heads"
+                    else "tails"
                     content = "It's $result"
                 }
             }

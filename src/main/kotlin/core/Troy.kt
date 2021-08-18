@@ -6,6 +6,7 @@ import com.kotlindiscord.kord.extensions.utils.env
 import commands.`fun`.*
 import commands.misc.Credits
 import commands.mod.Prune
+import commands.mod.Reboot
 import dev.kord.common.entity.PresenceStatus
 import dev.kord.gateway.PrivilegedIntent
 import utils.Environment
@@ -41,6 +42,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Poll)
             add(::Prune)
             add(::Understandable)
+            add(::Reboot)
         }
         presence {
             status = PresenceStatus.Online
