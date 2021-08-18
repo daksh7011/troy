@@ -21,7 +21,7 @@ class Prune : TroyExtension() {
         troyCommand(::PurgeArguments) {
             name = "purge"
             aliases = arrayOf("purge", "bulk", "clean")
-            hasPermission(Permission.Administrator)
+            check(hasPermission(Permission.Administrator))
             requirePermissions(Permission.ManageMessages)
             action {
                 val amount = (arguments.amount.toIntOrNull() ?: 0)
