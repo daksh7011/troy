@@ -21,21 +21,27 @@ stages:
 - incremental rollout 100%
 - performance
 - cleanup
+
 before_script:
-- export GRADLE_USER_HOME=`pwd`/.gradle
-- chmod +x ./gradlew
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+  - chmod +x ./gradlew
+
 cache:
   paths:
-  - ".gradle/wrapper"
-  - ".gradle/caches"
+    - ".gradle/wrapper"
+    - ".gradle/caches"
+
 compile:
   stage: compile
   script:
-  - "./gradlew assemble"
+    - "./gradlew assemble"
+
 test:
   stage: test
+  image: openjdk:11
   script:
-  - "./gradlew test --stacktrace"
+    - "./gradlew test --stacktrace"
+
 code_style:
   stage: test
   script:
@@ -45,15 +51,18 @@ code_style:
     - build/ktlint.xml
     expire_in: 1 day
   allow_failure: true
+
 package:
   stage: package
   script:
-  - "./gradlew shadowJar"
+    - "./gradlew shadowJar"
   artifacts:
     paths:
-    - build/libs/*.jar
+      - build/libs/*.jar
     expire_in: 1 day
+
 sast:
   stage: test
+
 include:
-- template: Auto-DevOps.gitlab-ci.yml
+  - template: Auto-DevOps.gitlab-ci.yml
