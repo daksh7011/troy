@@ -9,7 +9,6 @@ image: openjdk:11-jdk
 include:
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
-  - template: Auto-DevOps.gitlab-ci.yml
 
 stages:
 - compile
@@ -63,3 +62,5 @@ package:
     expire_in: 1 day
 sast:
   stage: test
+include:
+  - template: Auto-DevOps.gitlab-ci.yml
