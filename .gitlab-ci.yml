@@ -29,7 +29,6 @@ stages:
 - cleanup
 before_script:
 - export GRADLE_USER_HOME=`pwd`/.gradle
-- export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/"
 - chmod +x ./gradlew
 cache:
   paths:
