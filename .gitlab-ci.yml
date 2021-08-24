@@ -49,5 +49,3 @@ package:
     expire_in: 1 day
 sast:
   stage: test
-include:
-- template: Auto-DevOps.gitlab-ci.yml
