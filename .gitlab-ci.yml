@@ -29,6 +29,7 @@ stages:
 - cleanup
 before_script:
 - export GRADLE_USER_HOME=`pwd`/.gradle
+- export JAVA_HOME="/usr/bin/
 - chmod +x ./gradlew
 cache:
   paths:
