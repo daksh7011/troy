@@ -13,4 +13,6 @@ object Environment {
     const val STACKOVERFLOW_API_KEY = "stackoverflowApiKey"
     const val GENIUS_API_KEY = "geniusApiKey"
     const val OPEN_WEATHER_API_KEY = "openWeatherKey"
+    const val SENTRY_DSN = "sentryDsn"
+    const val TEST_GUILD_ID = "testGuildId"
 }

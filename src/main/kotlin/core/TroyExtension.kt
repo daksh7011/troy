@@ -18,4 +18,13 @@ abstract class TroyExtension : Extension(), KoinComponent {
 
         return command(commandObj)
     }
+
+    open suspend fun troyCommand(
+        body: suspend BaseMessageCommand<Arguments>.() -> Unit
+    ): MessageCommand<Arguments> {
+        val commandObj = BaseMessageCommand<Arguments>(this)
+        body.invoke(commandObj)
+
+        return command(commandObj)
+    }
 }

@@ -3,6 +3,7 @@ import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.gateway.PrivilegedIntent
 import utils.Extensions.containsF
 import utils.Extensions.containsNigga
+import utils.Extensions.containsTableFlip
 import utils.Extensions.isNotBot
 
 @OptIn(PrivilegedIntent::class)
@@ -15,7 +16,9 @@ suspend fun main() {
         if (message.containsNigga() && message.isNotBot()) {
             message.channel.createMessage("Why do I have to remind you everytime?, It's aggiN")
         }
+        if (message.containsTableFlip() && message.isNotBot()) {
+            message.channel.createMessage("┬─┬ ノ( ゜-゜ノ)")
+        }
     }
     troy.start()
-// perm id 260382391511
 }

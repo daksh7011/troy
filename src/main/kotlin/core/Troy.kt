@@ -3,8 +3,10 @@ package core
 import com.kotlindiscord.kord.extensions.DISCORD_GREEN
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
-import commands.`fun`.Burn
+import commands.`fun`.*
 import commands.misc.Credits
+import commands.mod.Prune
+import commands.mod.Reboot
 import dev.kord.common.entity.PresenceStatus
 import dev.kord.gateway.PrivilegedIntent
 import utils.Environment
@@ -26,8 +28,21 @@ suspend fun getTroy(): ExtensibleBot {
                 deletePaginatorOnTimeout = true
                 deleteInvocationOnPaginatorTimeout = true
             }
+            if (env(Environment.SENTRY_DSN).isNullOrEmpty().not()) {
+                sentry {
+                    enable = true
+                    dsn = env(Environment.SENTRY_DSN)
+                }
+            }
             add(::Credits)
             add(::Burn)
+            add(::Doggo)
+            add(::Flip)
+            add(::ItsOur)
+            add(::Poll)
+            add(::Prune)
+            add(::Understandable)
+            add(::Reboot)
         }
         presence {
             status = PresenceStatus.Online

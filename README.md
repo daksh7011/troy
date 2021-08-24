@@ -1,1 +1,1 @@
-
+[Invite Troy](https://discord.com/api/oauth2/authorize?client_id=871836869493661736&permissions=261992873943&scope=bot%20applications.commands)
