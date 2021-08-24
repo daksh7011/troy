@@ -9,11 +9,25 @@ image: openjdk:11-jdk
 include:
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Auto-DevOps.gitlab-ci.yml
 
 stages:
 - compile
 - test
 - package
+- build
+- deploy
+- review
+- dast
+- staging
+- canary
+- production
+- incremental rollout 10%
+- incremental rollout 25%
+- incremental rollout 50%
+- incremental rollout 100%
+- performance
+
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
