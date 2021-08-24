@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     echo "Building the app..."
-                    ./gradlew assemble 
+                    sh "./gradlew assemble "
                 }
             }
         }
@@ -36,16 +36,5 @@ pipeline {
             }
         }
 
-    }
-    post {
-        always {
-            // run it always, regardless of pipeline status.
-        }
-        success{
-            // run when build is success
-        }
-        failure {
-            // run when build is failed.
-        }
-    }   
+    } 
 }
