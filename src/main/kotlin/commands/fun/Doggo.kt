@@ -1,10 +1,12 @@
 package commands.`fun`
 
+import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingString
-import com.kotlindiscord.kord.extensions.commands.parser.Arguments
-import com.kotlindiscord.kord.extensions.commands.slash.AutoAckType
+import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.chatCommand
+import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
+import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.respond
-import core.TroyExtension
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
@@ -21,7 +23,7 @@ import utils.Extensions.getEmbedFooter
 import utils.Extensions.getTestGuildSnowflake
 import utils.Extensions.requestAndCatch
 
-class Doggo : TroyExtension() {
+class Doggo : Extension() {
 
     private val kordClient: Kord by inject()
 
@@ -45,7 +47,7 @@ class Doggo : TroyExtension() {
     }
 
     override suspend fun setup() {
-        troyCommand(::DoggoArguments) {
+        chatCommand(::DoggoArguments) {
             name = "doggo"
             description = "Finds some cute doggo images."
             action {
@@ -74,10 +76,9 @@ class Doggo : TroyExtension() {
             }
         }
 
-        slashCommand(::DoggoSlashArguments) {
+        publicSlashCommand(::DoggoSlashArguments) {
             name = "doggo"
             description = "Finds some cute doggo images."
-            autoAck = AutoAckType.PUBLIC
             guild(getTestGuildSnowflake())
             action {
                 val url = if (arguments.breedName == "random") "https://dog.ceo/api/breeds/image/random"
@@ -89,14 +90,14 @@ class Doggo : TroyExtension() {
                     {
                         when (response.status) {
                             HttpStatusCode.NotFound -> {
-                                this@action.publicFollowUp { content = "Can't find any good boi photo." }
+                                this@action.respond { content = "Can't find any good boi photo." }
                             }
                             else -> getKoin().logger.log(Level.ERROR, localizedMessage)
                         }
                     }
                 )
                 if (doggoModel != null) {
-                    publicFollowUp {
+                    respond {
                         embed {
                             title = "Woof Woof \uD83D\uDC36"
                             description = "A cute doggo image for you."

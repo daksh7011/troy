@@ -1,11 +1,13 @@
 package commands.`fun`
 
+import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.commands.converters.impl.stringList
-import com.kotlindiscord.kord.extensions.commands.parser.Arguments
-import com.kotlindiscord.kord.extensions.commands.slash.AutoAckType
+import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.chatCommand
+import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
+import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.addReaction
-import core.TroyExtension
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
@@ -13,7 +15,7 @@ import org.koin.core.component.inject
 import utils.Extensions.getEmbedFooter
 import utils.Extensions.getTestGuildSnowflake
 
-class Poll : TroyExtension() {
+class Poll : Extension() {
 
     private val kordClient: Kord by inject()
 
@@ -33,7 +35,7 @@ class Poll : TroyExtension() {
     }
 
     override suspend fun setup() {
-        troyCommand(::PollArguments) {
+        chatCommand(::PollArguments) {
             name = "poll"
             description = "Gives a poll for the options"
             action {
@@ -52,14 +54,13 @@ class Poll : TroyExtension() {
                 }
             }
         }
-        slashCommand(::PollSlashArguments) {
+        publicSlashCommand(::PollSlashArguments) {
             name = "poll"
             description = "Gives a poll for provided options"
-            autoAck = AutoAckType.PUBLIC
             guild(getTestGuildSnowflake())
             action {
                 val optionList = arguments.options.split(",")
-                publicFollowUp {
+                respond {
                     embed {
                         title = "Poll for ${arguments.title}"
                         footer = kordClient.getEmbedFooter()

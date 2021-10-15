@@ -1,14 +1,15 @@
 package commands.mod
 
 import com.kotlindiscord.kord.extensions.checks.hasPermission
+import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
-import com.kotlindiscord.kord.extensions.commands.parser.Arguments
-import core.TroyExtension
+import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import dev.kord.common.entity.Permission
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 
-class Prune : TroyExtension() {
+class Prune : Extension() {
 
     override val name: String
         get() = "prune"
@@ -18,11 +19,13 @@ class Prune : TroyExtension() {
     }
 
     override suspend fun setup() {
-        troyCommand(::PurgeArguments) {
+        chatCommand(::PurgeArguments) {
             name = "purge"
             aliases = arrayOf("purge", "bulk", "clean")
-            check(hasPermission(Permission.Administrator))
-            requirePermissions(Permission.ManageMessages)
+            check {
+                hasPermission(Permission.Administrator)
+                requireBotPermissions(Permission.ManageMessages)
+            }
             action {
                 val amount = (arguments.amount.toIntOrNull() ?: 0)
                 channel.getMessagesBefore(message.id).take(amount).collect { it.delete() }

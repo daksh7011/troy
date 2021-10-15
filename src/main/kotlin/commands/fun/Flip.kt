@@ -1,17 +1,19 @@
 package commands.`fun`
 
-import com.kotlindiscord.kord.extensions.commands.slash.AutoAckType
-import core.TroyExtension
+import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.chatCommand
+import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
+import com.kotlindiscord.kord.extensions.types.respond
 import utils.Extensions.getTestGuildSnowflake
 import kotlin.math.floor
 
-class Flip : TroyExtension() {
+class Flip : Extension() {
 
     override val name: String
         get() = "flip"
 
     override suspend fun setup() {
-        troyCommand {
+        chatCommand {
             name = "flip"
             description = "Flips a coin for you."
             action {
@@ -20,13 +22,12 @@ class Flip : TroyExtension() {
                 message.channel.createMessage("It's $result")
             }
         }
-        slashCommand {
+        publicSlashCommand {
             name = "flip"
             description = "Flips a coin for you."
-            autoAck = AutoAckType.PUBLIC
             guild(getTestGuildSnowflake())
             action {
-                publicFollowUp {
+                respond {
                     val result = if (floor(Math.random() * 2).toInt() == 0) "heads"
                     else "tails"
                     content = "It's $result"

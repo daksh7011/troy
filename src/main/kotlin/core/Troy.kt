@@ -4,7 +4,6 @@ import com.kotlindiscord.kord.extensions.DISCORD_GREEN
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import commands.`fun`.*
-import commands.misc.Credits
 import commands.mod.Prune
 import commands.mod.Reboot
 import dev.kord.common.entity.PresenceStatus
@@ -13,13 +12,11 @@ import utils.Environment
 
 @OptIn(PrivilegedIntent::class)
 suspend fun getTroy(): ExtensibleBot {
-    val troy = ExtensibleBot(env(Environment.TOKEN).orEmpty()) {
-        messageCommands {
-            defaultPrefix = "!"
-            invokeOnMention = true
-        }
-        slashCommands {
+    val troy = ExtensibleBot(env(Environment.TOKEN)) {
+        chatCommands {
+            defaultPrefix = env(Environment.PREFIX)
             enabled = true
+            invokeOnMention = true
         }
         extensions {
             help {
@@ -28,13 +25,12 @@ suspend fun getTroy(): ExtensibleBot {
                 deletePaginatorOnTimeout = true
                 deleteInvocationOnPaginatorTimeout = true
             }
-            if (env(Environment.SENTRY_DSN).isNullOrEmpty().not()) {
+            if (env(Environment.SENTRY_DSN).isEmpty().not()) {
                 sentry {
                     enable = true
                     dsn = env(Environment.SENTRY_DSN)
                 }
             }
-            add(::Credits)
             add(::Burn)
             add(::Doggo)
             add(::Flip)

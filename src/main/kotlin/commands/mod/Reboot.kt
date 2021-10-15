@@ -1,11 +1,12 @@
 package commands.mod
 
-import core.TroyExtension
+import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import dev.kord.core.Kord
 import org.koin.core.component.inject
 import utils.Extensions.isOwner
 
-class Reboot : TroyExtension() {
+class Reboot : Extension() {
 
     private val kordClient: Kord by inject()
 
@@ -13,7 +14,7 @@ class Reboot : TroyExtension() {
         get() = "reboot"
 
     override suspend fun setup() {
-        troyCommand {
+        chatCommand {
             name = "reboot"
             description = "Reboots the bot."
             action {

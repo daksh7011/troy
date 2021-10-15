@@ -1,18 +1,18 @@
 package commands.`fun`
 
-import com.kotlindiscord.kord.extensions.commands.slash.AutoAckType
-import com.kotlindiscord.kord.extensions.utils.env
-import core.TroyExtension
-import dev.kord.common.entity.Snowflake
+import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.chatCommand
+import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
+import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
-import utils.Environment
 import utils.Extensions.getEmbedFooter
+import utils.Extensions.getTestGuildSnowflake
 
-class ItsOur : TroyExtension() {
+class ItsOur : Extension() {
 
     private val kordClient: Kord by inject()
 
@@ -22,7 +22,7 @@ class ItsOur : TroyExtension() {
         get() = "our"
 
     override suspend fun setup() {
-        command {
+        chatCommand {
             name = "our"
             description = "Firmly states that it is ours in this soviet soil."
             aliases = arrayOf("its-our")
@@ -36,13 +36,12 @@ class ItsOur : TroyExtension() {
             }
         }
 
-        slashCommand {
+        publicSlashCommand {
             name = "our"
             description = "Firmly states that it is ours in this soviet soil."
-            autoAck = AutoAckType.PUBLIC
-            env(Environment.TEST_GUILD_ID)?.toLong()?.let { guild(Snowflake(it)) }
+            guild(getTestGuildSnowflake())
             action {
-                publicFollowUp {
+                respond {
                     embed {
                         title = "It's our"
                         image = imageUrl
