@@ -2,6 +2,7 @@ package utils
 
 object Environment {
     const val OWNER_ID = "ownerId"
+    const val GIRLFRIEND_ID = "girlfriendId"
     const val PREFIX = "prefix"
     const val TOKEN = "token"
     const val IS_DEBUG = "isDebug"
