@@ -9,10 +9,13 @@
 # - For now, Only one Owner ID is supported.
 #
 ownerId=owner snowflake
+girlfriendUser=snowflake of girlfriend user
 prefix=prefix for bot
 token=bot-token
 isDebug=true or false
-redditUsername:username for reddit
+sentryDsn=your sentry dsn
+testGuildId=test guild id
+redditUsername=username for reddit
 redditUsername=Reddit Username for app
 redditPassword=Reddit Password
 redditAppId=Reddit App ID
