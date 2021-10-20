@@ -28,18 +28,18 @@ suspend fun main() {
         val userDiscriminator = this.event.message.author?.discriminator
         kordLogger.info("Chat Command: $commandName was triggered by $userName#$userDiscriminator")
     }
-    troy.on<ChatCommandSucceededEvent>{
+    troy.on<ChatCommandSucceededEvent> {
         kordLogger.info("${this.command.name} was successfully executed.")
     }
-    troy.on<ChatCommandFailedChecksEvent>{
+    troy.on<ChatCommandFailedChecksEvent> {
         val commandName = this.command.name
         kordLogger.info("Command: $commandName failed because checks did not pass.")
     }
-    troy.on<ChatCommandFailedParsingEvent>{
+    troy.on<ChatCommandFailedParsingEvent> {
         val commandName = this.command.name
         kordLogger.info("Command: $commandName failed because there was an parsing issue.")
     }
-    troy.on<ChatCommandFailedWithExceptionEvent>{
+    troy.on<ChatCommandFailedWithExceptionEvent> {
         val commandName = this.command.name
         kordLogger.info("Command: $commandName failed because there was an exception.")
         kordLogger.info("More details about exception: ${this.throwable.stackTrace}")
@@ -50,18 +50,21 @@ suspend fun main() {
         val userDiscriminator = this.event.interaction.user.asUser().discriminator
         kordLogger.info("Slash Command: $commandName was triggered by $userName#$userDiscriminator")
     }
-    troy.on<PublicSlashCommandFailedChecksEvent>{
+    troy.on<PublicSlashCommandSucceededEvent> {
+        kordLogger.info("${this.command.name} was successfully executed.")
+    }
+    troy.on<PublicSlashCommandFailedChecksEvent> {
         val commandName = this.command.name
         kordLogger.info("SlashCommand: $commandName failed because checks did not pass.")
     }
-    troy.on<PublicSlashCommandFailedParsingEvent>{
+    troy.on<PublicSlashCommandFailedParsingEvent> {
         val commandName = this.command.name
         kordLogger.info("SlashCommand: $commandName failed because there was an parsing issue.")
     }
-    troy.on<PublicSlashCommandFailedWithExceptionEvent>{
+    troy.on<PublicSlashCommandFailedWithExceptionEvent> {
         val commandName = this.command.name
         kordLogger.info("SlashCommand: $commandName failed because there was an exception.")
-        kordLogger.info("More details about exception: ${this.throwable.stackTrace}")
+        kordLogger.info("More details about exception: ${this.throwable.localizedMessage}")
     }
     troy.start()
 }
