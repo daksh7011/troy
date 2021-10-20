@@ -45,7 +45,7 @@ class Burn : Extension() {
                         message.respond(randomBurn)
                         return@action
                     } else if (user.id.isGirlfriend()) {
-                        message.channel.createMessage("You can't hurt her. But here is one for you asshole.")
+                        message.channel.createMessage("You can't hurt her. But here is one for you. Asshole.")
                         message.respond(randomBurn)
                         return@action
                     } else if (user.id == message.kord.selfId) {
@@ -69,6 +69,12 @@ class Burn : Extension() {
                         respond {
                             content = "You can't hurt the god, But here's one for you.\n${user.mention}, $randomBurn"
                         }
+                    } else if (user.id.isGirlfriend()) {
+                        respond {
+                            content =
+                                "You can't hurt her. But here is one for you. Asshole.\n${user.mention}, $randomBurn"
+                        }
+                        return@action
                     } else if (user.id == kordClient.selfId) {
                         respond {
                             content = "Huh, Burn me? But, $randomBurn"
