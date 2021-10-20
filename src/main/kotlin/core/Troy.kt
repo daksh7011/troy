@@ -4,9 +4,11 @@ import com.kotlindiscord.kord.extensions.DISCORD_GREEN
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import commands.`fun`.*
+import commands.misc.Avatar
+import commands.misc.Repo
+import commands.misc.Steam
 import commands.mod.Prune
 import commands.mod.Reboot
-import dev.kord.common.entity.PresenceStatus
 import dev.kord.gateway.PrivilegedIntent
 import utils.Environment
 
@@ -29,6 +31,7 @@ suspend fun getTroy(): ExtensibleBot {
                 sentry {
                     enable = true
                     dsn = env(Environment.SENTRY_DSN)
+                    debug = env(Environment.IS_DEBUG) == "true"
                 }
             }
             add(::Burn)
@@ -39,19 +42,16 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Prune)
             add(::Understandable)
             add(::Reboot)
+            add(::Avatar)
+            add(::Repo)
+            add(::Steam)
         }
         presence {
-            status = PresenceStatus.Online
-            watching("Troy burn in JS")
+            playing("/help")
         }
         members {
             fillPresences = true
             all()
-        }
-        hooks {
-            created {
-                println("ExtensibleBot object created, but not yet set up.")
-            }
         }
     }
     return troy
