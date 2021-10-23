@@ -45,6 +45,12 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Avatar)
             add(::Repo)
             add(::Steam)
+            add(::Emoji)
+            add(::SarcasticCatNo)
+            add(::Sike)
+            add(::SorryDidi)
+            add(::Tereko)
+            add(::UrbanDictionary)
         }
         presence {
             playing("/help")
