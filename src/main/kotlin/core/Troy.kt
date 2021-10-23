@@ -51,6 +51,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::SorryDidi)
             add(::Tereko)
             add(::UrbanDictionary)
+            add(::Bullshit)
         }
         presence {
             playing("/help")
