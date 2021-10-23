@@ -1,12 +1,12 @@
 package models
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class SteamSearchModel(
     @SerialName("items")
-    val gameItems: List<GameItem>?=null,
+    val gameItems: List<GameItem>? = null,
 )
 
 @Serializable
@@ -24,6 +24,7 @@ data class Platforms(
     @SerialName("windows")
     val windows: Boolean
 )
+
 @Serializable
 data class SteamGameModel(
     @SerialName("about_the_game")
