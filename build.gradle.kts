@@ -46,5 +46,5 @@ kotlinter {
     indentSize = 4
     reporters = arrayOf("checkstyle", "plain")
     experimentalRules = false
-    disabledRules = arrayOf("no-wildcard-imports")
+    disabledRules = arrayOf("no-wildcard-imports", "import-ordering", "indent")
 }
