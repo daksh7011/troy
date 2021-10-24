@@ -1,1 +1,1 @@
-Contribiution guide will be here in near future.
+Contribution guide will be here in near future.

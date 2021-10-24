@@ -17,12 +17,14 @@ repositories {
         name = "Kotlin Discord"
         url = uri("https://maven.kotlindiscord.com/repository/maven-public/")
     }
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
 }
 
 dependencies {
-    implementation("dev.kord:kord-core:0.7.4")
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.1")
-    implementation("org.slf4j:slf4j-simple:1.7.30")
+    implementation("dev.kord:kord-core:0.8.0-M7")
+    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.5.1-RC1")
+    implementation("io.ktor:ktor-client-core:1.6.4")
+    implementation("org.slf4j:slf4j-simple:1.7.32")
 }
 
 tasks.withType<KotlinCompile> {
@@ -44,5 +46,5 @@ kotlinter {
     indentSize = 4
     reporters = arrayOf("checkstyle", "plain")
     experimentalRules = false
-    disabledRules = arrayOf("no-wildcard-imports")
+    disabledRules = arrayOf("no-wildcard-imports", "import-ordering", "indent")
 }

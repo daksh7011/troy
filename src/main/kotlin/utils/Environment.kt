@@ -2,6 +2,7 @@ package utils
 
 object Environment {
     const val OWNER_ID = "ownerId"
+    const val GIRLFRIEND_ID = "girlfriendId"
     const val PREFIX = "prefix"
     const val TOKEN = "token"
     const val IS_DEBUG = "isDebug"
@@ -13,4 +14,6 @@ object Environment {
     const val STACKOVERFLOW_API_KEY = "stackoverflowApiKey"
     const val GENIUS_API_KEY = "geniusApiKey"
     const val OPEN_WEATHER_API_KEY = "openWeatherKey"
+    const val SENTRY_DSN = "sentryDsn"
+    const val TEST_GUILD_ID = "testGuildId"
 }
