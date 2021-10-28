@@ -1,5 +1,17 @@
-import com.kotlindiscord.kord.extensions.commands.events.*
+import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedChecksEvent
+import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedParsingEvent
+import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedWithExceptionEvent
+import com.kotlindiscord.kord.extensions.commands.events.ChatCommandInvocationEvent
+import com.kotlindiscord.kord.extensions.commands.events.ChatCommandSucceededEvent
+import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedChecksEvent
+import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedParsingEvent
+import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedWithExceptionEvent
+import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandInvocationEvent
+import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandSucceededEvent
+import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import core.getTroy
+import dev.kord.core.event.gateway.DisconnectEvent
+import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.kordLogger
 import dev.kord.gateway.PrivilegedIntent
@@ -7,8 +19,11 @@ import utils.Extensions.containsF
 import utils.Extensions.containsNigga
 import utils.Extensions.containsTableFlip
 import utils.Extensions.isNotBot
+import utils.GreetingsHelper
+import utils.PresenceManager
+import kotlin.time.Duration
 
-@OptIn(PrivilegedIntent::class)
+@OptIn(PrivilegedIntent::class, kotlin.time.ExperimentalTime::class)
 suspend fun main() {
     val troy = getTroy()
     troy.on<MessageCreateEvent> {
@@ -65,6 +80,18 @@ suspend fun main() {
         val commandName = this.command.name
         kordLogger.info("SlashCommand: $commandName failed because there was an exception.")
         kordLogger.info("More details about exception: ${this.throwable.localizedMessage}")
+    }
+    troy.on<ReadyEvent> {
+        PresenceManager.setPresence()
+        Scheduler().schedule(
+            delay = Duration.Companion.hours(6),
+            callback = {
+                GreetingsHelper.setupGreetingsForTechnoTrojans()
+            },
+        )
+    }
+    troy.on<DisconnectEvent> {
+        Scheduler().shutdown()
     }
     troy.start()
 }
