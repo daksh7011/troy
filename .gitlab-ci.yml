@@ -44,7 +44,7 @@ package:
       - build/libs/*.jar
     expire_in: 1 day
 
-deploy:
+prod_deploy:
   stage: deploy
   before_script:
   - apk add openssh-client
@@ -56,5 +56,3 @@ deploy:
     - scp -o StrictHostKeyChecking=no $SSH_USER_HOST build/libs/*.jar $SSH_USER_HOST:/root/troy-bin
     - ssh -o StrictHostKeyChecking=no $SSH_USER_HOST "cd ~/troy-bin && killall java && java -jar *.jar MAINKT"
     - echo "Finishing Deployment to production."
-  only:
-    - master
