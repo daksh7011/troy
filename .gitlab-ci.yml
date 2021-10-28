@@ -54,6 +54,6 @@ prod_deploy:
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   script: 
-    - scp -o StrictHostKeyChecking=no $SSH_USER_HOST build/libs/*.jar /root/troy-bin
+    - scp -o StrictHostKeyChecking=no $SSH_USER_HOST build/libs/*.jar ~/troy-bin
     - ssh -o StrictHostKeyChecking=no $SSH_USER_HOST "cd ~/troy-bin && killall java && java -jar *.jar MAINKT"
     - echo "Finishing Deployment to production."
