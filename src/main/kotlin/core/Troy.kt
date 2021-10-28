@@ -3,7 +3,19 @@ package core
 import com.kotlindiscord.kord.extensions.DISCORD_GREEN
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
-import commands.`fun`.*
+import commands.`fun`.Bullshit
+import commands.`fun`.Burn
+import commands.`fun`.Doggo
+import commands.`fun`.Emoji
+import commands.`fun`.Flip
+import commands.`fun`.ItsOur
+import commands.`fun`.Poll
+import commands.`fun`.SarcasticCatNo
+import commands.`fun`.Sike
+import commands.`fun`.SorryDidi
+import commands.`fun`.Tereko
+import commands.`fun`.Understandable
+import commands.`fun`.UrbanDictionary
 import commands.misc.Avatar
 import commands.misc.Repo
 import commands.misc.Steam
@@ -52,9 +64,6 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Tereko)
             add(::UrbanDictionary)
             add(::Bullshit)
-        }
-        presence {
-            playing("/help")
         }
         members {
             fillPresences = true
