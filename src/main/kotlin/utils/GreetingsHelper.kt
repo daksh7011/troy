@@ -35,15 +35,6 @@ object GreetingsHelper : KoinComponent {
             })
         }
     }
-    @OptIn(ExperimentalTime::class)
-     suspend fun setupGreetings(){
-        Scheduler().schedule(
-            delay = kotlin.time.Duration.hours(6),
-            callback = {
-                setupGreetingsForTechnoTrojans()
-            },
-        )
-    }
 
     private suspend fun setupGreetingsForTechnoTrojans() {
         val ayodhyaWeatherUrl =
