@@ -159,3 +159,5 @@ gradle-app.setting
 /.idea/compiler.xml
 /.idea/misc.xml
 /.idea/.name
+/src/main/kotlin/data/troy.db
+/.idea/dataSources.xml
