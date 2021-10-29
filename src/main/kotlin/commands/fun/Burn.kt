@@ -67,12 +67,13 @@ class Burn : Extension() {
                 with(arguments) {
                     if (user.id.isOwner()) {
                         respond {
-                            content = "You can't hurt the god, But here's one for you.\n${user.mention}, $randomBurn"
+                            content = "You can't hurt the god, But here's one for you.\n${member?.mention}, $randomBurn"
                         }
+                        return@action
                     } else if (user.id.isGirlfriend()) {
                         respond {
                             content =
-                                "You can't hurt her. But here is one for you. Asshole.\n${user.mention}, $randomBurn"
+                                "You can't hurt her. But here is one for you. Asshole.\n${member?.mention}, $randomBurn"
                         }
                         return@action
                     } else if (user.id == kordClient.selfId) {
