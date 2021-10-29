@@ -19,6 +19,7 @@ import commands.`fun`.UrbanDictionary
 import commands.misc.Avatar
 import commands.misc.Repo
 import commands.misc.Steam
+import commands.mod.Ban
 import commands.mod.Prune
 import commands.mod.Reboot
 import dev.kord.gateway.PrivilegedIntent
@@ -64,6 +65,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Tereko)
             add(::UrbanDictionary)
             add(::Bullshit)
+            add(::Ban)
         }
         members {
             fillPresences = true
