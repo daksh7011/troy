@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.count
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.time.Duration
+import kotlin.math.floor
 import kotlin.time.ExperimentalTime
 
 object PresenceManager : KoinComponent {
@@ -16,16 +16,19 @@ object PresenceManager : KoinComponent {
 
     @OptIn(ExperimentalTime::class)
     suspend fun setPresence() {
-        val listOfPresence = getPresenceList()
-        Scheduler().schedule(
-            delay = Duration.minutes(1),
-            callback = { editPresence(listOfPresence) },
-            name = "Presence Task"
-        )
+        callScheduler()
     }
 
-    private suspend fun editPresence(listOfPresence: List<PresenceBuilder.() -> Unit>) {
-        kordClient.editPresence(listOfPresence.random())
+    private suspend fun callScheduler() {
+        val listOfPresence = getPresenceList()
+        Scheduler().schedule(
+            60L,
+            callback = {
+                kordClient.editPresence(listOfPresence[floor(Math.random() * listOfPresence.size).toInt()])
+                callScheduler()
+            },
+            name = "Presence Task"
+        )
     }
 
     private suspend fun getPresenceList(): List<PresenceBuilder.() -> Unit> {
@@ -35,15 +38,19 @@ object PresenceManager : KoinComponent {
         kordClient.guilds.collect {
             totalChannels += it.channels.count()
         }
+        var totalMembers = 0
+        kordClient.guilds.collect {
+            totalMembers += it.members.count()
+        }
         listOfPresence.add { watching("$totalServers servers") }
         listOfPresence.add { watching("$totalChannels channels") }
+        listOfPresence.add { playing("with $totalMembers users") }
         listOfPresence.add { playing("COD: Warzone") }
         listOfPresence.add { playing("with your heart") }
         listOfPresence.add { watching("Kratos kill Zeus") }
         listOfPresence.add { watching("NSFW channels") }
         listOfPresence.add { watching("over the walls") }
         listOfPresence.add { playing("in Erebus") }
-        listOfPresence.add { playing("with Kronos") }
         listOfPresence.add { playing("with Kronos") }
         listOfPresence.add { playing("in Slothie's CPU") }
         listOfPresence.add { playing("with my dark saber") }

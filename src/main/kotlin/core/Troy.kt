@@ -67,6 +67,9 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Bullshit)
             add(::Ban)
         }
+        presence {
+            playing("/help")
+        }
         members {
             fillPresences = true
             all()
