@@ -8,6 +8,7 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
+import com.kotlindiscord.kord.extensions.utils.env
 import dev.kord.common.entity.Permission
 import dev.kord.core.Kord
 import dev.kord.core.behavior.ban
@@ -26,6 +27,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.component.inject
+import utils.Environment
 import utils.Extensions
 import utils.Extensions.getEmbedFooter
 
@@ -42,7 +44,11 @@ class Ban : Extension() {
     }
 
     override suspend fun setup() {
-        Database.connect("jdbc:sqlite:src/main/kotlin/data/troy.db", "org.sqlite.JDBC")
+        if (env(Environment.IS_DEBUG).toBoolean()) {
+            Database.connect("jdbc:sqlite:src/main/kotlin/data/troy.db", "org.sqlite.JDBC")
+        } else {
+            Database.connect("jdbc:sqlite:troy.db", "org.sqlite.JDBC")
+        }
         chatCommand(::BanArguments) {
             name = "ban"
             description = "Bans user with reason."
@@ -57,7 +63,7 @@ class Ban : Extension() {
                     reason = banReason
                 }
                 transaction {
-                    insertBanLog(user, banReason)
+                    insertBanLog(user, banReason, member?.mention.orEmpty())
                 }
                 message.channel.createEmbed {
                     setupBannedEmbed(
@@ -83,7 +89,7 @@ class Ban : Extension() {
                     reason = banReason
                 }
                 transaction {
-                    insertBanLog(user, banReason)
+                    insertBanLog(user, banReason, member?.mention.orEmpty())
                 }
                 respond {
                     embed {
@@ -100,7 +106,8 @@ class Ban : Extension() {
 
     private fun Transaction.insertBanLog(
         user: User,
-        banReason: String
+        banReason: String,
+        moderator: String
     ): InsertStatement<Number> {
         addLogger(StdOutSqlLogger)
         SchemaUtils.create(BanLogs)
@@ -108,6 +115,7 @@ class Ban : Extension() {
             it[bannedUser] = "${user.username}#${user.discriminator}"
             it[reason] = banReason
             it[bannedAt] = Clock.System.now().toString()
+            it[bannedBy] = moderator
         }
     }
 
@@ -140,4 +148,5 @@ object BanLogs : IntIdTable() {
     val bannedUser = varchar("bannedUser", 100)
     val reason = varchar("reason", 200)
     val bannedAt = varchar("timestamp", 100)
+    val bannedBy = varchar("bannedBy", 100)
 }
