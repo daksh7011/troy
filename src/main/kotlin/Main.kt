@@ -19,6 +19,7 @@ import utils.Extensions.containsF
 import utils.Extensions.containsNigga
 import utils.Extensions.containsTableFlip
 import utils.Extensions.isNotBot
+import utils.GreetingsHelper
 import utils.PresenceManager
 
 @OptIn(PrivilegedIntent::class, kotlin.time.ExperimentalTime::class)
@@ -81,6 +82,7 @@ suspend fun main() {
     }
     troy.on<ReadyEvent> {
         PresenceManager.setPresence()
+        GreetingsHelper.scheduleRecurringGreetingsCall()
     }
     troy.on<DisconnectEvent> {
         Scheduler().shutdown()

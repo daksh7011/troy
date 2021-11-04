@@ -36,27 +36,37 @@ object GreetingsHelper : KoinComponent {
         }
     }
 
-    private suspend fun setupGreetingsForTechnoTrojans() {
+    @OptIn(ExperimentalTime::class)
+    suspend fun scheduleRecurringGreetingsCall() {
+        Scheduler().schedule(
+            kotlin.time.Duration.Companion.hours(6),
+            callback = {
+                pollForAyodhyaWeather()
+                scheduleRecurringGreetingsCall()
+            },
+            name = "Greetings Scheduler"
+        )
+    }
+
+    private suspend fun pollForAyodhyaWeather() {
         val ayodhyaWeatherUrl =
             "https://api.openweathermap.org/data/2.5/weather?q=Ajodhya&appid=${env(Environment.OPEN_WEATHER_API_KEY)}"
-        var ayodhyaWeather: OpenWeatherModel? = null
-        ayodhyaWeather = requestForWeather(ayodhyaWeather, ayodhyaWeatherUrl)
+        val ayodhyaWeather = requestForWeather(ayodhyaWeatherUrl)
         ayodhyaWeather?.let {
             scheduleGreetings(it)
         }
     }
 
     private suspend fun requestForWeather(
-        ayodhyaWeather: OpenWeatherModel?,
         ayodhyaWeatherUrl: String
     ): OpenWeatherModel? {
-        var ayodhyaWeather1 = ayodhyaWeather
+        var ayodhyaWeather: OpenWeatherModel? = null
         httpClient.requestAndCatch({
-            ayodhyaWeather1 = get<OpenWeatherModel>(ayodhyaWeatherUrl)
+            ayodhyaWeather = get<OpenWeatherModel>(ayodhyaWeatherUrl)
         }, {
             getKoin().logger.log(Level.ERROR, localizedMessage)
         })
-        return ayodhyaWeather1
+        return ayodhyaWeather
     }
 
     @OptIn(ExperimentalTime::class)
@@ -64,7 +74,7 @@ object GreetingsHelper : KoinComponent {
         val technoTrojansGuild =
             kordClient.guilds.filter { it.id == getTestGuildSnowflake() }.first().asGuildOrNull()
         val chitChatsChannel =
-            technoTrojansGuild.channels.filter { it.name == "chit-chats" }.first().asChannel()
+            technoTrojansGuild.channels.filter { it.name == "bot-spam" }.first().asChannel()
         val channelBehaviour = MessageChannelBehavior(chitChatsChannel.id, kordClient)
         ayodhyaWeather.let {
             val morningDate =
@@ -78,12 +88,14 @@ object GreetingsHelper : KoinComponent {
                 callback = {
                     channelBehaviour.createMessage("Good Morning! Jay Shree Ram")
                 },
+                name = "Morning Greetings",
             )
             Scheduler().schedule(
                 delay = nightDateDelay.toKotlinDuration(),
                 callback = {
                     channelBehaviour.createMessage("Good Night! Jay Shree Ram")
                 },
+                name = "Evening Greetings"
             )
         }
     }
