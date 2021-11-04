@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "in.technowolf"
-version = "1.0-SNAPSHOT"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -23,8 +23,13 @@ repositories {
 dependencies {
     implementation("dev.kord:kord-core:0.8.0-M7")
     implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.5.1-RC1")
+    implementation("com.kotlindiscord.kord.extensions:time4j:1.5.1-RC1")
     implementation("io.ktor:ktor-client-core:1.6.4")
     implementation("org.slf4j:slf4j-simple:1.7.32")
+    implementation("org.jetbrains.exposed:exposed-core:0.36.1")
+    implementation("org.jetbrains.exposed:exposed-dao:0.36.1")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.36.1")
+    implementation("org.xerial:sqlite-jdbc:3.36.0.2")
 }
 
 tasks.withType<KotlinCompile> {
