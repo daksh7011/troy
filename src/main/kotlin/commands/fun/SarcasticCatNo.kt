@@ -10,7 +10,6 @@ import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import utils.Extensions.getEmbedFooter
-import utils.Extensions.getTestGuildSnowflake
 
 class SarcasticCatNo : Extension() {
 
@@ -38,7 +37,6 @@ class SarcasticCatNo : Extension() {
         publicSlashCommand {
             name = "sarno"
             description = "Summons a sarcastic catto to say no."
-            guild(getTestGuildSnowflake())
             action {
                 respond {
                     embed {

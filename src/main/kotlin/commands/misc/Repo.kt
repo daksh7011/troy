@@ -4,7 +4,6 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import utils.Extensions.getTestGuildSnowflake
 
 class Repo : Extension() {
 
@@ -25,7 +24,6 @@ class Repo : Extension() {
         publicSlashCommand {
             name = "repo"
             description = "Returns Troy's GitLab repo url."
-            guild(getTestGuildSnowflake())
             action {
                 respond {
                     content = "https://gitlab.com/technowolf/troy" +

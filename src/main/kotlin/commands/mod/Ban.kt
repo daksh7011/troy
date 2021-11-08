@@ -28,7 +28,6 @@ import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.component.inject
 import utils.Environment
-import utils.Extensions
 import utils.Extensions.getEmbedFooter
 
 class Ban : Extension() {
@@ -81,7 +80,6 @@ class Ban : Extension() {
                 hasPermission(Permission.Administrator)
                 requireBotPermissions(Permission.BanMembers)
             }
-            guild(Extensions.getTestGuildSnowflake())
             action {
                 val user = arguments.user
                 val banReason = arguments.reason

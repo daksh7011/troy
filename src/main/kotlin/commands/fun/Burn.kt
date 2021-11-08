@@ -11,7 +11,6 @@ import dev.kord.common.annotation.KordPreview
 import dev.kord.core.Kord
 import org.koin.core.component.inject
 import utils.DataProvider
-import utils.Extensions.getTestGuildSnowflake
 import utils.Extensions.isGirlfriend
 import utils.Extensions.isOwner
 
@@ -60,7 +59,6 @@ class Burn : Extension() {
         publicSlashCommand(::BurnSlashArguments) {
             name = "burn"
             description = "Lights fire to mentioned user."
-            guild(getTestGuildSnowflake())
             action {
                 val burnList = DataProvider.getBurnData()
                 val randomBurn = burnList[kotlin.math.floor(Math.random() * burnList.size).toInt()]

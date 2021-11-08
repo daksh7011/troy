@@ -20,7 +20,6 @@ import models.DoggoModel
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
 import utils.Extensions.getEmbedFooter
-import utils.Extensions.getTestGuildSnowflake
 import utils.Extensions.requestAndCatch
 
 class Doggo : Extension() {
@@ -79,7 +78,6 @@ class Doggo : Extension() {
         publicSlashCommand(::DoggoSlashArguments) {
             name = "doggo"
             description = "Finds some cute doggo images."
-            guild(getTestGuildSnowflake())
             action {
                 val url = if (arguments.breedName == "random") "https://dog.ceo/api/breeds/image/random"
                 else "https://dog.ceo/api/breed/${arguments.breedName}/images/random"

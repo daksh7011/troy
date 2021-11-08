@@ -19,7 +19,6 @@ import commands.`fun`.UrbanDictionary
 import commands.misc.Avatar
 import commands.misc.Invite
 import commands.misc.Repo
-import commands.misc.Steam
 import commands.mod.Ban
 import commands.mod.Kick
 import commands.mod.Prune

@@ -4,7 +4,6 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import utils.Extensions.getTestGuildSnowflake
 import kotlin.math.floor
 
 class Flip : Extension() {
@@ -25,7 +24,6 @@ class Flip : Extension() {
         publicSlashCommand {
             name = "flip"
             description = "Flips a coin for you."
-            guild(getTestGuildSnowflake())
             action {
                 respond {
                     val result = if (floor(Math.random() * 2).toInt() == 0) "heads"

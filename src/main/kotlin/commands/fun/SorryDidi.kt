@@ -6,7 +6,6 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import utils.Extensions.getTestGuildSnowflake
 
 class SorryDidi : Extension() {
 
@@ -30,7 +29,6 @@ class SorryDidi : Extension() {
         publicSlashCommand(::SorryDidiArguments) {
             name = "sorry-didi"
             description = "Apologizes to woke didis out there."
-            guild(getTestGuildSnowflake())
             action {
                 if (arguments.user == null) {
                     respond {
