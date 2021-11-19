@@ -7,8 +7,6 @@ import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.respond
-import dev.kord.common.entity.Snowflake
-import dev.kord.common.entity.optional.orElse
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
@@ -28,9 +26,7 @@ class Noods : Extension() {
 
     private val noodCatalog = DataProvider.getNoodsData()
 
-
-    override val name: String
-        get() = "noods"
+    override val name: String get() = "noods"
 
     class NoodsArguments : Arguments() {
         val category by defaultingString("category", "What will tickle your pickle?", "random")
@@ -54,7 +50,7 @@ class Noods : Extension() {
                         .floor(Math.random() * 69).toInt()).build()
                     val data = posts.next()
                     var noodUrl = data.children[kotlin.math.floor(Math.random() * data.children.size).toInt()].url
-                    while (!(noodUrl.contains(".jpg") or noodUrl.contains(".png"))){
+                    while (!(noodUrl.contains(".jpg") or noodUrl.contains(".png"))) {
                         noodUrl = data.children[kotlin.math.floor(Math.random() * data.children.size).toInt()].url
                     }
                     if (noodUrl != null) {
