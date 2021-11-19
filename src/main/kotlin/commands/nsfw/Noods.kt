@@ -45,10 +45,9 @@ class Noods : Extension() {
             name = "noods"
             description = "Finds some spicy noods."
             action {
-                if(kordClient.getChannel(channel.id)?.data?.nsfw?.orElse(false) == false) {
+                if (kordClient.getChannel(channel.id)?.data?.nsfw?.orElse(false) == false) {
                     this@action.message.respond("Eh, you lost boi??")
-                }
-                else{
+                } else {
                     val categoryToFetch = noodCatalog.filter { it.categoryName.contains(arguments.category) }
                     val category = categoryToFetch[0].value[kotlin.math.floor(Math.random() * categoryToFetch.size).toInt()]
                     val posts = redditClient.subreddit(category).posts().sorting(SubredditSort.HOT).limit(kotlin.math
@@ -76,22 +75,21 @@ class Noods : Extension() {
             description = "Finds some spicy noods."
             guild(getTestGuildSnowflake())
             action {
-                if(kordClient.getChannel(channel.id)?.data?.nsfw?.orElse(false) == false) {
+                if (kordClient.getChannel(channel.id)?.data?.nsfw?.orElse(false) == false) {
                     this@action.respond {
                         content = "Eh, you lost boi??"
                     }
-                }
-                else{
+                } else {
                     val categoryToFetch = noodCatalog.filter { it.categoryName.contains(arguments.categoryName) }
                     val category = categoryToFetch[0].value[kotlin.math.floor(Math.random() * categoryToFetch.size).toInt()]
                     val posts = redditClient.subreddit(category).posts().sorting(SubredditSort.HOT).limit(kotlin.math
                         .floor(Math.random() * 69).toInt()).build()
                     val data = posts.next()
                     var noodUrl = data.children[kotlin.math.floor(Math.random() * data.children.size).toInt()].url
-                    while (!(noodUrl.contains(".jpg") or noodUrl.contains(".png"))){
+                    while (!(noodUrl.contains(".jpg") or noodUrl.contains(".png"))) {
                         noodUrl = data.children[kotlin.math.floor(Math.random() * data.children.size).toInt()].url
                     }
-                    if (noodUrl != null){
+                    if (noodUrl != null) {
                         respond {
                             embed {
                                 title = "Go. Enjoi those 10 seconds."
@@ -107,5 +105,3 @@ class Noods : Extension() {
         }
     }
 }
-
-

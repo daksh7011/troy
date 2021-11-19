@@ -2,7 +2,6 @@ package utils
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import models.NoodsModel
 import models.NoodsModelItem
 
 object DataProvider {
