@@ -9,6 +9,7 @@ import commands.`fun`.Doggo
 import commands.`fun`.Emoji
 import commands.`fun`.Flip
 import commands.`fun`.ItsOur
+import commands.nsfw.Noods
 import commands.`fun`.Poll
 import commands.`fun`.SarcasticCatNo
 import commands.`fun`.Sike
@@ -64,6 +65,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Tereko)
             add(::UrbanDictionary)
             add(::Bullshit)
+            add(::Noods)
         }
         members {
             fillPresences = true

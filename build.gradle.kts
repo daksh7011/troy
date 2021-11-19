@@ -25,6 +25,7 @@ dependencies {
     implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.5.1-RC1")
     implementation("io.ktor:ktor-client-core:1.6.4")
     implementation("org.slf4j:slf4j-simple:1.7.32")
+    implementation("net.dean.jraw:JRAW:1.1.0")
 }
 
 tasks.withType<KotlinCompile> {
