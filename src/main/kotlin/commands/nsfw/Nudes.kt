@@ -11,7 +11,7 @@ import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
-import models.NoodsModelItem
+import models.NoodsModel
 import net.dean.jraw.models.SubredditSort
 import org.koin.core.component.inject
 import utils.DataProvider
@@ -90,7 +90,7 @@ class Nudes : Extension() {
         return nudeUrl
     }
 
-    private fun getRandomCategory(categoryToFetch: List<NoodsModelItem>) =
+    private fun getRandomCategory(categoryToFetch: List<NoodsModel>) =
         categoryToFetch[0].value[floor(Math.random() * categoryToFetch.size).toInt()]
 
     private fun getCategoriesFromCatalog(categoryName: String) =

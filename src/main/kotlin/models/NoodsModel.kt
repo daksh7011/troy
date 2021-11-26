@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NoodsModelItem(
+data class NoodsModel(
     @SerialName("categoryName")
     val categoryName: List<String>,
     @SerialName("fullName")
