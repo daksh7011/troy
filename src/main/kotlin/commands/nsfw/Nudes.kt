@@ -57,7 +57,6 @@ class Nudes : Extension() {
         publicSlashCommand(::NudesArguments) {
             name = "nudes"
             description = "Finds some spicy noods."
-            guild(getTestGuildSnowflake())
             action {
                 if (kordClient.getChannel(channel.id)?.data?.nsfw?.orElse(false) == false) {
                     this@action.respond {
