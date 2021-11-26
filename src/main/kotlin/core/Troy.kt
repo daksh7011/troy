@@ -9,6 +9,7 @@ import commands.`fun`.Doggo
 import commands.`fun`.Emoji
 import commands.`fun`.Flip
 import commands.`fun`.ItsOur
+import commands.nsfw.Nudes
 import commands.`fun`.Poll
 import commands.`fun`.SarcasticCatNo
 import commands.`fun`.Sike
@@ -69,6 +70,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Ban)
             add(::Kick)
             add(::Invite)
+            add(::Nudes)
         }
         presence {
             playing("/help")

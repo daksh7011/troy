@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "in.technowolf"
-version = "1.0.1"
+version = "1.0.2"
 
 repositories {
     mavenCentral()
@@ -26,6 +26,7 @@ dependencies {
     implementation("com.kotlindiscord.kord.extensions:time4j:1.5.1-RC1")
     implementation("io.ktor:ktor-client-core:1.6.4")
     implementation("org.slf4j:slf4j-simple:1.7.32")
+    implementation("net.dean.jraw:JRAW:1.1.0")
     implementation("org.jetbrains.exposed:exposed-core:0.36.1")
     implementation("org.jetbrains.exposed:exposed-dao:0.36.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.36.1")
