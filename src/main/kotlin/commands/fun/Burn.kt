@@ -11,7 +11,6 @@ import dev.kord.common.annotation.KordPreview
 import dev.kord.core.Kord
 import org.koin.core.component.inject
 import utils.DataProvider
-import utils.Extensions.getTestGuildSnowflake
 import utils.Extensions.isGirlfriend
 import utils.Extensions.isOwner
 
@@ -60,19 +59,19 @@ class Burn : Extension() {
         publicSlashCommand(::BurnSlashArguments) {
             name = "burn"
             description = "Lights fire to mentioned user."
-            guild(getTestGuildSnowflake())
             action {
                 val burnList = DataProvider.getBurnData()
                 val randomBurn = burnList[kotlin.math.floor(Math.random() * burnList.size).toInt()]
                 with(arguments) {
                     if (user.id.isOwner()) {
                         respond {
-                            content = "You can't hurt the god, But here's one for you.\n${user.mention}, $randomBurn"
+                            content = "You can't hurt the god, But here's one for you.\n${member?.mention}, $randomBurn"
                         }
+                        return@action
                     } else if (user.id.isGirlfriend()) {
                         respond {
                             content =
-                                "You can't hurt her. But here is one for you. Asshole.\n${user.mention}, $randomBurn"
+                                "You can't hurt her. But here is one for you. Asshole.\n${member?.mention}, $randomBurn"
                         }
                         return@action
                     } else if (user.id == kordClient.selfId) {

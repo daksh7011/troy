@@ -18,8 +18,10 @@ import commands.`fun`.Tereko
 import commands.`fun`.Understandable
 import commands.`fun`.UrbanDictionary
 import commands.misc.Avatar
+import commands.misc.Invite
 import commands.misc.Repo
-import commands.misc.Steam
+import commands.mod.Ban
+import commands.mod.Kick
 import commands.mod.Prune
 import commands.mod.Reboot
 import dev.kord.gateway.PrivilegedIntent
@@ -57,7 +59,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Reboot)
             add(::Avatar)
             add(::Repo)
-            add(::Steam)
+            // add(::Steam)
             add(::Emoji)
             add(::SarcasticCatNo)
             add(::Sike)
@@ -65,7 +67,13 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Tereko)
             add(::UrbanDictionary)
             add(::Bullshit)
+            add(::Ban)
+            add(::Kick)
+            add(::Invite)
             add(::Noods)
+        }
+        presence {
+            playing("/help")
         }
         members {
             fillPresences = true

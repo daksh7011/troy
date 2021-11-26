@@ -21,7 +21,6 @@ import models.UrbanDictItem
 import models.UrbanDictModel
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
-import utils.Extensions
 import utils.Extensions.getEmbedFooter
 import utils.Extensions.requestAndCatch
 
@@ -88,7 +87,6 @@ class UrbanDictionary : Extension() {
         publicSlashCommand(::UrbanDictArguments) {
             name = "urban"
             description = "Returns a definition from Urban Dictionary"
-            guild(Extensions.getTestGuildSnowflake())
             action {
                 var urbanDictModelForSlashCommand: UrbanDictModel? = null
                 httpClient.requestAndCatch({

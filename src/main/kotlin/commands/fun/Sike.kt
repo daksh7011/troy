@@ -4,7 +4,6 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import utils.Extensions.getTestGuildSnowflake
 
 class Sike : Extension() {
 
@@ -22,7 +21,6 @@ class Sike : Extension() {
         publicSlashCommand {
             name = "sike"
             description = "Sends sike whenever someone requests for it."
-            guild(getTestGuildSnowflake())
             action {
                 respond { content = "** _S I K E_ **" }
             }

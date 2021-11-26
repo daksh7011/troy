@@ -25,7 +25,6 @@ import models.SteamGameModel
 import models.SteamSearchModel
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
-import utils.Extensions
 import utils.Extensions.getEmbedFooter
 import utils.Extensions.requestAndCatch
 
@@ -113,7 +112,6 @@ class Steam : Extension() {
         publicSlashCommand(::SteamSearchArguments) {
             name = "steam"
             description = "Searches Steam for your query."
-            guild(Extensions.getTestGuildSnowflake())
             action {
                 respond {
                     var steamSearchModelForSlashCommand: SteamSearchModel? = null

@@ -10,7 +10,6 @@ import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import utils.Extensions.getEmbedFooter
-import utils.Extensions.getTestGuildSnowflake
 
 class ItsOur : Extension() {
 
@@ -39,7 +38,6 @@ class ItsOur : Extension() {
         publicSlashCommand {
             name = "our"
             description = "Firmly states that it is ours in this soviet soil."
-            guild(getTestGuildSnowflake())
             action {
                 respond {
                     embed {

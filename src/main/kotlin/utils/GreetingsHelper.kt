@@ -37,38 +37,66 @@ object GreetingsHelper : KoinComponent {
     }
 
     @OptIn(ExperimentalTime::class)
-    suspend fun setupGreetingsForTechnoTrojans() {
+    suspend fun scheduleRecurringGreetingsCall() {
+        Scheduler().schedule(
+            kotlin.time.Duration.Companion.hours(6),
+            callback = {
+                pollForAyodhyaWeather()
+                scheduleRecurringGreetingsCall()
+            },
+            name = "Greetings Scheduler"
+        )
+    }
+
+    private suspend fun pollForAyodhyaWeather() {
         val ayodhyaWeatherUrl =
             "https://api.openweathermap.org/data/2.5/weather?q=Ajodhya&appid=${env(Environment.OPEN_WEATHER_API_KEY)}"
-        val technoTrojansGuild =
-            kordClient.guilds.filter { it.id == getTestGuildSnowflake() }.first().asGuildOrNull()
-        val chitChatsChannel =
-            technoTrojansGuild.channels.filter { it.name == "chit-chats" }.first().asChannel()
-        val channelBehaviour = MessageChannelBehavior(chitChatsChannel.id, kordClient)
+        val ayodhyaWeather = requestForWeather(ayodhyaWeatherUrl)
+        ayodhyaWeather?.let {
+            scheduleGreetings(it)
+        }
+    }
+
+    private suspend fun requestForWeather(
+        ayodhyaWeatherUrl: String
+    ): OpenWeatherModel? {
+        var ayodhyaWeather: OpenWeatherModel? = null
         httpClient.requestAndCatch({
-            val ayodhyaWeather = get<OpenWeatherModel>(ayodhyaWeatherUrl)
-            ayodhyaWeather.let {
-                val morningDate =
-                    Instant.ofEpochMilli(it.sys.sunrise.toLong()).atZone(ZoneId.of("UTC")).toLocalDateTime()
-                val morningDateDelay = Duration.between(LocalDateTime.now(), morningDate)
-                val nightDate =
-                    Instant.ofEpochMilli(it.sys.sunset.toLong()).atZone(ZoneId.of("UTC")).toLocalDateTime()
-                val nightDateDelay = Duration.between(LocalDateTime.now(), nightDate)
-                Scheduler().schedule(
-                    delay = morningDateDelay.toKotlinDuration(),
-                    callback = {
-                        channelBehaviour.createMessage("Good Morning! Jay Shree Ram")
-                    },
-                )
-                Scheduler().schedule(
-                    delay = nightDateDelay.toKotlinDuration(),
-                    callback = {
-                        channelBehaviour.createMessage("Good Night! Jay Shree Ram")
-                    },
-                )
-            }
+            ayodhyaWeather = get<OpenWeatherModel>(ayodhyaWeatherUrl)
         }, {
             getKoin().logger.log(Level.ERROR, localizedMessage)
         })
+        return ayodhyaWeather
+    }
+
+    @OptIn(ExperimentalTime::class)
+    private suspend fun scheduleGreetings(ayodhyaWeather: OpenWeatherModel) {
+        val technoTrojansGuild =
+            kordClient.guilds.filter { it.id == getTestGuildSnowflake() }.first().asGuildOrNull()
+        val chitChatsChannel =
+            technoTrojansGuild.channels.filter { it.name == "bot-spam" }.first().asChannel()
+        val channelBehaviour = MessageChannelBehavior(chitChatsChannel.id, kordClient)
+        ayodhyaWeather.let {
+            val morningDate =
+                Instant.ofEpochMilli(it.sys.sunrise.toLong()).atZone(ZoneId.of("UTC")).toLocalDateTime()
+            val morningDateDelay = Duration.between(LocalDateTime.now(), morningDate)
+            val nightDate =
+                Instant.ofEpochMilli(it.sys.sunset.toLong()).atZone(ZoneId.of("UTC")).toLocalDateTime()
+            val nightDateDelay = Duration.between(LocalDateTime.now(), nightDate)
+            Scheduler().schedule(
+                delay = morningDateDelay.toKotlinDuration(),
+                callback = {
+                    channelBehaviour.createMessage("Good Morning! Jay Shree Ram")
+                },
+                name = "Morning Greetings",
+            )
+            Scheduler().schedule(
+                delay = nightDateDelay.toKotlinDuration(),
+                callback = {
+                    channelBehaviour.createMessage("Good Night! Jay Shree Ram")
+                },
+                name = "Evening Greetings"
+            )
+        }
     }
 }

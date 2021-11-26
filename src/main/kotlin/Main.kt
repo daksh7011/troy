@@ -21,7 +21,6 @@ import utils.Extensions.containsTableFlip
 import utils.Extensions.isNotBot
 import utils.GreetingsHelper
 import utils.PresenceManager
-import kotlin.time.Duration
 
 @OptIn(PrivilegedIntent::class, kotlin.time.ExperimentalTime::class)
 suspend fun main() {
@@ -83,12 +82,7 @@ suspend fun main() {
     }
     troy.on<ReadyEvent> {
         PresenceManager.setPresence()
-        Scheduler().schedule(
-            delay = Duration.Companion.hours(6),
-            callback = {
-                GreetingsHelper.setupGreetingsForTechnoTrojans()
-            },
-        )
+        GreetingsHelper.scheduleRecurringGreetingsCall()
     }
     troy.on<DisconnectEvent> {
         Scheduler().shutdown()

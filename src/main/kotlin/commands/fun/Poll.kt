@@ -13,7 +13,6 @@ import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
 import org.koin.core.component.inject
 import utils.Extensions.getEmbedFooter
-import utils.Extensions.getTestGuildSnowflake
 
 class Poll : Extension() {
 
@@ -57,7 +56,6 @@ class Poll : Extension() {
         publicSlashCommand(::PollSlashArguments) {
             name = "poll"
             description = "Gives a poll for provided options"
-            guild(getTestGuildSnowflake())
             action {
                 val optionList = arguments.options.split(",")
                 respond {

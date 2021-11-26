@@ -6,7 +6,6 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import utils.Extensions.getTestGuildSnowflake
 
 class Understandable : Extension() {
 
@@ -34,7 +33,6 @@ class Understandable : Extension() {
         publicSlashCommand(::UnderstandableSlashArgument) {
             name = "understandable"
             description = "Sends understandable have a great day on request."
-            guild(getTestGuildSnowflake())
             action {
                 if (arguments.user == null) {
                     respond {

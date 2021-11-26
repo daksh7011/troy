@@ -11,7 +11,6 @@ import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
-import utils.Extensions
 import utils.Extensions.getEmbedFooter
 
 class Avatar : Extension() {
@@ -52,7 +51,6 @@ class Avatar : Extension() {
         publicSlashCommand(::AvatarArguments) {
             name = "avatar"
             description = "Get the avatar URL of the tagged user, or your own avatar."
-            guild(Extensions.getTestGuildSnowflake())
             action {
                 if (arguments.user == null) {
                     respond {

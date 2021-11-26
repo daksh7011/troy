@@ -9,7 +9,6 @@ import com.kotlindiscord.kord.extensions.types.respond
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
-import utils.Extensions
 
 class Emoji : Extension() {
 
@@ -46,7 +45,6 @@ class Emoji : Extension() {
         publicSlashCommand(::EmojiArguments) {
             name = "emoji"
             description = "Sends server custom emoji, Also supports animated emojis."
-            guild(Extensions.getTestGuildSnowflake())
             action {
                 if (
                     guild?.emojis?.filter { it.name == arguments.emoji }?.count() != 0
