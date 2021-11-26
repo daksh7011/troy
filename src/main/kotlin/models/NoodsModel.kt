@@ -1,9 +1,7 @@
 package models
-import kotlinx.serialization.Serializable
 
 import kotlinx.serialization.SerialName
-
-class NoodsModel : ArrayList<NoodsModelItem>()
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class NoodsModelItem(
