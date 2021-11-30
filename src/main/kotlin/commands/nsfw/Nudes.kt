@@ -16,7 +16,6 @@ import net.dean.jraw.models.SubredditSort
 import org.koin.core.component.inject
 import utils.DataProvider
 import utils.Extensions.getEmbedFooter
-import utils.Extensions.getTestGuildSnowflake
 import utils.RedditClient
 import kotlin.math.floor
 
