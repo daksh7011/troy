@@ -3,6 +3,8 @@ package commands.mod
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import dev.kord.core.Kord
+import dev.kord.x.emoji.Emojis
+import dev.kord.x.emoji.toReaction
 import org.koin.core.component.inject
 import utils.Extensions.isOwner
 
@@ -21,6 +23,7 @@ class Reboot : Extension() {
                 if (message.author?.id?.isOwner()?.not() != false) {
                     message.channel.createMessage("This is owner only command.")
                 } else {
+                    message.addReaction(Emojis.wave.toReaction())
                     message.channel.createMessage("Commencing reboot.")
                     kordClient.logout()
                     kordClient.shutdown()

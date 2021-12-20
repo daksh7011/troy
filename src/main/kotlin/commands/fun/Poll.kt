@@ -7,10 +7,20 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import com.kotlindiscord.kord.extensions.utils.addReaction
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
+import dev.kord.x.emoji.Emojis.eight
+import dev.kord.x.emoji.Emojis.five
+import dev.kord.x.emoji.Emojis.four
+import dev.kord.x.emoji.Emojis.keycapTen
+import dev.kord.x.emoji.Emojis.nine
+import dev.kord.x.emoji.Emojis.one
+import dev.kord.x.emoji.Emojis.seven
+import dev.kord.x.emoji.Emojis.six
+import dev.kord.x.emoji.Emojis.three
+import dev.kord.x.emoji.Emojis.two
+import dev.kord.x.emoji.toReaction
 import org.koin.core.component.inject
 import utils.Extensions.getEmbedFooter
 
@@ -18,7 +28,18 @@ class Poll : Extension() {
 
     private val kordClient: Kord by inject()
 
-    private val reactions = listOf("1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟")
+    private val reactions = listOf(
+        one.toReaction(),
+        two.toReaction(),
+        three.toReaction(),
+        four.toReaction(),
+        five.toReaction(),
+        six.toReaction(),
+        seven.toReaction(),
+        eight.toReaction(),
+        nine.toReaction(),
+        keycapTen.toReaction(),
+    )
 
     override val name: String
         get() = "poll"
@@ -45,6 +66,7 @@ class Poll : Extension() {
                         field {
                             name = "Option ${index + 1}"
                             value = option
+                            inline = true
                         }
                     }
                 }
@@ -66,6 +88,7 @@ class Poll : Extension() {
                             field {
                                 name = "Option ${index + 1}"
                                 value = option
+                                inline = true
                             }
                         }
                         field {

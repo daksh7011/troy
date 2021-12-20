@@ -207,7 +207,7 @@ class Steam : Extension() {
         }
         field {
             name = "❯ Recommendations"
-            value = steamGameModel.recommendations.total.toString()
+            value = "%,d".format(steamGameModel.recommendations.total)
             inline = true
         }
         field {
@@ -222,7 +222,7 @@ class Steam : Extension() {
         }
         field {
             name = "❯ DLC Count"
-            value = steamGameModel.dlc?.size.toString()
+            value = if (steamGameModel.dlc.isNullOrEmpty()) "Info not found" else steamGameModel.dlc.size.toString()
             inline = true
         }
         field {

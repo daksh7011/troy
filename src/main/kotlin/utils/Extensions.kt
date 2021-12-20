@@ -5,6 +5,9 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.entity.Message
 import dev.kord.rest.builder.message.EmbedBuilder
+import io.getunleash.DefaultUnleash
+import io.getunleash.Unleash
+import io.getunleash.util.UnleashConfig
 import io.ktor.client.*
 import io.ktor.client.features.*
 
@@ -46,5 +49,14 @@ object Extensions {
         return Snowflake(
             env(Environment.TEST_GUILD_ID).toLong()
         )
+    }
+
+    fun provideUnleashClient(): Unleash {
+        val config = UnleashConfig.builder()
+            .appName("Troy")
+            .instanceId(env(Environment.UNLEASH_INSTANCE_ID))
+            .unleashAPI(env(Environment.UNLEASH_URL))
+            .build()
+        return DefaultUnleash(config)
     }
 }

@@ -24,3 +24,5 @@ redditUserAgent=Reddit user agent
 stackoverflowApiKey=your stackoverflow key goes here.
 geniusApiKey=your genius api key, It is optional though
 openWeatherKey=your open weather key
+unleashUrl=your unleash url for dynamic feature flag toggles
+unleashInstanceId=your unleash instance id for dynamic feature flag toggles

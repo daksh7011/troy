@@ -16,4 +16,6 @@ object Environment {
     const val OPEN_WEATHER_API_KEY = "openWeatherKey"
     const val SENTRY_DSN = "sentryDsn"
     const val TEST_GUILD_ID = "testGuildId"
+    const val UNLEASH_URL = "unleashUrl"
+    const val UNLEASH_INSTANCE_ID = "unleashInstanceId"
 }

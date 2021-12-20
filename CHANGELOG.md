@@ -1,3 +1,10 @@
+### Version 1.0.4
+- Fix slash commands registry
+- Enhance Reboot, Steam and Poll command
+- Add feature flag support for dynamic features toggle from gitlab
+- Bundled noods.json resource to the package until better solution is made available
+- Housekeeping and other optimizations
+
 ### Version 1.0.3
 - Fix and enhance nudes command.
 
