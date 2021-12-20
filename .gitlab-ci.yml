@@ -43,6 +43,8 @@ package:
     paths:
       - build/libs/*.jar
     expire_in: 1 day
+  only:
+    - master
 
 prod_deploy:
   stage: deploy

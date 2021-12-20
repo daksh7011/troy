@@ -9,7 +9,6 @@ import commands.`fun`.Doggo
 import commands.`fun`.Emoji
 import commands.`fun`.Flip
 import commands.`fun`.ItsOur
-import commands.nsfw.Nudes
 import commands.`fun`.Poll
 import commands.`fun`.SarcasticCatNo
 import commands.`fun`.Sike
@@ -20,15 +19,19 @@ import commands.`fun`.UrbanDictionary
 import commands.misc.Avatar
 import commands.misc.Invite
 import commands.misc.Repo
+import commands.misc.Steam
 import commands.mod.Ban
 import commands.mod.Kick
 import commands.mod.Prune
 import commands.mod.Reboot
+import commands.nsfw.Nudes
 import dev.kord.gateway.PrivilegedIntent
 import utils.Environment
+import utils.Extensions.provideUnleashClient
 
 @OptIn(PrivilegedIntent::class)
 suspend fun getTroy(): ExtensibleBot {
+    val unleash = provideUnleashClient()
     val troy = ExtensibleBot(env(Environment.TOKEN)) {
         chatCommands {
             defaultPrefix = env(Environment.PREFIX)
@@ -59,7 +62,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Reboot)
             add(::Avatar)
             add(::Repo)
-            // add(::Steam)
+            if (unleash.isEnabled("steam")) add(::Steam)
             add(::Emoji)
             add(::SarcasticCatNo)
             add(::Sike)
