@@ -18,20 +18,23 @@ repositories {
         url = uri("https://maven.kotlindiscord.com/repository/maven-public/")
     }
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
     implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.5.1-RC1")
     implementation("com.kotlindiscord.kord.extensions:time4j:1.5.1-RC1")
-    implementation("io.ktor:ktor-client-core:1.6.7")
     implementation("org.slf4j:slf4j-simple:1.7.32")
     implementation("net.dean.jraw:JRAW:1.1.0")
     implementation("org.jetbrains.exposed:exposed-core:0.36.1")
     implementation("org.jetbrains.exposed:exposed-dao:0.36.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.36.1")
     implementation("org.xerial:sqlite-jdbc:3.36.0.2")
-    implementation ("io.getunleash:unleash-client-java:5.0.3")
+    implementation("io.getunleash:unleash-client-java:5.0.3")
     implementation("dev.kord.x:emoji:0.5.0")
+    implementation("io.ktor:ktor-client-core:1.6.7")
+    implementation("io.ktor:ktor-client-cio:1.6.7")
+    implementation("com.github.DiscordBotList:DBL-Java-Library:2.0.1")
 }
 
 tasks.withType<KotlinCompile> {
