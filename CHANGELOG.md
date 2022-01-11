@@ -1,3 +1,6 @@
+### Version 1.0.5
+- Add Top.gg library to send total number of guilds.
+
 ### Version 1.0.4
 - Fix slash commands registry
 - Enhance Reboot, Steam and Poll command
