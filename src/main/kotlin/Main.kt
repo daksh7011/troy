@@ -8,13 +8,18 @@ import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFaile
 import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedWithExceptionEvent
 import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandInvocationEvent
 import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandSucceededEvent
+import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import core.getTroy
+import dev.kord.core.Kord
 import dev.kord.core.event.gateway.DisconnectEvent
 import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.kordLogger
 import dev.kord.gateway.PrivilegedIntent
+import kotlinx.coroutines.flow.count
+import org.discordbots.api.client.DiscordBotListAPI
+import utils.Environment
 import utils.Extensions.containsF
 import utils.Extensions.containsNigga
 import utils.Extensions.containsTableFlip
@@ -24,6 +29,11 @@ import utils.PresenceManager
 @OptIn(PrivilegedIntent::class, kotlin.time.ExperimentalTime::class)
 suspend fun main() {
     val troy = getTroy()
+    val api: DiscordBotListAPI = DiscordBotListAPI.Builder()
+        .token(env(Environment.TOP_GG_TOKEN))
+        .botId(env(Environment.BOT_ID))
+        .build()
+    val kordClient: Kord = troy.getKoin().get()
     troy.on<MessageCreateEvent> {
         if (message.containsF() && message.isNotBot()) {
             message.channel.createMessage("f")
@@ -82,6 +92,11 @@ suspend fun main() {
     troy.on<ReadyEvent> {
         PresenceManager.setPresence()
         // GreetingsHelper.scheduleRecurringGreetingsCall()
+        if (env(Environment.IS_DEBUG).toBoolean().not()) {
+            val stats = kordClient.guilds.count()
+            kordLogger.info("Server Count: $stats")
+            api.setStats(stats)
+        }
     }
     troy.on<DisconnectEvent> {
         Scheduler().shutdown()
