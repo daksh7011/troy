@@ -5,6 +5,7 @@ object Environment {
     const val GIRLFRIEND_ID = "girlfriendId"
     const val PREFIX = "prefix"
     const val TOKEN = "token"
+    const val BOT_ID = "botId"
     const val IS_DEBUG = "isDebug"
     const val REDDIT_USERNAME = "redditUsername"
     const val REDDIT_PASSWORD = "redditPassword"
@@ -18,4 +19,5 @@ object Environment {
     const val TEST_GUILD_ID = "testGuildId"
     const val UNLEASH_URL = "unleashUrl"
     const val UNLEASH_INSTANCE_ID = "unleashInstanceId"
+    const val TOP_GG_TOKEN = "topGgToken"
 }
