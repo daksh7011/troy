@@ -1,3 +1,6 @@
+### Version 1.0.6
+- Add Phishing link protection to scan for scam links and send a notification to that channel.
+
 ### Version 1.0.5
 - Add Top.gg library to send total number of guilds.
 
