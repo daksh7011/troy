@@ -1,3 +1,4 @@
+import com.kotlindiscord.kord.extensions.DISCORD_RED
 import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedChecksEvent
 import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedParsingEvent
 import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedWithExceptionEvent
@@ -12,18 +13,22 @@ import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import core.getTroy
 import dev.kord.core.Kord
+import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.event.gateway.DisconnectEvent
 import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.kordLogger
 import dev.kord.gateway.PrivilegedIntent
 import kotlinx.coroutines.flow.count
+import kotlinx.datetime.Clock
 import org.discordbots.api.client.DiscordBotListAPI
 import utils.Environment
 import utils.Extensions.containsF
 import utils.Extensions.containsNigga
 import utils.Extensions.containsTableFlip
+import utils.Extensions.getEmbedFooter
 import utils.Extensions.isNotBot
+import utils.PhishingDomainsHelper
 import utils.PresenceManager
 
 @OptIn(PrivilegedIntent::class, kotlin.time.ExperimentalTime::class)
@@ -34,6 +39,8 @@ suspend fun main() {
         .botId(env(Environment.BOT_ID))
         .build()
     val kordClient: Kord = troy.getKoin().get()
+    val domainList = PhishingDomainsHelper.fetchDomains()
+
     troy.on<MessageCreateEvent> {
         if (message.containsF() && message.isNotBot()) {
             message.channel.createMessage("f")
@@ -43,6 +50,25 @@ suspend fun main() {
         }
         if (message.containsTableFlip() && message.isNotBot()) {
             message.channel.createMessage("┬─┬ ノ( ゜-゜ノ)")
+        }
+        if (message.isNotBot()) {
+            domainList.filter { message.content.contains(it) }.let {
+                if (it.isNotEmpty()) {
+                    message.channel.createEmbed {
+                        title = "Warning"
+                        color = DISCORD_RED
+                        description = "_${it.first()}_ is **Phishing website**. Stay away from this site. " +
+                                "You have been warned!"
+                        field {
+                            name = "Author"
+                            value = message.author?.mention.orEmpty()
+                            inline = true
+                        }
+                        footer = message.getEmbedFooter()
+                        timestamp = Clock.System.now()
+                    }
+                }
+            }
         }
     }
     troy.on<ChatCommandInvocationEvent> {
