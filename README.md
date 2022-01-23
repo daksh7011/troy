@@ -15,7 +15,7 @@
     <a href="https://gitlab.com/technowolf/troy/-/blob/master/LICENSE" target="_blank">
         <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" alt="License: MIT">
     </a>
-    <a href="http://makeapullrequest.com" target="_blank">
+    <a href="https://makeapullrequest.com" target="_blank">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat" alt="Make a MR">
     </a>
     <a href="https://gitlab.com/technowolf/troy/commits/master">

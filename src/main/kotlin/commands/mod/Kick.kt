@@ -52,20 +52,22 @@ class Kick : Extension() {
             description = "Kicks user with reason."
             check {
                 hasPermission(Permission.Administrator)
-                requireBotPermissions(Permission.BanMembers)
+                requireBotPermissions(Permission.KickMembers)
             }
             action {
                 val user = arguments.user
                 val kickReason = arguments.reason
+                val moderator = "${message.author?.username}#${message.author?.discriminator}"
                 message.getGuild().kick(user.id, kickReason)
                 transaction {
-                    insertKickLog(user, kickReason, member?.mention.orEmpty())
+                    insertKickLog(user, kickReason, moderator)
                 }
                 message.channel.createEmbed {
                     setupKickedEmbed(
                         arguments.user.mention,
                         arguments.reason,
-                        message.author?.mention.orEmpty()
+                        message.author?.mention.orEmpty(),
+                        kordClient,
                     )
                 }
             }
@@ -75,21 +77,23 @@ class Kick : Extension() {
             description = "Kicks user with reason."
             check {
                 hasPermission(Permission.Administrator)
-                requireBotPermissions(Permission.BanMembers)
+                requireBotPermissions(Permission.KickMembers)
             }
             action {
                 val user = arguments.user
                 val kickReason = arguments.reason
+                val moderator = "${member?.asUser()?.username}#${member?.asUser()?.discriminator}"
                 guild?.kick(user.id, kickReason)
                 transaction {
-                    insertKickLog(user, kickReason, member?.mention.orEmpty())
+                    insertKickLog(user, kickReason, moderator)
                 }
                 respond {
                     embed {
                         setupKickedEmbed(
                             user.mention,
                             kickReason,
-                            member?.mention.orEmpty()
+                            member?.mention.orEmpty(),
+                            kordClient,
                         )
                     }
                 }
@@ -97,43 +101,46 @@ class Kick : Extension() {
         }
     }
 
-    private fun Transaction.insertKickLog(
-        user: User,
-        kickReason: String,
-        moderator: String
-    ): InsertStatement<Number> {
-        addLogger(StdOutSqlLogger)
-        SchemaUtils.create(KickLogs)
-        return KickLogs.insert {
-            it[kickedUser] = "${user.username}#${user.discriminator}"
-            it[reason] = kickReason
-            it[kickedAt] = Clock.System.now().toString()
-            it[kickedBy] = moderator
+    companion object {
+        fun Transaction.insertKickLog(
+            user: User,
+            kickReason: String,
+            moderator: String
+        ): InsertStatement<Number> {
+            addLogger(StdOutSqlLogger)
+            SchemaUtils.create(KickLogs)
+            return KickLogs.insert {
+                it[kickedUser] = "${user.username}#${user.discriminator}"
+                it[reason] = kickReason
+                it[kickedAt] = Clock.System.now().toString()
+                it[kickedBy] = moderator
+            }
         }
-    }
 
-    private suspend fun EmbedBuilder.setupKickedEmbed(
-        userMention: String,
-        reason: String,
-        bannedBy: String
-    ) {
-        title = "Kick Event"
-        field {
-            name = "Kicked User"
-            value = userMention
-            inline = true
+        suspend fun EmbedBuilder.setupKickedEmbed(
+            userMention: String,
+            reason: String,
+            kickedBy: String,
+            kordClient: Kord,
+        ) {
+            title = "Kick Event"
+            field {
+                name = "Kicked User"
+                value = userMention
+                inline = true
+            }
+            field {
+                name = "Reason of kick"
+                value = reason
+                inline = true
+            }
+            field {
+                name = "Kicked by"
+                value = kickedBy
+            }
+            timestamp = Clock.System.now()
+            footer = kordClient.getEmbedFooter()
         }
-        field {
-            name = "Reason of kick"
-            value = reason
-            inline = true
-        }
-        field {
-            name = "Kicked by"
-            value = bannedBy
-        }
-        timestamp = Clock.System.now()
-        footer = kordClient.getEmbedFooter()
     }
 }
 

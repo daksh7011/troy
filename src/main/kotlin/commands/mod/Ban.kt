@@ -68,7 +68,8 @@ class Ban : Extension() {
                     setupBannedEmbed(
                         arguments.user.mention,
                         arguments.reason,
-                        message.author?.mention.orEmpty()
+                        message.author?.mention.orEmpty(),
+                        kordClient,
                     )
                 }
             }
@@ -94,7 +95,8 @@ class Ban : Extension() {
                         setupBannedEmbed(
                             user.mention,
                             banReason,
-                            member?.mention.orEmpty()
+                            member?.mention.orEmpty(),
+                            kordClient,
                         )
                     }
                 }
@@ -102,43 +104,47 @@ class Ban : Extension() {
         }
     }
 
-    private fun Transaction.insertBanLog(
-        user: User,
-        banReason: String,
-        moderator: String
-    ): InsertStatement<Number> {
-        addLogger(StdOutSqlLogger)
-        SchemaUtils.create(BanLogs)
-        return BanLogs.insert {
-            it[bannedUser] = "${user.username}#${user.discriminator}"
-            it[reason] = banReason
-            it[bannedAt] = Clock.System.now().toString()
-            it[bannedBy] = moderator
-        }
-    }
+    companion object {
 
-    private suspend fun EmbedBuilder.setupBannedEmbed(
-        userMention: String,
-        reason: String,
-        bannedBy: String
-    ) {
-        title = "Ban Event"
-        field {
-            name = "Banned User"
-            value = userMention
-            inline = true
+        fun Transaction.insertBanLog(
+            user: User,
+            banReason: String,
+            moderator: String,
+        ): InsertStatement<Number> {
+            addLogger(StdOutSqlLogger)
+            SchemaUtils.create(BanLogs)
+            return BanLogs.insert {
+                it[bannedUser] = "${user.username}#${user.discriminator}"
+                it[reason] = banReason
+                it[bannedAt] = Clock.System.now().toString()
+                it[bannedBy] = moderator
+            }
         }
-        field {
-            name = "Reason of ban"
-            value = reason
-            inline = true
+
+        suspend fun EmbedBuilder.setupBannedEmbed(
+            userMention: String,
+            reason: String,
+            bannedBy: String,
+            kordClient: Kord,
+        ) {
+            title = "Ban Event"
+            field {
+                name = "Banned User"
+                value = userMention
+                inline = true
+            }
+            field {
+                name = "Reason of ban"
+                value = reason
+                inline = true
+            }
+            field {
+                name = "Banned by"
+                value = bannedBy
+            }
+            timestamp = Clock.System.now()
+            footer = kordClient.getEmbedFooter()
         }
-        field {
-            name = "Banned by"
-            value = bannedBy
-        }
-        timestamp = Clock.System.now()
-        footer = kordClient.getEmbedFooter()
     }
 }
 

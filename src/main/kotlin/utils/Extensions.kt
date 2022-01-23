@@ -10,6 +10,7 @@ import io.getunleash.Unleash
 import io.getunleash.util.UnleashConfig
 import io.ktor.client.*
 import io.ktor.client.features.*
+import org.jetbrains.exposed.sql.Database
 
 object Extensions {
     fun Message.isBot(): Boolean = author?.isBot ?: true
@@ -51,12 +52,23 @@ object Extensions {
         )
     }
 
-    fun provideUnleashClient(): Unleash {
-        val config = UnleashConfig.builder()
-            .appName("Troy")
-            .instanceId(env(Environment.UNLEASH_INSTANCE_ID))
-            .unleashAPI(env(Environment.UNLEASH_URL))
-            .build()
-        return DefaultUnleash(config)
+    fun provideUnleashClient(): Unleash? {
+        if (env(Environment.IS_DEBUG).toBoolean().not()) {
+            val config = UnleashConfig.builder()
+                .appName("Troy")
+                .instanceId(env(Environment.UNLEASH_INSTANCE_ID))
+                .unleashAPI(env(Environment.UNLEASH_URL))
+                .build()
+            return DefaultUnleash(config)
+        }
+        return null
+    }
+
+    fun connectToDatabase() {
+        if (env(Environment.IS_DEBUG).toBoolean()) {
+            Database.connect("jdbc:sqlite:src/main/kotlin/data/troy.db", "org.sqlite.JDBC")
+        } else {
+            Database.connect("jdbc:sqlite:troy.db", "org.sqlite.JDBC")
+        }
     }
 }

@@ -24,6 +24,8 @@ import commands.mod.Ban
 import commands.mod.Kick
 import commands.mod.Prune
 import commands.mod.Reboot
+import commands.mod.ResetWarnings
+import commands.mod.Warn
 import commands.nsfw.Nudes
 import dev.kord.gateway.PrivilegedIntent
 import utils.Environment
@@ -62,7 +64,6 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Reboot)
             add(::Avatar)
             add(::Repo)
-            if (unleash.isEnabled("steam")) add(::Steam)
             add(::Emoji)
             add(::SarcasticCatNo)
             add(::Sike)
@@ -73,7 +74,12 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Ban)
             add(::Kick)
             add(::Invite)
-            add(::Nudes)
+            if (unleash?.isEnabled("steam") != false) add(::Steam)
+            if (unleash?.isEnabled("nudes") != false) add(::Nudes)
+            if (unleash?.isEnabled("warn") != false) {
+                add(::Warn)
+                add(::ResetWarnings)
+            }
         }
         presence {
             playing("/help")
