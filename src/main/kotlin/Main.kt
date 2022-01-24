@@ -12,6 +12,8 @@ import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandSucce
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import core.getTroy
+import data.doesGuildExistsInDatabase
+import data.insertGuildConfig
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.event.gateway.DisconnectEvent
@@ -19,10 +21,13 @@ import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.kordLogger
 import dev.kord.gateway.PrivilegedIntent
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.count
 import kotlinx.datetime.Clock
 import org.discordbots.api.client.DiscordBotListAPI
+import org.jetbrains.exposed.sql.transactions.transaction
 import utils.Environment
+import utils.Extensions.connectToDatabase
 import utils.Extensions.containsF
 import utils.Extensions.containsNigga
 import utils.Extensions.containsTableFlip
@@ -122,6 +127,15 @@ suspend fun main() {
             val stats = kordClient.guilds.count()
             kordLogger.info("Server Count: $stats")
             api.setStats(stats)
+        }
+        connectToDatabase()
+        kordClient.guilds.collect { guild ->
+            val guildId = guild.id.value.toLong()
+            transaction {
+                if (doesGuildExistsInDatabase(guildId).not()) {
+                    insertGuildConfig(guildId)
+                }
+            }
         }
     }
     troy.on<DisconnectEvent> {

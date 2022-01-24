@@ -8,11 +8,14 @@ import net.dean.jraw.oauth.Credentials
 import net.dean.jraw.oauth.OAuthHelper.automatic
 
 object RedditClient {
-    var oauthCreds: Credentials = Credentials.script(env(Environment.REDDIT_USERNAME), env(Environment.REDDIT_PASSWORD),
+    private var oauthCredentials: Credentials = Credentials.script(
+        env(Environment.REDDIT_USERNAME),
+        env(Environment.REDDIT_PASSWORD),
         env(Environment.REDDIT_APP_ID),
-        env(Environment.REDDIT_APP_SECRET))
-    var userAgent: UserAgent = UserAgent(env(Environment.REDDIT_USER_AGENT))
-    var reddit: RedditClient = automatic(OkHttpNetworkAdapter(userAgent), oauthCreds)
+        env(Environment.REDDIT_APP_SECRET),
+    )
+    private var userAgent: UserAgent = UserAgent(env(Environment.REDDIT_USER_AGENT))
+    private var reddit: RedditClient = automatic(OkHttpNetworkAdapter(userAgent), oauthCredentials)
     fun getClient(): RedditClient {
         return reddit
     }
