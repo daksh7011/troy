@@ -1,6 +1,5 @@
 package data
 
-import commands.mod.WarnLogs
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.Table
@@ -28,7 +27,7 @@ fun doesGuildExistsInDatabase(guildSnowflake: Long): Boolean {
 
 fun Transaction.insertGuildConfig(guildSnowflake: Long): InsertStatement<Number> {
     addLogger(StdOutSqlLogger)
-    SchemaUtils.create(WarnLogs)
+    SchemaUtils.create(GuildConfig)
     return GuildConfig.insert {
         it[guildId] = guildSnowflake
     }

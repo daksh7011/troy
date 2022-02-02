@@ -114,7 +114,7 @@ class Warn : Extension() {
                                 )
                             }
                         }
-                        WarnMode.None -> {
+                        else -> {
                         }
                     }
                 } else {
@@ -193,7 +193,7 @@ class Warn : Extension() {
                                     )
                                 }
                             }
-                            WarnMode.None -> {
+                            else -> {
                             }
                         }
                     } else {
