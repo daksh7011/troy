@@ -1,5 +1,8 @@
 package utils
 
+import com.kotlindiscord.kord.extensions.commands.Arguments
+import com.kotlindiscord.kord.extensions.commands.application.slash.PublicSlashCommandContext
+import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.env
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
@@ -72,3 +75,17 @@ object Extensions {
         }
     }
 }
+
+fun String?.bold(): String {
+    return "**$this**"
+}
+
+fun String?.italic(): String {
+    return "*$this*"
+}
+
+fun String.isEmptyOrBlank(): Boolean {
+    return this.isBlank() || this.isEmpty()
+}
+
+suspend fun <T : Arguments> PublicSlashCommandContext<T>.respond(text: String) = this.respond { content = text }

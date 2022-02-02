@@ -20,4 +20,7 @@ object Environment {
     const val UNLEASH_URL = "unleashUrl"
     const val UNLEASH_INSTANCE_ID = "unleashInstanceId"
     const val TOP_GG_TOKEN = "topGgToken"
+    const val MONGO_URL = "mongoUrl"
+    const val MONGO_USERNAME = "mongoUserName"
+    const val MONGO_PASSWORD = "mongoPassword"
 }

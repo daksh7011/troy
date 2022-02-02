@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.20"
+    kotlin("jvm") version "1.6.10"
     kotlin("plugin.serialization") version "1.5.20"
     id("org.jmailen.kotlinter") version "3.4.5"
     id("com.github.johnrengelman.shadow") version "7.0.0"
@@ -26,7 +26,7 @@ dependencies {
     implementation("com.kotlindiscord.kord.extensions:time4j:1.5.1-RC1")
     implementation("org.slf4j:slf4j-simple:1.7.33")
     implementation("net.dean.jraw:JRAW:1.1.0")
-    implementation("org.jetbrains.exposed:exposed-core:0.36.1")
+    implementation("org.jetbrains.exposed:exposed-core:0.37.3")
     implementation("org.jetbrains.exposed:exposed-dao:0.36.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.36.1")
     implementation("org.xerial:sqlite-jdbc:3.36.0.2")
@@ -35,10 +35,11 @@ dependencies {
     implementation("io.ktor:ktor-client-core:1.6.7")
     implementation("io.ktor:ktor-client-cio:1.6.7")
     implementation("com.github.DiscordBotList:DBL-Java-Library:2.0.1")
+    implementation("org.litote.kmongo:kmongo-coroutine:4.4.0")
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "16"
 }
 
 tasks.withType(KotlinCompile::class).all {

@@ -3,6 +3,7 @@ package core
 import com.kotlindiscord.kord.extensions.DISCORD_GREEN
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
+import com.kotlindiscord.kord.extensions.utils.getKoin
 import commands.`fun`.Bullshit
 import commands.`fun`.Burn
 import commands.`fun`.Doggo
@@ -16,6 +17,7 @@ import commands.`fun`.SorryDidi
 import commands.`fun`.Tereko
 import commands.`fun`.Understandable
 import commands.`fun`.UrbanDictionary
+import commands.config.InviteLink
 import commands.misc.Avatar
 import commands.misc.Invite
 import commands.misc.Repo
@@ -27,7 +29,10 @@ import commands.mod.Reboot
 import commands.mod.ResetWarnings
 import commands.mod.Warn
 import commands.nsfw.Nudes
+import dev.kord.common.entity.PresenceStatus
 import dev.kord.gateway.PrivilegedIntent
+import di.mongoModule
+import di.repositoryModule
 import utils.Environment
 import utils.Extensions.provideUnleashClient
 
@@ -74,6 +79,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Ban)
             add(::Kick)
             add(::Invite)
+            add(::InviteLink)
             if (unleash?.isEnabled("steam") != false) add(::Steam)
             if (unleash?.isEnabled("nudes") != false) add(::Nudes)
             if (unleash?.isEnabled("warn") != false) {
@@ -82,7 +88,13 @@ suspend fun getTroy(): ExtensibleBot {
             }
         }
         presence {
-            playing("/help")
+            status = PresenceStatus.DoNotDisturb
+            watching("initialization...")
+        }
+        hooks {
+            afterKoinSetup {
+                registerKoinModules()
+            }
         }
         members {
             fillPresences = true
@@ -90,4 +102,13 @@ suspend fun getTroy(): ExtensibleBot {
         }
     }
     return troy
+}
+
+private fun registerKoinModules() {
+    getKoin().loadModules(
+        listOf(
+            mongoModule,
+            repositoryModule,
+        )
+    )
 }
