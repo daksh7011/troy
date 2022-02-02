@@ -39,8 +39,14 @@ class InviteLink : Extension() {
                 val wasLinkProvidedInArguments = arguments.inviteLink.isNullOrBlank().not()
 
                 if (wasLinkProvidedInArguments && doesGuildConfigExist) {
-                    globalGuildRepository.updateInviteLinkForGuild(guildId, arguments.inviteLink!!)
-                    respond("Invite link updated for $guildName")
+                    if (isProvidedLinkValid(arguments.inviteLink!!)) {
+                        globalGuildRepository.updateInviteLinkForGuild(guildId, arguments.inviteLink!!)
+                        respond("Invite link updated for $guildName")
+                    } else {
+                        respond(
+                            "You might want to check your link. It does not looks like a **Discord invite link**."
+                        )
+                    }
                 } else {
                     globalGuildRepository.getGlobalConfigForGuild(guildId)?.let {
                         if (it.inviteLink.isEmptyOrBlank())
@@ -53,5 +59,11 @@ class InviteLink : Extension() {
                 }
             }
         }
+    }
+
+    private fun isProvidedLinkValid(inviteLink: String): Boolean {
+        val patternForDiscordCom = Regex("^((https?)://)+(discord)+\\.(com)+/(invite)/.*")
+        val patternForDiscordGg = Regex("^((https?)://)+(discord)+\\.(gg)/.*")
+        return inviteLink.matches(patternForDiscordCom) || inviteLink.matches(patternForDiscordGg)
     }
 }
