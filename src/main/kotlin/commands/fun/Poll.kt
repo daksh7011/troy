@@ -22,7 +22,7 @@ import dev.kord.x.emoji.Emojis.three
 import dev.kord.x.emoji.Emojis.two
 import dev.kord.x.emoji.toReaction
 import org.koin.core.component.inject
-import utils.Extensions.getEmbedFooter
+import utils.getEmbedFooter
 
 class Poll : Extension() {
 

@@ -9,7 +9,7 @@ import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
-import utils.Extensions.getEmbedFooter
+import utils.getEmbedFooter
 
 class ItsOur : Extension() {
 

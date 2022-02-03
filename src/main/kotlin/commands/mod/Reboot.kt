@@ -6,7 +6,7 @@ import dev.kord.core.Kord
 import dev.kord.x.emoji.Emojis
 import dev.kord.x.emoji.toReaction
 import org.koin.core.component.inject
-import utils.Extensions.isOwner
+import utils.isOwner
 
 class Reboot : Extension() {
 

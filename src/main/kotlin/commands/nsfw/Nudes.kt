@@ -15,16 +15,14 @@ import models.NoodsModel
 import net.dean.jraw.models.SubredditSort
 import org.koin.core.component.inject
 import utils.DataProvider
-import utils.Extensions.getEmbedFooter
 import utils.RedditClient
+import utils.getEmbedFooter
 import kotlin.math.floor
 
 class Nudes : Extension() {
 
     private val kordClient: Kord by inject()
-
     private var redditClient = RedditClient.getClient()
-
     private val nudesCatalog = DataProvider.getNoodsData()
 
     override val name: String get() = "nudes"

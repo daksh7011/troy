@@ -14,8 +14,6 @@ import models.OpenWeatherModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
-import utils.Extensions.getTestGuildSnowflake
-import utils.Extensions.requestAndCatch
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
