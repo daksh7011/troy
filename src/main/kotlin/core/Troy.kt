@@ -29,6 +29,7 @@ import commands.mod.Reboot
 import commands.mod.ResetWarnings
 import commands.mod.Warn
 import commands.nsfw.Nudes
+import commands.nsfw.Rule34
 import dev.kord.common.entity.PresenceStatus
 import dev.kord.gateway.PrivilegedIntent
 import di.mongoModule
@@ -81,7 +82,10 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Invite)
             add(::InviteLink)
             if (unleash?.isEnabled("steam") != false) add(::Steam)
-            if (unleash?.isEnabled("nudes") != false) add(::Nudes)
+            if (unleash?.isEnabled("nudes") != false) {
+                add(::Nudes)
+                add(::Rule34)
+            }
             if (unleash?.isEnabled("warn") != false) {
                 add(::Warn)
                 add(::ResetWarnings)
