@@ -8,35 +8,23 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import commands.mod.Ban.Companion.insertBanLog
 import commands.mod.Ban.Companion.setupBannedEmbed
-import commands.mod.Kick.Companion.insertKickLog
 import commands.mod.Kick.Companion.setupKickedEmbed
-import data.GuildConfig
-import data.WarnMode
+import data.models.WarningMode
+import data.repository.BanLogsRepository
+import data.repository.GlobalGuildRepository
+import data.repository.KickLogsRepository
+import data.repository.WarningLogsRepository
 import dev.kord.common.entity.Permission
 import dev.kord.core.Kord
 import dev.kord.core.behavior.ban
 import dev.kord.core.behavior.channel.createEmbed
-import dev.kord.core.entity.User
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.statements.InsertStatement
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.component.inject
-import utils.Extensions
-import utils.Extensions.getEmbedFooter
+import utils.getEmbedFooter
 
-@Suppress("DuplicatedCode")
 class Warn : Extension() {
 
     val kordClient: Kord by inject()
@@ -45,12 +33,16 @@ class Warn : Extension() {
         get() = "warn"
 
     inner class WarnArguments : Arguments() {
-        val user by user("user", "Which user do you want to warn?")
+        val warnedUser by user("user", "Which user do you want to warn?")
         val reason by coalescedString("reason", "Reason for the warning.")
     }
 
     override suspend fun setup() {
-        Extensions.connectToDatabase()
+        val globalGuildRepository: GlobalGuildRepository by inject()
+        val warningLogsRepository: WarningLogsRepository by inject()
+        val kickLogsRepository: KickLogsRepository by inject()
+        val banLogsRepository: BanLogsRepository by inject()
+
         chatCommand(::WarnArguments) {
             name = "warn"
             description = "Warns the user with a reason."
@@ -60,67 +52,59 @@ class Warn : Extension() {
                 requireBotPermissions(Permission.BanMembers)
             }
             action {
-                val user = arguments.user
-                val userSnowflake = user.id.value.toLong()
+                val guildId = message.getGuild().id.asString
+                val userId = arguments.warnedUser.id.asString
                 val warnReason = arguments.reason
                 val moderator = "${message.author?.username}#${message.author?.discriminator}"
-                val guildSnowflake = message.getGuild().asGuild().id.value.toLong()
-                var didMaxWarningExceeded = false
-                var userWarnings = 0
-                var guildMaxWarnings = 0
-                var guildWarnMode: WarnMode? = null
 
-                transaction {
-                    addLogger(StdOutSqlLogger)
-                    SchemaUtils.create(WarnLogs)
-                    insertWarnLog(user, warnReason, moderator)
-                    userWarnings = getUserWarnings(userSnowflake)
-                    guildMaxWarnings = getMaxWarnings(guildSnowflake)
-                    guildWarnMode = getGuildWarnMode(guildSnowflake)
-                    didMaxWarningExceeded = isUserWarningsExceeded(guildSnowflake, userWarnings)
-                }
+                warningLogsRepository.insertUserWarning(arguments.warnedUser, warnReason, moderator)
+
+                val userWarnings = warningLogsRepository.getUserWarningsCount(userId)
+                val guildMaxWarnings = globalGuildRepository.getMaxWarningsForGuild(guildId)
+                val didMaxWarningExceeded = warningLogsRepository.didUserExceedWarnings(guildMaxWarnings, userWarnings)
+                val guildWarnMode = globalGuildRepository.getWarnModeForGuild(guildId)
+
                 if (didMaxWarningExceeded) {
                     val reason = "Max warnings exceeded!"
                     when (guildWarnMode) {
-                        WarnMode.Kick -> {
-                            transaction {
-                                insertKickLog(user, reason, "Troy")
-                                deleteWarnLog(user.id.value.toLong())
-                            }
-                            message.getGuild().kick(user.id, reason)
+                        is WarningMode.Kick -> {
+                            kickLogsRepository.insertKickLog(arguments.warnedUser, reason, "Troy")
+                            warningLogsRepository.deleteWarningsForUser(userId)
+                            message.getGuild().kick(arguments.warnedUser.id, reason)
                             message.channel.createEmbed {
                                 setupKickedEmbed(
-                                    user.mention,
+                                    arguments.warnedUser.mention,
                                     reason,
                                     "<@${kordClient.selfId.asString}>",
                                     kordClient,
                                 )
                             }
                         }
-                        WarnMode.Ban -> {
-                            transaction {
-                                insertBanLog(user, reason, "Troy")
-                                deleteWarnLog(user.id.value.toLong())
-                            }
-                            message.getGuild().ban(user.id) {
+                        is WarningMode.Ban -> {
+                            banLogsRepository.insertBanLog(arguments.warnedUser, reason, "Troy")
+                            warningLogsRepository.deleteWarningsForUser(userId)
+                            message.getGuild().ban(arguments.warnedUser.id) {
                                 this.reason = reason
                             }
                             message.channel.createEmbed {
                                 setupBannedEmbed(
-                                    user.mention,
+                                    arguments.warnedUser.mention,
                                     reason,
                                     "<@${kordClient.selfId.asString}>",
                                     kordClient
                                 )
                             }
                         }
-                        else -> {
+                        is WarningMode.None -> {
+                            message.channel.createEmbed {
+                                setupEmbedForNoneWarningMode(arguments.warnedUser.mention)
+                            }
                         }
                     }
                 } else {
                     message.channel.createEmbed {
                         setupWarningEmbed(
-                            user.mention,
+                            arguments.warnedUser.mention,
                             warnReason,
                             message.author?.mention.orEmpty(),
                             "$userWarnings/$guildMaxWarnings"
@@ -138,68 +122,58 @@ class Warn : Extension() {
                 requireBotPermissions(Permission.BanMembers)
             }
             action {
-                val user = arguments.user
-                val userSnowflake = user.id.value.toLong()
+                val guildId = guild?.asGuild()?.id?.asString.orEmpty()
+                val userId = arguments.warnedUser.id.asString
                 val warnReason = arguments.reason
                 val moderator = "${member?.asUser()?.username}#${member?.asUser()?.discriminator}"
-                val guildSnowflake = guild?.asGuild()?.id?.value?.toLong() ?: 0
-                var didMaxWarningExceeded = false
-                var userWarnings = 0
-                var guildMaxWarnings = 0
-                var guildWarnMode: WarnMode? = null
 
-                transaction {
-                    addLogger(StdOutSqlLogger)
-                    SchemaUtils.create(WarnLogs)
-                    insertWarnLog(user, warnReason, moderator)
-                    userWarnings = getUserWarnings(userSnowflake)
-                    guildMaxWarnings = getMaxWarnings(guildSnowflake)
-                    guildWarnMode = getGuildWarnMode(guildSnowflake)
-                    didMaxWarningExceeded = isUserWarningsExceeded(guildSnowflake, userWarnings)
-                }
+                warningLogsRepository.insertUserWarning(arguments.warnedUser, warnReason, moderator)
+
+                val userWarnings = warningLogsRepository.getUserWarningsCount(userId)
+                val guildMaxWarnings = globalGuildRepository.getMaxWarningsForGuild(guildId)
+                val didMaxWarningExceeded = warningLogsRepository.didUserExceedWarnings(guildMaxWarnings, userWarnings)
+                val guildWarnMode = globalGuildRepository.getWarnModeForGuild(guildId)
+
                 respond {
                     if (didMaxWarningExceeded) {
                         val reason = "Max warnings exceeded!"
                         when (guildWarnMode) {
-                            WarnMode.Kick -> {
-                                transaction {
-                                    insertKickLog(user, reason, "Troy")
-                                    deleteWarnLog(user.id.value.toLong())
-                                }
-                                guild?.kick(user.id, reason)
+                            is WarningMode.Kick -> {
+                                kickLogsRepository.insertKickLog(arguments.warnedUser, reason, "Troy")
+                                warningLogsRepository.deleteWarningsForUser(arguments.warnedUser.id.asString)
+                                guild?.kick(arguments.warnedUser.id, reason)
                                 embed {
                                     setupKickedEmbed(
-                                        user.mention,
+                                        arguments.warnedUser.mention,
                                         reason,
                                         member?.mention.orEmpty(),
                                         kordClient,
                                     )
                                 }
                             }
-                            WarnMode.Ban -> {
-                                transaction {
-                                    insertBanLog(user, reason, "Troy")
-                                    deleteWarnLog(user.id.value.toLong())
-                                }
-                                guild?.ban(user.id) {
-                                    this.reason = reason
-                                }
+                            is WarningMode.Ban -> {
+                                banLogsRepository.insertBanLog(arguments.warnedUser, reason, "Troy")
+                                warningLogsRepository.deleteWarningsForUser(arguments.warnedUser.id.asString)
+                                guild?.ban(arguments.warnedUser.id) { this.reason = reason }
                                 embed {
                                     setupBannedEmbed(
-                                        user.mention,
+                                        arguments.warnedUser.mention,
                                         reason,
                                         member?.mention.orEmpty(),
                                         kordClient
                                     )
                                 }
                             }
-                            else -> {
+                            is WarningMode.None -> {
+                                embed {
+                                    setupEmbedForNoneWarningMode(arguments.warnedUser.mention)
+                                }
                             }
                         }
                     } else {
                         embed {
                             setupWarningEmbed(
-                                user.mention,
+                                arguments.warnedUser.mention,
                                 warnReason,
                                 member?.mention.orEmpty(),
                                 "$userWarnings/$guildMaxWarnings"
@@ -207,55 +181,6 @@ class Warn : Extension() {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    companion object {
-        fun deleteWarnLog(userSnowflake: Long) {
-            WarnLogs.deleteWhere { WarnLogs.warnedUserId eq userSnowflake }
-        }
-    }
-
-    private fun Transaction.insertWarnLog(
-        user: User,
-        warningReason: String,
-        moderator: String
-    ): InsertStatement<Number> {
-        addLogger(StdOutSqlLogger)
-        SchemaUtils.create(WarnLogs)
-        return WarnLogs.insert {
-            it[warnedUserId] = user.id.value.toLong()
-            it[warnedUser] = "${user.username}#${user.discriminator}"
-            it[reason] = warningReason
-            it[warnedAt] = Clock.System.now().toString()
-            it[warningIssuedBy] = moderator
-        }
-    }
-
-    private fun getUserWarnings(userSnowflake: Long): Int {
-        return WarnLogs.select { WarnLogs.warnedUserId eq userSnowflake }.count().toInt()
-    }
-
-    private fun getMaxWarnings(guildSnowflake: Long): Int {
-        GuildConfig.select { GuildConfig.guildId eq guildSnowflake }.first().let {
-            return it[GuildConfig.maxWarnings]
-        }
-    }
-
-    private fun isUserWarningsExceeded(guildSnowflake: Long, userWarnCount: Int): Boolean {
-        GuildConfig.select { GuildConfig.guildId eq guildSnowflake }.first().let {
-            return it[GuildConfig.maxWarnings] <= userWarnCount
-        }
-    }
-
-    private fun getGuildWarnMode(guildSnowflake: Long): WarnMode {
-        GuildConfig.select { GuildConfig.guildId eq guildSnowflake }.first().let {
-            return when (it[GuildConfig.warnMode]) {
-                0 -> WarnMode.None
-                1 -> WarnMode.Kick
-                2 -> WarnMode.Ban
-                else -> WarnMode.None
             }
         }
     }
@@ -288,12 +213,13 @@ class Warn : Extension() {
         timestamp = Clock.System.now()
         footer = kordClient.getEmbedFooter()
     }
-}
 
-object WarnLogs : IntIdTable() {
-    val warnedUserId = long("warnedUserId")
-    val warnedUser = varchar("warnedUser", 100)
-    val reason = varchar("reason", 200)
-    val warnedAt = varchar("timestamp", 100)
-    val warningIssuedBy = varchar("warningIssuedBy", 100)
+    private suspend fun EmbedBuilder.setupEmbedForNoneWarningMode(userMention: String) {
+        title = "Warning Event"
+        description = "$userMention exceeded maximum warnings but warning mode is set to **None** for this guild. " +
+                "Hence no action is taken. To modify this behaviour, Please change the warning mode for automated " +
+                "Kick or Bans when user exceeds max number of warnings."
+        timestamp = Clock.System.now()
+        footer = kordClient.getEmbedFooter()
+    }
 }

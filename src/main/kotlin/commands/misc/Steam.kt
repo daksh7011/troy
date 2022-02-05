@@ -25,15 +25,13 @@ import models.SteamGameModel
 import models.SteamSearchModel
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
-import utils.Extensions.getEmbedFooter
-import utils.Extensions.requestAndCatch
+import utils.getEmbedFooter
+import utils.requestAndCatch
 
 class Steam : Extension() {
 
     private val kordClient: Kord by inject()
-
     private val jsonSerializer = Json { ignoreUnknownKeys = true }
-
     private val httpClient = HttpClient {
         install(JsonFeature) {
             serializer = KotlinxSerializer(kotlinx.serialization.json.Json {

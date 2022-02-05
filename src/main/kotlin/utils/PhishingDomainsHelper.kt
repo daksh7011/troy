@@ -7,7 +7,6 @@ import io.ktor.client.request.*
 import models.PhishingDomainModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.logger.Level
-import utils.Extensions.requestAndCatch
 
 object PhishingDomainsHelper : KoinComponent {
 

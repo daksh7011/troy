@@ -19,15 +19,13 @@ import kotlinx.datetime.Clock
 import models.DoggoModel
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
-import utils.Extensions.getEmbedFooter
-import utils.Extensions.requestAndCatch
+import utils.requestAndCatch
+import utils.getEmbedFooter
 
 class Doggo : Extension() {
 
     private val kordClient: Kord by inject()
-
     private var doggoModel: DoggoModel? = null
-
     private val httpClient = HttpClient {
         install(JsonFeature) {
             serializer = KotlinxSerializer()

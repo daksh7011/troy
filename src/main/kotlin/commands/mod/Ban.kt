@@ -8,27 +8,16 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import com.kotlindiscord.kord.extensions.utils.env
+import data.repository.BanLogsRepository
 import dev.kord.common.entity.Permission
 import dev.kord.core.Kord
 import dev.kord.core.behavior.ban
 import dev.kord.core.behavior.channel.createEmbed
-import dev.kord.core.entity.User
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.statements.InsertStatement
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.component.inject
-import utils.Environment
-import utils.Extensions.getEmbedFooter
+import utils.getEmbedFooter
 
 class Ban : Extension() {
 
@@ -43,11 +32,7 @@ class Ban : Extension() {
     }
 
     override suspend fun setup() {
-        if (env(Environment.IS_DEBUG).toBoolean()) {
-            Database.connect("jdbc:sqlite:src/main/kotlin/data/troy.db", "org.sqlite.JDBC")
-        } else {
-            Database.connect("jdbc:sqlite:troy.db", "org.sqlite.JDBC")
-        }
+        val banLogsRepository: BanLogsRepository by inject()
         chatCommand(::BanArguments) {
             name = "ban"
             description = "Bans user with reason."
@@ -56,14 +41,12 @@ class Ban : Extension() {
                 requireBotPermissions(Permission.BanMembers)
             }
             action {
-                val user = arguments.user
+                val moderator = "${message.author?.username}#${message.author?.discriminator}"
                 val banReason = arguments.reason
-                message.getGuild().ban(user.id) {
+                message.getGuild().ban(arguments.user.id) {
                     reason = banReason
                 }
-                transaction {
-                    insertBanLog(user, banReason, member?.mention.orEmpty())
-                }
+                banLogsRepository.insertBanLog(arguments.user, banReason, moderator)
                 message.channel.createEmbed {
                     setupBannedEmbed(
                         arguments.user.mention,
@@ -82,14 +65,12 @@ class Ban : Extension() {
                 requireBotPermissions(Permission.BanMembers)
             }
             action {
-                val user = arguments.user
+                val moderator = "${member?.asUser()?.username}#${member?.asUser()?.discriminator}"
                 val banReason = arguments.reason
                 guild?.ban(user.id) {
                     reason = banReason
                 }
-                transaction {
-                    insertBanLog(user, banReason, member?.mention.orEmpty())
-                }
+                banLogsRepository.insertBanLog(arguments.user, banReason, moderator)
                 respond {
                     embed {
                         setupBannedEmbed(
@@ -105,22 +86,6 @@ class Ban : Extension() {
     }
 
     companion object {
-
-        fun Transaction.insertBanLog(
-            user: User,
-            banReason: String,
-            moderator: String,
-        ): InsertStatement<Number> {
-            addLogger(StdOutSqlLogger)
-            SchemaUtils.create(BanLogs)
-            return BanLogs.insert {
-                it[bannedUser] = "${user.username}#${user.discriminator}"
-                it[reason] = banReason
-                it[bannedAt] = Clock.System.now().toString()
-                it[bannedBy] = moderator
-            }
-        }
-
         suspend fun EmbedBuilder.setupBannedEmbed(
             userMention: String,
             reason: String,
@@ -146,11 +111,4 @@ class Ban : Extension() {
             footer = kordClient.getEmbedFooter()
         }
     }
-}
-
-object BanLogs : IntIdTable() {
-    val bannedUser = varchar("bannedUser", 100)
-    val reason = varchar("reason", 200)
-    val bannedAt = varchar("timestamp", 100)
-    val bannedBy = varchar("bannedBy", 100)
 }

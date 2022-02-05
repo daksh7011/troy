@@ -34,7 +34,7 @@ import dev.kord.gateway.PrivilegedIntent
 import di.mongoModule
 import di.repositoryModule
 import utils.Environment
-import utils.Extensions.provideUnleashClient
+import utils.provideUnleashClient
 
 @OptIn(PrivilegedIntent::class)
 suspend fun getTroy(): ExtensibleBot {

@@ -11,8 +11,8 @@ import dev.kord.common.annotation.KordPreview
 import dev.kord.core.Kord
 import org.koin.core.component.inject
 import utils.DataProvider
-import utils.Extensions.isGirlfriend
-import utils.Extensions.isOwner
+import utils.isGirlfriend
+import utils.isOwner
 
 @OptIn(KordPreview::class)
 class Burn : Extension() {

@@ -21,13 +21,12 @@ import models.UrbanDictItem
 import models.UrbanDictModel
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
-import utils.Extensions.getEmbedFooter
-import utils.Extensions.requestAndCatch
+import utils.requestAndCatch
+import utils.getEmbedFooter
 
 class UrbanDictionary : Extension() {
 
     private val kordClient: Kord by inject()
-
     private val httpClient = HttpClient {
         install(JsonFeature) {
             serializer = KotlinxSerializer(kotlinx.serialization.json.Json {

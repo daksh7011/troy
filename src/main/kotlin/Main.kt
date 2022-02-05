@@ -12,9 +12,6 @@ import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandSucce
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import core.getTroy
-import data.GuildConfig
-import data.doesGuildExistsInDatabase
-import data.insertGuildConfig
 import data.repository.GlobalGuildRepository
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
@@ -23,22 +20,21 @@ import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.kordLogger
 import dev.kord.gateway.PrivilegedIntent
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.count
 import kotlinx.datetime.Clock
 import org.discordbots.api.client.DiscordBotListAPI
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import utils.Environment
-import utils.Extensions.connectToDatabase
-import utils.Extensions.containsF
-import utils.Extensions.containsNigga
-import utils.Extensions.containsTableFlip
-import utils.Extensions.getEmbedFooter
-import utils.Extensions.isNotBot
 import utils.PhishingDomainsHelper
 import utils.PresenceManager
+import utils.containsF
+import utils.containsNigga
+import utils.containsTableFlip
+import utils.getEmbedFooter
+import utils.isNotBot
+import kotlin.time.ExperimentalTime
 
-@OptIn(PrivilegedIntent::class, kotlin.time.ExperimentalTime::class)
+@OptIn(PrivilegedIntent::class, ExperimentalTime::class)
 suspend fun main() {
     val troy = getTroy()
     val api: DiscordBotListAPI = DiscordBotListAPI.Builder()
@@ -47,10 +43,6 @@ suspend fun main() {
         .build()
     val kordClient: Kord = troy.getKoin().get()
     val domainList = PhishingDomainsHelper.fetchDomains()
-
-    //region Repositories
-    val globalGuildRepository: GlobalGuildRepository = troy.getKoin().get()
-    //endregion
 
     troy.on<MessageCreateEvent> {
         if (message.containsF() && message.isNotBot()) {
@@ -134,16 +126,9 @@ suspend fun main() {
             kordLogger.info("Server Count: $stats")
             api.setStats(stats)
         }
-        connectToDatabase()
+        val globalGuildRepository: GlobalGuildRepository = troy.getKoin().get()
         kordClient.guilds.collect { guild ->
-            val guildId = guild.id.value.toLong()
-            transaction {
-                SchemaUtils.createMissingTablesAndColumns(GuildConfig)
-                if (doesGuildExistsInDatabase(guildId).not()) {
-                    insertGuildConfig(guildId)
-                }
-            }
-            globalGuildRepository.insertGlobalGuildConfig(guild.id.value.toString())
+            globalGuildRepository.insertGlobalGuildConfig(guild.id.asString)
         }
     }
     troy.on<DisconnectEvent> {

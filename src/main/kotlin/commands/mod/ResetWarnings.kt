@@ -6,14 +6,10 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.user
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import commands.mod.Warn.Companion.deleteWarnLog
+import data.repository.WarningLogsRepository
 import dev.kord.common.entity.Permission
 import dev.kord.core.Kord
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.component.inject
-import utils.Extensions
 
 class ResetWarnings : Extension() {
 
@@ -27,7 +23,7 @@ class ResetWarnings : Extension() {
     }
 
     override suspend fun setup() {
-        Extensions.connectToDatabase()
+        val warningLogsRepository: WarningLogsRepository by inject()
         publicSlashCommand(::WarnResetArguments) {
             name = "reset-warnings"
             description = "Resets warnings for mentioned user."
@@ -37,13 +33,10 @@ class ResetWarnings : Extension() {
                 requireBotPermissions(Permission.BanMembers)
             }
             action {
-                val user = arguments.user
-                val userSnowflake = user.id.value.toLong()
-                transaction {
-                    addLogger(StdOutSqlLogger)
-                    deleteWarnLog(userSnowflake)
+                warningLogsRepository.deleteWarningsForUser(arguments.user.id.asString)
+                respond {
+                    content = "Warnings have been reset for ${arguments.user.mention} by moderator ${member?.mention}"
                 }
-                respond { content = "Warnings have been reset for ${user.mention} by moderator ${member?.mention}" }
             }
         }
     }

@@ -1,9 +1,9 @@
 package utils
 
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
-import dev.kord.common.entity.PresenceStatus
 import dev.kord.core.Kord
 import dev.kord.gateway.builder.PresenceBuilder
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.count
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -24,10 +24,7 @@ object PresenceManager : KoinComponent {
         Scheduler().schedule(
             60L,
             callback = {
-                kordClient.editPresence {
-                    status = PresenceStatus.Online
-                    listOfPresence[floor(Math.random() * listOfPresence.size).toInt()]
-                }
+                kordClient.editPresence(listOfPresence[floor(Math.random() * listOfPresence.size).toInt()])
                 callScheduler()
             },
             name = "Presence Task"
@@ -41,13 +38,8 @@ object PresenceManager : KoinComponent {
         kordClient.guilds.collect {
             totalChannels += it.channels.count()
         }
-        var totalMembers = 0
-        kordClient.guilds.collect {
-            totalMembers += it.members.count()
-        }
         listOfPresence.add { watching("$totalServers servers") }
         listOfPresence.add { watching("$totalChannels channels") }
-        listOfPresence.add { playing("with $totalMembers users") }
         listOfPresence.add { playing("COD: Warzone") }
         listOfPresence.add { playing("with your heart") }
         listOfPresence.add { watching("Kratos kill Zeus") }
