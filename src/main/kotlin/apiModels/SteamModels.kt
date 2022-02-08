@@ -1,4 +1,4 @@
-package models
+package apiModels
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

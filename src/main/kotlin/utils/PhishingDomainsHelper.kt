@@ -4,7 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
-import models.PhishingDomainModel
+import apiModels.PhishingDomainModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.logger.Level
 

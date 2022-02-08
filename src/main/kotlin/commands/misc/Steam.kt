@@ -21,8 +21,8 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import models.SteamGameModel
-import models.SteamSearchModel
+import apiModels.SteamGameModel
+import apiModels.SteamSearchModel
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
 import utils.getEmbedFooter

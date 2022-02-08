@@ -11,7 +11,7 @@ import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
-import models.NoodsModel
+import apiModels.NoodsModel
 import net.dean.jraw.models.SubredditSort
 import org.koin.core.component.inject
 import utils.DataProvider

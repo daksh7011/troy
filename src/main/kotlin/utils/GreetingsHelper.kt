@@ -10,7 +10,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
-import models.OpenWeatherModel
+import apiModels.OpenWeatherModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.logger.Level

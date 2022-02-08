@@ -1,3 +1,6 @@
+### Version 1.1.1
+- Add rule34 command.
+
 ### Version 1.1.0
 - Migrate SQLite to MongoDB for database solution. This was done to ease off migrations and reduce server side 
   backups for .db files.
