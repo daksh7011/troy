@@ -31,3 +31,4 @@ topGgToken=your top gg token goes here
 mongoUrl=mongo url without username and password. Only the part after @
 mongoUserName=mongo username
 mongoPassword=mongo password
+owlDictToken=token for owndict.info to fetch definitions of words.

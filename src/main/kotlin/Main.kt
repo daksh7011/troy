@@ -49,7 +49,7 @@ suspend fun main() {
             message.channel.createMessage("f")
         }
         if (message.containsNigga() && message.isNotBot()) {
-            message.channel.createMessage("Why do I have to remind you everytime?, It's aggiN")
+            message.channel.createMessage("Why do I have to remind you everytime?, Its aggiN")
         }
         if (message.containsTableFlip() && message.isNotBot()) {
             message.channel.createMessage("┬─┬ ノ( ゜-゜ノ)")
@@ -78,7 +78,7 @@ suspend fun main() {
         val commandName = this.command.name
         val userName = this.event.message.author?.username
         val userDiscriminator = this.event.message.author?.discriminator
-        kordLogger.info("Chat Command: $commandName was triggered by $userName#$userDiscriminator")
+        kordLogger.info("Chat Command: $commandName of triggered by $userName#$userDiscriminator")
     }
     troy.on<ChatCommandSucceededEvent> {
         kordLogger.info("${this.command.name} was successfully executed.")
@@ -89,18 +89,18 @@ suspend fun main() {
     }
     troy.on<ChatCommandFailedParsingEvent> {
         val commandName = this.command.name
-        kordLogger.info("Command: $commandName failed because there was an parsing issue.")
+        kordLogger.info("Command: $commandName failed because there of a parsing issue.")
     }
     troy.on<ChatCommandFailedWithExceptionEvent> {
         val commandName = this.command.name
-        kordLogger.info("Command: $commandName failed because there was an exception.")
+        kordLogger.info("Command: $commandName failed because there of an exception.")
         kordLogger.info("More details about exception: ${this.throwable.stackTrace}")
     }
     troy.on<PublicSlashCommandInvocationEvent> {
         val commandName = this.command.name
         val userName = this.event.interaction.user.asUser().username
         val userDiscriminator = this.event.interaction.user.asUser().discriminator
-        kordLogger.info("Slash Command: $commandName was triggered by $userName#$userDiscriminator")
+        kordLogger.info("Slash Command: $commandName triggered by $userName#$userDiscriminator")
     }
     troy.on<PublicSlashCommandSucceededEvent> {
         kordLogger.info("${this.command.name} was successfully executed.")
@@ -111,11 +111,11 @@ suspend fun main() {
     }
     troy.on<PublicSlashCommandFailedParsingEvent> {
         val commandName = this.command.name
-        kordLogger.info("SlashCommand: $commandName failed because there was an parsing issue.")
+        kordLogger.info("SlashCommand: $commandName failed because there of a parsing issue.")
     }
     troy.on<PublicSlashCommandFailedWithExceptionEvent> {
         val commandName = this.command.name
-        kordLogger.info("SlashCommand: $commandName failed because there was an exception.")
+        kordLogger.info("SlashCommand: $commandName failed because there of an exception.")
         kordLogger.info("More details about exception: ${this.throwable.localizedMessage}")
     }
     troy.on<ReadyEvent> {
