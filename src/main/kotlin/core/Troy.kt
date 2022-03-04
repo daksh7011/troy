@@ -9,6 +9,7 @@ import commands.`fun`.Burn
 import commands.`fun`.Dictionary
 import commands.`fun`.Doggo
 import commands.`fun`.Emoji
+import commands.`fun`.Fact
 import commands.`fun`.Flip
 import commands.`fun`.ItsOur
 import commands.`fun`.Poll
@@ -83,6 +84,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Invite)
             add(::InviteLink)
             add(::Dictionary)
+            add(::Fact)
             if (unleash?.isEnabled("steam") != false) add(::Steam)
             if (unleash?.isEnabled("nudes") != false) {
                 add(::Nudes)
