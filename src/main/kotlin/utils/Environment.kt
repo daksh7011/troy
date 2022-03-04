@@ -23,4 +23,5 @@ object Environment {
     const val MONGO_URL = "mongoUrl"
     const val MONGO_USERNAME = "mongoUserName"
     const val MONGO_PASSWORD = "mongoPassword"
+    const val OWL_DICT_TOKEN = "owlDictToken"
 }
