@@ -6,6 +6,7 @@ import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.getKoin
 import commands.`fun`.Bullshit
 import commands.`fun`.Burn
+import commands.`fun`.Dictionary
 import commands.`fun`.Doggo
 import commands.`fun`.Emoji
 import commands.`fun`.Flip
@@ -81,6 +82,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Kick)
             add(::Invite)
             add(::InviteLink)
+            add(::Dictionary)
             if (unleash?.isEnabled("steam") != false) add(::Steam)
             if (unleash?.isEnabled("nudes") != false) {
                 add(::Nudes)
