@@ -30,7 +30,6 @@ class InviteLink : Extension() {
             name = "invite-link"
             description = "Setup invite link for this server"
             check { hasPermission(Permission.Administrator) }
-            guild(395550925340540930)
             action {
                 val guildId = guild?.id?.asString.orEmpty()
                 val guildName = guild?.asGuild()?.name.bold()
@@ -44,7 +43,7 @@ class InviteLink : Extension() {
                         respond("Invite link updated for $guildName")
                     } else {
                         respond(
-                            "You might want to check your link. It does not looks like a **Discord invite link**."
+                            "You might want to check your link. It does not look like a **Discord invite link**."
                         )
                     }
                 } else {
