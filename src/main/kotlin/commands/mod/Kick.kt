@@ -17,6 +17,7 @@ import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import utils.getEmbedFooter
+import utils.isOwner
 
 class Kick : Extension() {
 
@@ -42,14 +43,25 @@ class Kick : Extension() {
             action {
                 val kickReason = arguments.reason
                 val moderator = "${message.author?.username}#${message.author?.discriminator}"
-                message.getGuild().kick(arguments.user.id, kickReason)
-                kickLogsRepository.insertKickLog(arguments.user, kickReason, moderator)
-                message.channel.createEmbed {
-                    setupKickedEmbed(
-                        arguments.user.mention,
-                        arguments.reason,
-                        message.author?.mention.orEmpty(),
-                        kordClient,
+                if (arguments.user.id.isOwner()) {
+                    message.channel.createMessage("You can't hurt the god!")
+                    return@action
+                }
+                try {
+                    message.getGuild().kick(arguments.user.id, kickReason)
+                    kickLogsRepository.insertKickLog(arguments.user, kickReason, moderator)
+                    message.channel.createEmbed {
+                        setupKickedEmbed(
+                            arguments.user.mention,
+                            arguments.reason,
+                            message.author?.mention.orEmpty(),
+                            kordClient,
+                        )
+                    }
+                } catch (exception: Exception) {
+                    message.channel.createMessage(
+                        "Could not kick the user. Please check my hierarchy in guild roles." +
+                                " If everything looks in order, Please contact the bot developers."
                     )
                 }
             }
@@ -64,16 +76,28 @@ class Kick : Extension() {
             action {
                 val kickReason = arguments.reason
                 val moderator = "${member?.asUser()?.username}#${member?.asUser()?.discriminator}"
-                guild?.kick(user.id, kickReason)
-                kickLogsRepository.insertKickLog(arguments.user, kickReason, moderator)
-                respond {
-                    embed {
-                        setupKickedEmbed(
-                            user.mention,
-                            kickReason,
-                            member?.mention.orEmpty(),
-                            kordClient,
-                        )
+
+                if (arguments.user.id.isOwner()) {
+                    respond { content = "You can't hurt the god!" }
+                    return@action
+                }
+                try {
+                    guild?.kick(user.id, kickReason)
+                    kickLogsRepository.insertKickLog(arguments.user, kickReason, moderator)
+                    respond {
+                        embed {
+                            setupKickedEmbed(
+                                user.mention,
+                                kickReason,
+                                member?.mention.orEmpty(),
+                                kordClient,
+                            )
+                        }
+                    }
+                } catch (exception: Exception) {
+                    respond {
+                        content = "Could not kick the user. Please check my hierarchy in guild roles." +
+                                " If everything looks in order, Please contact the bot developers."
                     }
                 }
             }
