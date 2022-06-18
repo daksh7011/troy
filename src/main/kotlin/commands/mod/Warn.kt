@@ -24,6 +24,7 @@ import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import utils.getEmbedFooter
+import utils.isOwner
 
 class Warn : Extension() {
 
@@ -57,6 +58,11 @@ class Warn : Extension() {
                 val warnReason = arguments.reason
                 val moderator = "${message.author?.username}#${message.author?.discriminator}"
 
+                if (arguments.warnedUser.id.isOwner()) {
+                    message.channel.createMessage("You can't hurt the god!")
+                    return@action
+                }
+
                 warningLogsRepository.insertUserWarning(arguments.warnedUser, warnReason, moderator)
 
                 val userWarnings = warningLogsRepository.getUserWarningsCount(userId)
@@ -68,30 +74,42 @@ class Warn : Extension() {
                     val reason = "Max warnings exceeded!"
                     when (guildWarnMode) {
                         is WarningMode.Kick -> {
-                            kickLogsRepository.insertKickLog(arguments.warnedUser, reason, "Troy")
-                            warningLogsRepository.deleteWarningsForUser(userId)
-                            message.getGuild().kick(arguments.warnedUser.id, reason)
-                            message.channel.createEmbed {
-                                setupKickedEmbed(
-                                    arguments.warnedUser.mention,
-                                    reason,
-                                    "<@${kordClient.selfId.asString}>",
-                                    kordClient,
+                            try {
+                                kickLogsRepository.insertKickLog(arguments.warnedUser, reason, "Troy")
+                                warningLogsRepository.deleteWarningsForUser(userId)
+                                message.getGuild().kick(arguments.warnedUser.id, reason)
+                                message.channel.createEmbed {
+                                    setupKickedEmbed(
+                                        arguments.warnedUser.mention,
+                                        reason,
+                                        "<@${kordClient.selfId.asString}>",
+                                        kordClient,
+                                    )
+                                }
+                            } catch (exception: Exception) {
+                                message.channel.createMessage(
+                                    "Could not kick the user. Please check my hierarchy in guild roles."
                                 )
                             }
                         }
                         is WarningMode.Ban -> {
-                            banLogsRepository.insertBanLog(arguments.warnedUser, reason, "Troy")
-                            warningLogsRepository.deleteWarningsForUser(userId)
-                            message.getGuild().ban(arguments.warnedUser.id) {
-                                this.reason = reason
-                            }
-                            message.channel.createEmbed {
-                                setupBannedEmbed(
-                                    arguments.warnedUser.mention,
-                                    reason,
-                                    "<@${kordClient.selfId.asString}>",
-                                    kordClient
+                            try {
+                                banLogsRepository.insertBanLog(arguments.warnedUser, reason, "Troy")
+                                warningLogsRepository.deleteWarningsForUser(userId)
+                                message.getGuild().ban(arguments.warnedUser.id) {
+                                    this.reason = reason
+                                }
+                                message.channel.createEmbed {
+                                    setupBannedEmbed(
+                                        arguments.warnedUser.mention,
+                                        reason,
+                                        "<@${kordClient.selfId.asString}>",
+                                        kordClient
+                                    )
+                                }
+                            } catch (exception: Exception) {
+                                message.channel.createMessage(
+                                    "Could not ban the user. Please check my hierarchy in guild roles."
                                 )
                             }
                         }
@@ -127,6 +145,11 @@ class Warn : Extension() {
                 val warnReason = arguments.reason
                 val moderator = "${member?.asUser()?.username}#${member?.asUser()?.discriminator}"
 
+                if (arguments.warnedUser.id.isOwner()) {
+                    respond { content = "You can't hurt the god!" }
+                    return@action
+                }
+
                 warningLogsRepository.insertUserWarning(arguments.warnedUser, warnReason, moderator)
 
                 val userWarnings = warningLogsRepository.getUserWarningsCount(userId)
@@ -139,29 +162,43 @@ class Warn : Extension() {
                         val reason = "Max warnings exceeded!"
                         when (guildWarnMode) {
                             is WarningMode.Kick -> {
-                                kickLogsRepository.insertKickLog(arguments.warnedUser, reason, "Troy")
-                                warningLogsRepository.deleteWarningsForUser(arguments.warnedUser.id.asString)
-                                guild?.kick(arguments.warnedUser.id, reason)
-                                embed {
-                                    setupKickedEmbed(
-                                        arguments.warnedUser.mention,
-                                        reason,
-                                        member?.mention.orEmpty(),
-                                        kordClient,
-                                    )
+                                try {
+                                    kickLogsRepository.insertKickLog(arguments.warnedUser, reason, "Troy")
+                                    warningLogsRepository.deleteWarningsForUser(arguments.warnedUser.id.asString)
+                                    guild?.kick(arguments.warnedUser.id, reason)
+                                    embed {
+                                        setupKickedEmbed(
+                                            arguments.warnedUser.mention,
+                                            reason,
+                                            member?.mention.orEmpty(),
+                                            kordClient,
+                                        )
+                                    }
+                                } catch (exception: Exception) {
+                                    respond {
+                                        content = "Could not kick the user. Please check my hierarchy in guild roles." +
+                                                " If everything looks in order, Please contact the bot developers."
+                                    }
                                 }
                             }
                             is WarningMode.Ban -> {
-                                banLogsRepository.insertBanLog(arguments.warnedUser, reason, "Troy")
-                                warningLogsRepository.deleteWarningsForUser(arguments.warnedUser.id.asString)
-                                guild?.ban(arguments.warnedUser.id) { this.reason = reason }
-                                embed {
-                                    setupBannedEmbed(
-                                        arguments.warnedUser.mention,
-                                        reason,
-                                        member?.mention.orEmpty(),
-                                        kordClient
-                                    )
+                                try {
+                                    banLogsRepository.insertBanLog(arguments.warnedUser, reason, "Troy")
+                                    warningLogsRepository.deleteWarningsForUser(arguments.warnedUser.id.asString)
+                                    guild?.ban(arguments.warnedUser.id) { this.reason = reason }
+                                    embed {
+                                        setupBannedEmbed(
+                                            arguments.warnedUser.mention,
+                                            reason,
+                                            member?.mention.orEmpty(),
+                                            kordClient
+                                        )
+                                    }
+                                } catch (exception: Exception) {
+                                    respond {
+                                        content = "Could not ban the user. Please check my hierarchy in guild roles." +
+                                                " If everything looks in order, Please contact the bot developers."
+                                    }
                                 }
                             }
                             is WarningMode.None -> {

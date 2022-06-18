@@ -43,7 +43,7 @@ class InviteLink : Extension() {
                         respond("Invite link updated for $guildName")
                     } else {
                         respond(
-                            "You might want to check your link. It does not looks like a **Discord invite link**."
+                            "You might want to check your link. It does not look like a **Discord invite link**."
                         )
                     }
                 } else {

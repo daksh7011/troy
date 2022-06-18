@@ -18,6 +18,7 @@ import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import utils.getEmbedFooter
+import utils.isOwner
 
 class Ban : Extension() {
 
@@ -43,16 +44,27 @@ class Ban : Extension() {
             action {
                 val moderator = "${message.author?.username}#${message.author?.discriminator}"
                 val banReason = arguments.reason
-                message.getGuild().ban(arguments.user.id) {
-                    reason = banReason
+                if (arguments.user.id.isOwner()) {
+                    message.channel.createMessage("You can't hurt the god!")
+                    return@action
                 }
-                banLogsRepository.insertBanLog(arguments.user, banReason, moderator)
-                message.channel.createEmbed {
-                    setupBannedEmbed(
-                        arguments.user.mention,
-                        arguments.reason,
-                        message.author?.mention.orEmpty(),
-                        kordClient,
+                try {
+                    message.getGuild().ban(arguments.user.id) {
+                        reason = banReason
+                    }
+                    banLogsRepository.insertBanLog(arguments.user, banReason, moderator)
+                    message.channel.createEmbed {
+                        setupBannedEmbed(
+                            arguments.user.mention,
+                            arguments.reason,
+                            message.author?.mention.orEmpty(),
+                            kordClient,
+                        )
+                    }
+                } catch (exception: Exception) {
+                    message.channel.createMessage(
+                        "Could not ban the user. Please check my hierarchy in guild roles." +
+                                " If everything looks in order, Please contact the bot developers."
                     )
                 }
             }
@@ -67,18 +79,29 @@ class Ban : Extension() {
             action {
                 val moderator = "${member?.asUser()?.username}#${member?.asUser()?.discriminator}"
                 val banReason = arguments.reason
-                guild?.ban(user.id) {
-                    reason = banReason
+                if (arguments.user.id.isOwner()) {
+                    respond { content = "You can't hurt the god!" }
+                    return@action
                 }
-                banLogsRepository.insertBanLog(arguments.user, banReason, moderator)
-                respond {
-                    embed {
-                        setupBannedEmbed(
-                            user.mention,
-                            banReason,
-                            member?.mention.orEmpty(),
-                            kordClient,
-                        )
+                try {
+                    guild?.ban(user.id) {
+                        reason = banReason
+                    }
+                    banLogsRepository.insertBanLog(arguments.user, banReason, moderator)
+                    respond {
+                        embed {
+                            setupBannedEmbed(
+                                user.mention,
+                                banReason,
+                                member?.mention.orEmpty(),
+                                kordClient,
+                            )
+                        }
+                    }
+                } catch (exception: Exception) {
+                    respond {
+                        content = "Could not ban the user. Please check my hierarchy in guild roles." +
+                                " If everything looks in order, Please contact the bot developers."
                     }
                 }
             }
