@@ -30,7 +30,6 @@ class InviteLink : Extension() {
             name = "invite-link"
             description = "Setup invite link for this server"
             check { hasPermission(Permission.Administrator) }
-            guild(395550925340540930)
             action {
                 val guildId = guild?.id?.asString.orEmpty()
                 val guildName = guild?.asGuild()?.name.bold()

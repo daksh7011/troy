@@ -1,14 +1,5 @@
 import com.kotlindiscord.kord.extensions.DISCORD_RED
-import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedChecksEvent
-import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedParsingEvent
-import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedWithExceptionEvent
-import com.kotlindiscord.kord.extensions.commands.events.ChatCommandInvocationEvent
-import com.kotlindiscord.kord.extensions.commands.events.ChatCommandSucceededEvent
-import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedChecksEvent
-import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedParsingEvent
-import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedWithExceptionEvent
-import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandInvocationEvent
-import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandSucceededEvent
+import com.kotlindiscord.kord.extensions.commands.events.*
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import core.getTroy
@@ -19,22 +10,12 @@ import dev.kord.core.event.gateway.DisconnectEvent
 import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.kordLogger
-import dev.kord.gateway.PrivilegedIntent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.count
 import kotlinx.datetime.Clock
 import org.discordbots.api.client.DiscordBotListAPI
-import utils.Environment
-import utils.PhishingDomainsHelper
-import utils.PresenceManager
-import utils.containsF
-import utils.containsNigga
-import utils.containsTableFlip
-import utils.getEmbedFooter
-import utils.isNotBot
-import kotlin.time.ExperimentalTime
+import utils.*
 
-@OptIn(PrivilegedIntent::class, ExperimentalTime::class)
 suspend fun main() {
     val troy = getTroy()
     val api: DiscordBotListAPI = DiscordBotListAPI.Builder()
@@ -55,7 +36,8 @@ suspend fun main() {
             message.channel.createMessage("┬─┬ ノ( ゜-゜ノ)")
         }
         if (message.isNotBot()) {
-            domainList.filter { message.content.contains(it) }.let {
+            val domainRegex = Regex("^(?!-)[A-Za-z0-9-]+([\\-\\.]{1}[a-z0-9]+)*\\.[A-Za-z]{2,6}$")
+            domainList.filter { message.content.contains(it) && domainRegex.matches(message.content) }.let {
                 if (it.isNotEmpty()) {
                     message.channel.createEmbed {
                         title = "Warning"
