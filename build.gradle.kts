@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.5.2-RC1")
+    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.5.1-RC1")
     implementation("com.kotlindiscord.kord.extensions:time4j:1.5.1-RC1")
     implementation("org.slf4j:slf4j-simple:1.7.36")
     implementation("net.dean.jraw:JRAW:1.1.0")
