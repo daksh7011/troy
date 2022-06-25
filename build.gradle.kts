@@ -28,7 +28,7 @@ dependencies {
     implementation("net.dean.jraw:JRAW:1.1.0")
     implementation("io.getunleash:unleash-client-java:5.1.0")
     implementation("dev.kord.x:emoji:0.5.0")
-    implementation("com.github.discordbotlist:dbl-java-library:2.1.1")
+    implementation("com.github.discordbotlist:dbl-java-library:2.0.1")
     implementation("org.litote.kmongo:kmongo-coroutine:4.6.1")
     implementation("com.gitlab.technowolf:links-detektor:1.0.1")
 }
