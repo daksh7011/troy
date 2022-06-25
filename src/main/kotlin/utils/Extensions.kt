@@ -8,11 +8,13 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.entity.Message
 import dev.kord.rest.builder.message.EmbedBuilder
+import `in`.technowolf.linksDetekt.detector.LinksDetektor
+import `in`.technowolf.linksDetekt.detector.LinksDetektorOptions
 import io.getunleash.DefaultUnleash
 import io.getunleash.Unleash
 import io.getunleash.util.UnleashConfig
-import io.ktor.client.*
-import io.ktor.client.features.*
+import io.ktor.client.HttpClient
+import io.ktor.client.features.ResponseException
 
 fun Message.isBot(): Boolean = author?.isBot ?: true
 fun Message.isNotBot(): Boolean = isBot().not()
@@ -80,3 +82,28 @@ fun String.isEmptyOrBlank(): Boolean {
 fun Int?.orZero(): Int = this ?: 0
 
 suspend fun <T : Arguments> PublicSlashCommandContext<T>.respond(text: String) = this.respond { content = text }
+
+fun String.extractLinksFromMessage(): List<String?> {
+    val linksWithDefaultOption = LinksDetektor(this, LinksDetektorOptions.Default).detect().map { it.host }
+    val linksWithBracketMatch = LinksDetektor(this, LinksDetektorOptions.BRACKET_MATCH).detect().map { it.host }
+    val linksWithQuoteMatch = LinksDetektor(this, LinksDetektorOptions.QUOTE_MATCH).detect().map { it.host }
+    val linksWithSingleQuoteMatch =
+        LinksDetektor(this, LinksDetektorOptions.SINGLE_QUOTE_MATCH).detect().map { it.host }
+    val linksWithJsonMatch = LinksDetektor(this, LinksDetektorOptions.JSON).detect().map { it.host }
+    val linksWithJavascriptMatch = LinksDetektor(this, LinksDetektorOptions.JAVASCRIPT).detect().map { it.host }
+    val linksWithXmlMatch = LinksDetektor(this, LinksDetektorOptions.XML).detect().map { it.host }
+    val linksWithHtmlMatch = LinksDetektor(this, LinksDetektorOptions.HTML).detect().map { it.host }
+
+    val finalList = mutableListOf<String?>().apply {
+        addAll(linksWithDefaultOption)
+        addAll(linksWithBracketMatch)
+        addAll(linksWithQuoteMatch)
+        addAll(linksWithSingleQuoteMatch)
+        addAll(linksWithJsonMatch)
+        addAll(linksWithJavascriptMatch)
+        addAll(linksWithXmlMatch)
+        addAll(linksWithHtmlMatch)
+    }.distinct()
+
+    return finalList
+}

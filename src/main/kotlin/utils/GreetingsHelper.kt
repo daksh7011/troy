@@ -1,16 +1,16 @@
 package utils
 
+import apiModels.OpenWeatherModel
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.MessageChannelBehavior
-import io.ktor.client.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.request.*
+import io.ktor.client.HttpClient
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.request.get
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
-import apiModels.OpenWeatherModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
@@ -18,7 +18,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import kotlin.time.ExperimentalTime
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.toKotlinDuration
 
 // TODO: 28-Oct-21 Add dynamic subscription for this via bot command for particular guilds.
@@ -34,10 +34,9 @@ object GreetingsHelper : KoinComponent {
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     suspend fun scheduleRecurringGreetingsCall() {
         Scheduler().schedule(
-            kotlin.time.Duration.Companion.hours(6),
+            6.hours,
             callback = {
                 pollForAyodhyaWeather()
                 scheduleRecurringGreetingsCall()
@@ -67,7 +66,6 @@ object GreetingsHelper : KoinComponent {
         return ayodhyaWeather
     }
 
-    @OptIn(ExperimentalTime::class)
     private suspend fun scheduleGreetings(ayodhyaWeather: OpenWeatherModel) {
         val technoTrojansGuild =
             kordClient.guilds.filter { it.id == getTestGuildSnowflake() }.first().asGuildOrNull()

@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.serialization") version "1.5.20"
+    kotlin("jvm") version "1.7.0"
+    kotlin("plugin.serialization") version "1.7.0"
     id("org.jmailen.kotlinter") version "3.4.5"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "in.technowolf"
@@ -24,12 +24,13 @@ repositories {
 dependencies {
     implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.5.1-RC1")
     implementation("com.kotlindiscord.kord.extensions:time4j:1.5.1-RC1")
-    implementation("org.slf4j:slf4j-simple:1.7.35")
+    implementation("org.slf4j:slf4j-simple:1.7.36")
     implementation("net.dean.jraw:JRAW:1.1.0")
-    implementation("io.getunleash:unleash-client-java:5.0.3")
+    implementation("io.getunleash:unleash-client-java:5.1.0")
     implementation("dev.kord.x:emoji:0.5.0")
-    implementation("com.github.DiscordBotList:DBL-Java-Library:2.0.1")
-    implementation("org.litote.kmongo:kmongo-coroutine:4.4.0")
+    implementation("com.github.discordbotlist:dbl-java-library:2.0.1")
+    implementation("org.litote.kmongo:kmongo-coroutine:4.6.1")
+    implementation("com.gitlab.technowolf:links-detektor:1.0.1")
 }
 
 tasks.withType<KotlinCompile> {

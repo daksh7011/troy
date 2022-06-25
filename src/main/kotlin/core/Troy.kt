@@ -4,42 +4,21 @@ import com.kotlindiscord.kord.extensions.DISCORD_GREEN
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.getKoin
-import commands.`fun`.Bullshit
-import commands.`fun`.Burn
-import commands.`fun`.Dictionary
-import commands.`fun`.Doggo
-import commands.`fun`.Emoji
-import commands.`fun`.Fact
-import commands.`fun`.Flip
-import commands.`fun`.ItsOur
-import commands.`fun`.Poll
-import commands.`fun`.SarcasticCatNo
-import commands.`fun`.Sike
-import commands.`fun`.SorryDidi
-import commands.`fun`.Tereko
-import commands.`fun`.Understandable
-import commands.`fun`.UrbanDictionary
 import commands.config.InviteLink
+import commands.`fun`.*
 import commands.misc.Avatar
 import commands.misc.Invite
 import commands.misc.Repo
 import commands.misc.Steam
-import commands.mod.Ban
-import commands.mod.Kick
-import commands.mod.Prune
-import commands.mod.Reboot
-import commands.mod.ResetWarnings
-import commands.mod.Warn
+import commands.mod.*
 import commands.nsfw.Nudes
 import commands.nsfw.Rule34
 import dev.kord.common.entity.PresenceStatus
-import dev.kord.gateway.PrivilegedIntent
 import di.mongoModule
 import di.repositoryModule
 import utils.Environment
 import utils.provideUnleashClient
 
-@OptIn(PrivilegedIntent::class)
 suspend fun getTroy(): ExtensibleBot {
     val unleash = provideUnleashClient()
     val troy = ExtensibleBot(env(Environment.TOKEN)) {

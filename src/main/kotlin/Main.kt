@@ -19,8 +19,6 @@ import dev.kord.core.event.gateway.DisconnectEvent
 import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.kordLogger
-import dev.kord.gateway.PrivilegedIntent
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.count
 import kotlinx.datetime.Clock
 import org.discordbots.api.client.DiscordBotListAPI
@@ -30,11 +28,10 @@ import utils.PresenceManager
 import utils.containsF
 import utils.containsNigga
 import utils.containsTableFlip
+import utils.extractLinksFromMessage
 import utils.getEmbedFooter
 import utils.isNotBot
-import kotlin.time.ExperimentalTime
 
-@OptIn(PrivilegedIntent::class, ExperimentalTime::class)
 suspend fun main() {
     val troy = getTroy()
     val api: DiscordBotListAPI = DiscordBotListAPI.Builder()
@@ -55,21 +52,27 @@ suspend fun main() {
             message.channel.createMessage("┬─┬ ノ( ゜-゜ノ)")
         }
         if (message.isNotBot()) {
-            domainList.filter { message.content.contains(it) }.let {
-                if (it.isNotEmpty()) {
-                    message.channel.createEmbed {
-                        title = "Warning"
-                        color = DISCORD_RED
-                        description = "_${it.first()}_ is **Phishing website**. Stay away from this site. " +
-                                "You have been warned!"
-                        field {
-                            name = "Author"
-                            value = message.author?.mention.orEmpty()
-                            inline = true
-                        }
-                        footer = message.getEmbedFooter()
-                        timestamp = Clock.System.now()
+            val listOfDomainsInMessage = message.content.extractLinksFromMessage()
+            val intersectList = domainList.intersect(listOfDomainsInMessage.toSet())
+            if (intersectList.isNotEmpty()) {
+                val descriptionOfEmbed: String = "There is phishing website in the message.\n" +
+                        "Do NOT open it. Stay away from it. You have been warned.\n" +
+                        "Detected malicious domains:\n"
+                var listOfBlacklistDomains = ""
+                intersectList.forEachIndexed { index, domain ->
+                    listOfBlacklistDomains = "${index + 1}. - $domain\n"
+                }
+                message.channel.createEmbed {
+                    title = "Warning"
+                    color = DISCORD_RED
+                    description = "$descriptionOfEmbed\n$listOfBlacklistDomains"
+                    field {
+                        name = "Author"
+                        value = message.author?.mention.orEmpty()
+                        inline = true
                     }
+                    footer = message.getEmbedFooter()
+                    timestamp = Clock.System.now()
                 }
             }
         }
