@@ -1,5 +1,14 @@
 import com.kotlindiscord.kord.extensions.DISCORD_RED
-import com.kotlindiscord.kord.extensions.commands.events.*
+import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedChecksEvent
+import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedParsingEvent
+import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedWithExceptionEvent
+import com.kotlindiscord.kord.extensions.commands.events.ChatCommandInvocationEvent
+import com.kotlindiscord.kord.extensions.commands.events.ChatCommandSucceededEvent
+import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedChecksEvent
+import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedParsingEvent
+import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedWithExceptionEvent
+import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandInvocationEvent
+import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandSucceededEvent
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import core.getTroy
@@ -10,11 +19,18 @@ import dev.kord.core.event.gateway.DisconnectEvent
 import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.kordLogger
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.count
 import kotlinx.datetime.Clock
 import org.discordbots.api.client.DiscordBotListAPI
-import utils.*
+import utils.Environment
+import utils.PhishingDomainsHelper
+import utils.PresenceManager
+import utils.containsF
+import utils.containsNigga
+import utils.containsTableFlip
+import utils.extractLinksFromMessage
+import utils.getEmbedFooter
+import utils.isNotBot
 
 suspend fun main() {
     val troy = getTroy()
@@ -36,22 +52,27 @@ suspend fun main() {
             message.channel.createMessage("┬─┬ ノ( ゜-゜ノ)")
         }
         if (message.isNotBot()) {
-            val domainRegex = Regex("^(?!-)[A-Za-z0-9-]+([\\-\\.]{1}[a-z0-9]+)*\\.[A-Za-z]{2,6}$")
-            domainList.filter { message.content.contains(it) && domainRegex.matches(message.content) }.let {
-                if (it.isNotEmpty()) {
-                    message.channel.createEmbed {
-                        title = "Warning"
-                        color = DISCORD_RED
-                        description = "_${it.first()}_ is **Phishing website**. Stay away from this site. " +
-                                "You have been warned!"
-                        field {
-                            name = "Author"
-                            value = message.author?.mention.orEmpty()
-                            inline = true
-                        }
-                        footer = message.getEmbedFooter()
-                        timestamp = Clock.System.now()
+            val listOfDomainsInMessage = message.content.extractLinksFromMessage()
+            val intersectList = domainList.intersect(listOfDomainsInMessage.toSet())
+            if (intersectList.isNotEmpty()) {
+                val descriptionOfEmbed: String = "There is phishing website in the message.\n" +
+                        "Do NOT open it. Stay away from it. You have been warned.\n" +
+                        "Detected malicious domains:\n"
+                var listOfBlacklistDomains = ""
+                intersectList.forEachIndexed { index, domain ->
+                    listOfBlacklistDomains = "${index + 1}. - $domain\n"
+                }
+                message.channel.createEmbed {
+                    title = "Warning"
+                    color = DISCORD_RED
+                    description = "$descriptionOfEmbed\n$listOfBlacklistDomains"
+                    field {
+                        name = "Author"
+                        value = message.author?.mention.orEmpty()
+                        inline = true
                     }
+                    footer = message.getEmbedFooter()
+                    timestamp = Clock.System.now()
                 }
             }
         }
