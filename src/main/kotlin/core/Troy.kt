@@ -75,8 +75,8 @@ suspend fun getTroy(): ExtensibleBot {
             }
         }
         presence {
-            status = PresenceStatus.DoNotDisturb
-            watching("initialization...")
+            status = PresenceStatus.Online
+            playing("Playing /help")
         }
         hooks {
             afterKoinSetup {
