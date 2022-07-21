@@ -73,10 +73,11 @@ suspend fun getTroy(): ExtensibleBot {
                 add(::Warn)
                 add(::ResetWarnings)
             }
+            add(::Pun)
         }
         presence {
             status = PresenceStatus.Online
-            playing("Playing /help")
+            playing("/help")
         }
         hooks {
             afterKoinSetup {

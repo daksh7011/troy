@@ -1,3 +1,6 @@
+### Version 1.1.2
+- Add puns command.
+
 ### Version 1.1.1
 - Add rule34 command.
 
