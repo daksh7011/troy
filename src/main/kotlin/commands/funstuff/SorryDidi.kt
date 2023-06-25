@@ -1,9 +1,8 @@
-package commands.`fun`
+package commands.funstuff
 
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalUser
 import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 
@@ -13,19 +12,13 @@ class SorryDidi : Extension() {
         get() = "sorry-didi"
 
     inner class SorryDidiArguments : Arguments() {
-        val user by optionalUser("user", "Which user you want to wish great day.")
+        val user by optionalUser {
+            name = "user"
+            description = "Which woke didi you want to apologise to?."
+        }
     }
 
     override suspend fun setup() {
-        chatCommand(::SorryDidiArguments) {
-            name = "sorry-didi"
-            description = "Apologizes to woke didis out there."
-            aliases = arrayOf("sorry", "sry", "sry-didi", "woke")
-            action {
-                if (arguments.user == null) message.channel.createMessage("Sorry woke didi.")
-                else message.channel.createMessage("${arguments.user?.mention}, Sorry woke didi.")
-            }
-        }
         publicSlashCommand(::SorryDidiArguments) {
             name = "sorry-didi"
             description = "Apologizes to woke didis out there."

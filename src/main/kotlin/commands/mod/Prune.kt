@@ -6,7 +6,6 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import dev.kord.common.entity.Permission
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 
 class Prune : Extension() {
@@ -15,7 +14,10 @@ class Prune : Extension() {
         get() = "prune"
 
     class PurgeArguments : Arguments() {
-        val amount by string("number", "How many messages you want to purge?")
+        val amount by string {
+            name = "number"
+            description = "How many messages you want to purge?"
+        }
     }
 
     override suspend fun setup() {

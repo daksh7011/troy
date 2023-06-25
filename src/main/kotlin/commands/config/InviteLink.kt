@@ -18,10 +18,10 @@ class InviteLink : Extension() {
         get() = "invite-link"
 
     inner class InviteLinkArgument : Arguments() {
-        val inviteLink by optionalString(
-            "url",
-            "Provide Permanent invite link for this server.",
-        )
+        val inviteLink by optionalString {
+            name = "url"
+            description = "Provide Permanent invite link for this server."
+        }
     }
 
     override suspend fun setup() {
@@ -31,7 +31,7 @@ class InviteLink : Extension() {
             description = "Setup invite link for this server"
             check { hasPermission(Permission.Administrator) }
             action {
-                val guildId = guild?.id?.asString.orEmpty()
+                val guildId = guild?.id?.toString().orEmpty()
                 val guildName = guild?.asGuild()?.name.bold()
                 val doesGuildConfigExist =
                     globalGuildRepository.checkIfConfigExistsForGuild(guildId)
@@ -48,12 +48,14 @@ class InviteLink : Extension() {
                     }
                 } else {
                     globalGuildRepository.getGlobalConfigForGuild(guildId)?.let {
-                        if (it.inviteLink.isEmptyOrBlank())
+                        if (it.inviteLink.isEmptyOrBlank()) {
                             respond(
                                 "No invite link has been set for $guildName.\n You can set it by executing same " +
-                                        "command, but followed by **URL** of the invite link."
+                                    "command, but followed by **URL** of the invite link."
                             )
-                        else respond("Invite link for $guildName: ${it.inviteLink}")
+                        } else {
+                            respond("Invite link for $guildName: ${it.inviteLink}")
+                        }
                     }
                 }
             }

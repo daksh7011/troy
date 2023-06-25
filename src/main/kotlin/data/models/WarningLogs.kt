@@ -5,5 +5,5 @@ data class WarningLogs(
     val warnedUser: String,
     val reason: String,
     val warnedAt: String,
-    val warningIssuedBy: String,
+    val warningIssuedBy: String
 )

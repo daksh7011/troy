@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SteamSearchModel(
     @SerialName("items")
-    val gameItems: List<GameItem>? = null,
+    val gameItems: List<GameItem>? = null
 )
 
 @Serializable

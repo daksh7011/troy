@@ -9,7 +9,7 @@ class KickLogsRepository(private val kicksCollection: CoroutineCollection<KickLo
     suspend fun insertKickLog(user: User, kickReason: String, moderator: String) {
         kicksCollection.insertOne(
             KickLogs(
-                user.id.asString,
+                user.id.toString(),
                 "${user.username}#${user.discriminator}",
                 kickReason,
                 Clock.System.now().toString(),

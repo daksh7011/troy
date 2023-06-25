@@ -2,6 +2,7 @@ package utils
 
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.PublicSlashCommandContext
+import com.kotlindiscord.kord.extensions.components.forms.ModalForm
 import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.env
 import dev.kord.common.entity.Snowflake
@@ -14,15 +15,15 @@ import io.getunleash.DefaultUnleash
 import io.getunleash.Unleash
 import io.getunleash.util.UnleashConfig
 import io.ktor.client.HttpClient
-import io.ktor.client.features.ResponseException
+import io.ktor.client.plugins.ResponseException
 
 fun Message.isBot(): Boolean = author?.isBot ?: true
 fun Message.isNotBot(): Boolean = isBot().not()
 fun Message.containsF(): Boolean = content.lowercase() == "f"
 fun Message.containsNigga(): Boolean = content.lowercase().contains("nigga")
 fun Message.containsTableFlip(): Boolean = content.lowercase().contains("(╯°□°）╯︵ ┻━┻")
-fun Snowflake.isOwner(): Boolean = asString == env(Environment.OWNER_ID)
-fun Snowflake.isGirlfriend(): Boolean = asString == env(Environment.GIRLFRIEND_ID)
+fun Snowflake.isOwner(): Boolean = toString() == env(Environment.OWNER_ID)
+fun Snowflake.isGirlfriend(): Boolean = toString() == env(Environment.GIRLFRIEND_ID)
 
 suspend fun <T> HttpClient.requestAndCatch(
     block: suspend HttpClient.() -> T,
@@ -38,14 +39,14 @@ suspend fun <T> HttpClient.requestAndCatch(
 suspend fun Message.getEmbedFooter(): EmbedBuilder.Footer {
     val footer = EmbedBuilder.Footer()
     footer.text = "Powered by ${this.kord.getUser(this.kord.selfId)?.username}"
-    footer.icon = this.kord.getUser(this.kord.selfId)?.avatar?.url
+    footer.icon = this.kord.getUser(this.kord.selfId)?.avatar?.cdnUrl?.toUrl()
     return footer
 }
 
 suspend fun Kord.getEmbedFooter(): EmbedBuilder.Footer {
     val footer = EmbedBuilder.Footer()
     footer.text = "Powered by ${this.getUser(this.selfId)?.username}"
-    footer.icon = this.getUser(this.selfId)?.avatar?.url
+    footer.icon = this.getUser(this.selfId)?.avatar?.cdnUrl?.toUrl()
     return footer
 }
 
@@ -81,7 +82,7 @@ fun String.isEmptyOrBlank(): Boolean {
 
 fun Int?.orZero(): Int = this ?: 0
 
-suspend fun <T : Arguments> PublicSlashCommandContext<T>.respond(text: String) = this.respond { content = text }
+suspend fun <T : Arguments, M : ModalForm> PublicSlashCommandContext<T, M>.respond(text: String) = this.respond { content = text }
 
 fun String.extractLinksFromMessage(): List<String?> {
     val linksWithDefaultOption = LinksDetektor(this, LinksDetektorOptions.Default).detect().map { it.host }

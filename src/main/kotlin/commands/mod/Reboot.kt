@@ -1,10 +1,9 @@
 package commands.mod
 
 import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.extensions.chatCommand
+import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
+import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.Kord
-import dev.kord.x.emoji.Emojis
-import dev.kord.x.emoji.toReaction
 import org.koin.core.component.inject
 import utils.isOwner
 
@@ -16,18 +15,16 @@ class Reboot : Extension() {
         get() = "reboot"
 
     override suspend fun setup() {
-        chatCommand {
+        publicSlashCommand {
             name = "reboot"
-            description = "Reboots the bot."
+            description = "Reboots bot"
+            check { failIf(!event.interaction.user.id.isOwner(), message = "This is owner only command.") }
             action {
-                if (message.author?.id?.isOwner()?.not() != false) {
-                    message.channel.createMessage("This is owner only command.")
-                } else {
-                    message.addReaction(Emojis.wave.toReaction())
-                    message.channel.createMessage("Commencing reboot.")
-                    kordClient.logout()
-                    kordClient.shutdown()
+                respond {
+                    content = "Commencing reboot."
                 }
+                kordClient.logout()
+                kordClient.shutdown()
             }
         }
     }

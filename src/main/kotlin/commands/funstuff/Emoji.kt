@@ -1,9 +1,8 @@
-package commands.`fun`
+package commands.funstuff
 
 import com.kotlindiscord.kord.extensions.commands.Arguments
-import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescedString
+import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
 import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import kotlinx.coroutines.flow.count
@@ -16,32 +15,13 @@ class Emoji : Extension() {
         get() = "emoji"
 
     inner class EmojiArguments : Arguments() {
-        val emoji by coalescedString(
-            "emoji-name",
-            "Which emoji would you like me to send? PS: Animated emoji are supported."
-        )
+        val emoji by coalescingString {
+            name = "emoji-name"
+            description = "Which emoji would you like me to send? PS: Animated emoji are supported."
+        }
     }
 
     override suspend fun setup() {
-        chatCommand(::EmojiArguments) {
-            name = "emoji"
-            description = "Sends server custom emoji, Also supports animated emojis."
-            action {
-                if (
-                    guild?.emojis?.filter { it.name == arguments.emoji }?.count() != 0
-                ) {
-                    val emoji = guild?.emojis?.filter {
-                        it.name == arguments.emoji
-                    }?.first()
-                    if (emoji != null) {
-                        channel.createMessage(emoji.mention)
-                    }
-                } else {
-                    channel.createMessage("Can't find that emoji on **${guild?.asGuild()?.name}**")
-                }
-            }
-        }
-
         publicSlashCommand(::EmojiArguments) {
             name = "emoji"
             description = "Sends server custom emoji, Also supports animated emojis."

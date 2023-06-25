@@ -1,10 +1,11 @@
 package utils
 
-import io.ktor.client.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.request.*
 import apiModels.PhishingDomainModel
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
+import io.ktor.serialization.kotlinx.json.json
 import org.koin.core.component.KoinComponent
 import org.koin.core.logger.Level
 
@@ -13,15 +14,14 @@ object PhishingDomainsHelper : KoinComponent {
     private const val DOMAIN_URL = "https://technowolf.in/phishingDomains"
 
     private val httpClient = HttpClient {
-        install(JsonFeature) {
-            val json = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
-            serializer = KotlinxSerializer(json)
+        install(ContentNegotiation) {
+            json()
         }
     }
 
     suspend fun fetchDomains(): List<String> {
         return httpClient.requestAndCatch({
-            get<PhishingDomainModel>(DOMAIN_URL).domains
+            get(DOMAIN_URL).body<PhishingDomainModel>().domains
         }, {
             getKoin().logger.log(Level.ERROR, localizedMessage)
             emptyList()

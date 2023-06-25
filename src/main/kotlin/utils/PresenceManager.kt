@@ -3,18 +3,15 @@ package utils
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import dev.kord.core.Kord
 import dev.kord.gateway.builder.PresenceBuilder
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.count
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.math.floor
-import kotlin.time.ExperimentalTime
 
 object PresenceManager : KoinComponent {
 
     private val kordClient: Kord by inject()
 
-    @OptIn(ExperimentalTime::class)
     suspend fun setPresence() {
         callScheduler()
     }

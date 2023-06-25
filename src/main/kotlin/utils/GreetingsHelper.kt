@@ -6,11 +6,13 @@ import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.MessageChannelBehavior
 import io.ktor.client.HttpClient
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
@@ -27,10 +29,12 @@ object GreetingsHelper : KoinComponent {
     private val kordClient: Kord by inject()
 
     private val httpClient = HttpClient {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
-                ignoreUnknownKeys = true
-            })
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    ignoreUnknownKeys = true
+                }
+            )
         }
     }
 
@@ -59,7 +63,7 @@ object GreetingsHelper : KoinComponent {
     ): OpenWeatherModel? {
         var ayodhyaWeather: OpenWeatherModel? = null
         httpClient.requestAndCatch({
-            ayodhyaWeather = get<OpenWeatherModel>(ayodhyaWeatherUrl)
+            ayodhyaWeather = get(ayodhyaWeatherUrl).body()
         }, {
             getKoin().logger.log(Level.ERROR, localizedMessage)
         })
@@ -84,7 +88,7 @@ object GreetingsHelper : KoinComponent {
                 callback = {
                     channelBehaviour.createMessage("Good Morning! Jay Shree Ram")
                 },
-                name = "Morning Greetings",
+                name = "Morning Greetings"
             )
             Scheduler().schedule(
                 delay = nightDateDelay.toKotlinDuration(),

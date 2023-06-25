@@ -2,17 +2,15 @@ package commands.mod
 
 import com.kotlindiscord.kord.extensions.checks.hasPermission
 import com.kotlindiscord.kord.extensions.commands.Arguments
-import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescedString
+import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
 import com.kotlindiscord.kord.extensions.commands.converters.impl.user
 import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import data.repository.BanLogsRepository
 import dev.kord.common.entity.Permission
 import dev.kord.core.Kord
 import dev.kord.core.behavior.ban
-import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
@@ -28,47 +26,18 @@ class Ban : Extension() {
         get() = "ban"
 
     inner class BanArguments : Arguments() {
-        val user by user("user", "Which user do you want to ban?")
-        val reason by coalescedString("reason", "Reason for the ban")
+        val user by user {
+            name = "user"
+            description = "Which user do you want to ban?"
+        }
+        val reason by coalescingString {
+            name = "reason"
+            description = "Reason for the ban"
+        }
     }
 
     override suspend fun setup() {
         val banLogsRepository: BanLogsRepository by inject()
-        chatCommand(::BanArguments) {
-            name = "ban"
-            description = "Bans user with reason."
-            check {
-                hasPermission(Permission.Administrator)
-                requireBotPermissions(Permission.BanMembers)
-            }
-            action {
-                val moderator = "${message.author?.username}#${message.author?.discriminator}"
-                val banReason = arguments.reason
-                if (arguments.user.id.isOwner()) {
-                    message.channel.createMessage("You can't hurt the god!")
-                    return@action
-                }
-                try {
-                    message.getGuild().ban(arguments.user.id) {
-                        reason = banReason
-                    }
-                    banLogsRepository.insertBanLog(arguments.user, banReason, moderator)
-                    message.channel.createEmbed {
-                        setupBannedEmbed(
-                            arguments.user.mention,
-                            arguments.reason,
-                            message.author?.mention.orEmpty(),
-                            kordClient,
-                        )
-                    }
-                } catch (exception: Exception) {
-                    message.channel.createMessage(
-                        "Could not ban the user. Please check my hierarchy in guild roles." +
-                                " If everything looks in order, Please contact the bot developers."
-                    )
-                }
-            }
-        }
         publicSlashCommand(::BanArguments) {
             name = "ban"
             description = "Bans user with reason."
@@ -94,14 +63,14 @@ class Ban : Extension() {
                                 user.mention,
                                 banReason,
                                 member?.mention.orEmpty(),
-                                kordClient,
+                                kordClient
                             )
                         }
                     }
                 } catch (exception: Exception) {
                     respond {
                         content = "Could not ban the user. Please check my hierarchy in guild roles." +
-                                " If everything looks in order, Please contact the bot developers."
+                            " If everything looks in order, Please contact the bot developers."
                     }
                 }
             }
@@ -113,7 +82,7 @@ class Ban : Extension() {
             userMention: String,
             reason: String,
             bannedBy: String,
-            kordClient: Kord,
+            kordClient: Kord
         ) {
             title = "Ban Event"
             field {

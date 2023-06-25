@@ -10,7 +10,7 @@ class WarningLogsRepository(private val warningCollection: CoroutineCollection<W
     suspend fun insertUserWarning(user: User, warningReason: String, moderator: String) {
         warningCollection.insertOne(
             WarningLogs(
-                user.id.asString,
+                user.id.toString(),
                 "${user.username}#${user.discriminator}",
                 warningReason,
                 Clock.System.now().toString(),

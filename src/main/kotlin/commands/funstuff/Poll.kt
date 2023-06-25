@@ -1,14 +1,11 @@
-package commands.`fun`
+package commands.funstuff
 
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
-import com.kotlindiscord.kord.extensions.commands.converters.impl.stringList
 import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.Kord
-import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
 import dev.kord.x.emoji.Emojis.eight
 import dev.kord.x.emoji.Emojis.five
@@ -38,44 +35,25 @@ class Poll : Extension() {
         seven.toReaction(),
         eight.toReaction(),
         nine.toReaction(),
-        keycapTen.toReaction(),
+        keycapTen.toReaction()
     )
 
     override val name: String
         get() = "poll"
 
     inner class PollArguments : Arguments() {
-        val title by string("title", "Title for poll")
-        val options by stringList("options", "Options for poll")
-    }
-
-    inner class PollSlashArguments : Arguments() {
-        val title by string("title", "Title for poll")
-        val options by string("options", "Options for poll seperated by comma.")
+        val title by string {
+            name = "title"
+            description = "Title for poll"
+        }
+        val options by string {
+            name = "options"
+            description = "Options for poll separated by comma"
+        }
     }
 
     override suspend fun setup() {
-        chatCommand(::PollArguments) {
-            name = "poll"
-            description = "Gives a poll for the options"
-            action {
-                val sentEmbed = message.channel.createEmbed {
-                    title = "Poll for ${arguments.title}"
-                    footer = message.getEmbedFooter()
-                    arguments.options.forEachIndexed { index, option ->
-                        field {
-                            name = "Option ${index + 1}"
-                            value = option
-                            inline = true
-                        }
-                    }
-                }
-                arguments.options.forEachIndexed { index, _ ->
-                    sentEmbed.addReaction(reactions[index])
-                }
-            }
-        }
-        publicSlashCommand(::PollSlashArguments) {
+        publicSlashCommand(::PollArguments) {
             name = "poll"
             description = "Gives a poll for provided options"
             action {
