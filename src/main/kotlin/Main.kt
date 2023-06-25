@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.count
 import kotlinx.datetime.Clock
 import org.discordbots.api.client.DiscordBotListAPI
 import utils.Environment
-import utils.GreetingsHelper
 import utils.PhishingDomainsHelper
 import utils.PresenceManager
 import utils.containsBs
