@@ -1,3 +1,8 @@
+### Version 1.2.1
+- Mode housekeeping
+- Remove bullshit command and add it as auto chat message prompt when someone says bullshit in chat.
+- Adjust and test Greetings. (Needs more tweaks.) 
+
 ### Version 1.2
 - Dependencies upgrades and fixes for breaking changes
 - Fix presence
