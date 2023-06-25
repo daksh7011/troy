@@ -37,7 +37,6 @@ import dev.kord.common.entity.PresenceStatus
 import di.mongoModule
 import di.repositoryModule
 import utils.Environment
-import utils.PresenceManager
 import utils.provideUnleashClient
 
 suspend fun getTroy(): ExtensibleBot {
