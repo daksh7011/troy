@@ -31,7 +31,7 @@ code_style:
     - ./gradlew lintKotlin
   artifacts:
     paths:
-      - build/ktlint.xml
+      - build/reports/ktlint/*
     expire_in: 1 day
   allow_failure: true
 

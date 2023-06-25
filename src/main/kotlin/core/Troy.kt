@@ -5,7 +5,6 @@ import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.getKoin
 import commands.config.InviteLink
-import commands.funstuff.Bullshit
 import commands.funstuff.Burn
 import commands.funstuff.Dictionary
 import commands.funstuff.Doggo
@@ -77,7 +76,6 @@ suspend fun getTroy(): ExtensibleBot {
             add(::SorryDidi)
             add(::Tereko)
             add(::UrbanDictionary)
-            add(::Bullshit)
             add(::Ban)
             add(::Kick)
             add(::Invite)

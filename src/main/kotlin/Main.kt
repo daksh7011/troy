@@ -18,8 +18,10 @@ import kotlinx.coroutines.flow.count
 import kotlinx.datetime.Clock
 import org.discordbots.api.client.DiscordBotListAPI
 import utils.Environment
+import utils.GreetingsHelper
 import utils.PhishingDomainsHelper
 import utils.PresenceManager
+import utils.containsBs
 import utils.containsF
 import utils.containsNigga
 import utils.containsTableFlip
@@ -45,6 +47,9 @@ suspend fun main() {
         }
         if (message.containsTableFlip() && message.isNotBot()) {
             message.channel.createMessage("┬─┬ ノ( ゜-゜ノ)")
+        }
+        if (message.containsBs() && message.isNotBot()) {
+            message.channel.createMessage("It a Bulseet :poop:")
         }
         if (message.isNotBot()) {
             val listOfDomainsInMessage = message.content.extractLinksFromMessage()
@@ -96,7 +101,7 @@ suspend fun main() {
     }
     troy.on<ReadyEvent> {
         PresenceManager.setPresence(this.kord)
-        // GreetingsHelper.scheduleRecurringGreetingsCall()
+//        GreetingsHelper.scheduleRecurringGreetingsCall(this.kord)
         if (env(Environment.IS_DEBUG).toBoolean().not()) {
             val stats = kordClient.guilds.count()
             kordLogger.info("Server Count: $stats")

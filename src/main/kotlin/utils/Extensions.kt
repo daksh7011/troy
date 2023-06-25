@@ -22,8 +22,14 @@ fun Message.isNotBot(): Boolean = isBot().not()
 fun Message.containsF(): Boolean = content.lowercase() == "f"
 fun Message.containsNigga(): Boolean = content.lowercase().contains("nigga")
 fun Message.containsTableFlip(): Boolean = content.lowercase().contains("(╯°□°）╯︵ ┻━┻")
+fun Message.containsBs(): Boolean = checkContainsMultiple("bullshit", "BullSheet", "bull-shit")
 fun Snowflake.isOwner(): Boolean = toString() == env(Environment.OWNER_ID)
 fun Snowflake.isGirlfriend(): Boolean = toString() == env(Environment.GIRLFRIEND_ID)
+
+fun Message.checkContainsMultiple(vararg check: String): Boolean {
+    val message = this.content.lowercase()
+    return check.toList().any { it.contains(message) }
+}
 
 suspend fun <T> HttpClient.requestAndCatch(
     block: suspend HttpClient.() -> T,
