@@ -54,13 +54,42 @@ class Steam : Extension() {
             name = "steam"
             description = "Searches Steam for your query."
             action {
-                respond {
-                    var steamSearchModel: SteamSearchModel? = null
-                    var steamGameJsonObject: JsonObject? = null
-                    val url = "https://store.steampowered.com/api/storesearch?cc=us&l=en&term=${arguments.gameName}"
+                var steamSearchModel: SteamSearchModel? = null
+                var steamGameJsonObject: JsonObject? = null
+                val url = "https://store.steampowered.com/api/storesearch?cc=us&l=en&term=${arguments.gameName}"
+                httpClient.requestAndCatch(
+                    {
+                        steamSearchModel = get(url).body()
+                    },
+                    {
+                        when (response.status) {
+                            HttpStatusCode.BadRequest -> {
+                                getKoin().logger.log(Level.ERROR, localizedMessage)
+                            }
+
+                            HttpStatusCode.NotFound -> {
+                                this@action.respond { content = "Can't the data for requested game!" }
+                            }
+
+                            else -> getKoin().logger.log(Level.ERROR, localizedMessage)
+                        }
+                    },
+                )
+                if (steamSearchModel?.gameItems == null ||
+                    steamSearchModel?.gameItems?.isEmpty() != false
+                ) {
+                    respond { content = "Can't the data for requested game!" }
+                    return@action
+                }
+                steamSearchModel?.gameItems?.get(0)?.let {
+                    if (it.id == null) {
+                        respond { content = "Can't the data for requested game!" }
+                        return@action
+                    }
                     httpClient.requestAndCatch(
                         {
-                            steamSearchModel = get(url).body()
+                            val steamGameUrl = "https://store.steampowered.com/api/appdetails?appids=${it.id}"
+                            steamGameJsonObject = get(steamGameUrl).body()
                         },
                         {
                             when (response.status) {
@@ -76,49 +105,18 @@ class Steam : Extension() {
                             }
                         },
                     )
-                    if (steamSearchModel?.gameItems == null ||
-                        steamSearchModel?.gameItems?.isEmpty() != false
-                    ) {
-                        respond { content = "Can't the data for requested game!" }
-                        return@action
-                    }
-                    steamSearchModel?.gameItems?.get(0)?.let {
-                        if (it.id == null) {
-                            respond { content = "Can't the data for requested game!" }
-                            return@action
-                        }
-                        httpClient.requestAndCatch(
-                            {
-                                val steamGameUrl = "https://store.steampowered.com/api/appdetails?appids=${it.id}"
-                                steamGameJsonObject = get(steamGameUrl).body()
-                            },
-                            {
-                                when (response.status) {
-                                    HttpStatusCode.BadRequest -> {
-                                        getKoin().logger.log(Level.ERROR, localizedMessage)
-                                    }
-
-                                    HttpStatusCode.NotFound -> {
-                                        this@action.respond { content = "Can't the data for requested game!" }
-                                    }
-
-                                    else -> getKoin().logger.log(Level.ERROR, localizedMessage)
-                                }
-                            },
-                        )
-                    }
-                    val steamGameJsonString =
-                        (steamGameJsonObject?.get(steamGameJsonObject?.entries?.first()?.key) as JsonObject)["data"]
-                    if (steamGameJsonString != null) {
-                        jsonSerializer.decodeFromString<SteamGameModel?>(steamGameJsonString.toString())
-                            ?.let { steamGameModel ->
-                                respond {
-                                    embed {
-                                        setupSteamEmbed(steamGameModel, getGamePlatforms(steamGameModel))
-                                    }
+                }
+                val steamGameJsonString =
+                    (steamGameJsonObject?.get(steamGameJsonObject?.entries?.first()?.key) as JsonObject)["data"]
+                if (steamGameJsonString != null) {
+                    jsonSerializer.decodeFromString<SteamGameModel?>(steamGameJsonString.toString())
+                        ?.let { steamGameModel ->
+                            respond {
+                                embed {
+                                    setupSteamEmbed(steamGameModel, getGamePlatforms(steamGameModel))
                                 }
                             }
-                    }
+                        }
                 }
             }
         }
