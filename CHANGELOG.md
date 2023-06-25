@@ -1,3 +1,10 @@
+### Version 1.2
+- Dependencies upgrades and fixes for breaking changes
+- Fix presence
+- Update CI infrastructure
+- Remove most chat commands in favor of slash commands
+- Housekeeping
+
 ### Version 1.1.2
 
 - Add puns command.
