@@ -5,5 +5,5 @@ data class BanLogs(
     val bannedUser: String,
     val reason: String,
     val bannedAt: String,
-    val banIssuedBy: String,
+    val banIssuedBy: String
 )

@@ -19,7 +19,10 @@ class ResetWarnings : Extension() {
         get() = "reset-warnings"
 
     inner class WarnResetArguments : Arguments() {
-        val user by user("user", "Which user do you want to reset warnings for?")
+        val user by user {
+            name = "user"
+            description = "Which user do you want to reset warnings for?"
+        }
     }
 
     override suspend fun setup() {
@@ -33,7 +36,7 @@ class ResetWarnings : Extension() {
                 requireBotPermissions(Permission.BanMembers)
             }
             action {
-                warningLogsRepository.deleteWarningsForUser(arguments.user.id.asString)
+                warningLogsRepository.deleteWarningsForUser(arguments.user.id.toString())
                 respond {
                     content = "Warnings have been reset for ${arguments.user.mention} by moderator ${member?.mention}"
                 }

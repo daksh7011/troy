@@ -1,28 +1,25 @@
 package commands.misc
 
-import com.kotlindiscord.kord.extensions.DISCORD_FUCHSIA
-import com.kotlindiscord.kord.extensions.commands.Arguments
-import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescedString
-import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.extensions.chatCommand
-import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
-import com.kotlindiscord.kord.extensions.types.respond
-import com.kotlindiscord.kord.extensions.utils.respond
-import dev.kord.core.Kord
-import dev.kord.core.behavior.channel.createEmbed
-import dev.kord.rest.builder.message.EmbedBuilder
-import dev.kord.rest.builder.message.create.embed
-import io.ktor.client.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import kotlinx.datetime.Clock
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import apiModels.SteamGameModel
 import apiModels.SteamSearchModel
+import com.kotlindiscord.kord.extensions.DISCORD_FUCHSIA
+import com.kotlindiscord.kord.extensions.commands.Arguments
+import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescingString
+import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
+import com.kotlindiscord.kord.extensions.types.respond
+import dev.kord.core.Kord
+import dev.kord.rest.builder.message.EmbedBuilder
+import dev.kord.rest.builder.message.create.embed
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.datetime.Clock
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
 import utils.getEmbedFooter
@@ -33,10 +30,12 @@ class Steam : Extension() {
     private val kordClient: Kord by inject()
     private val jsonSerializer = Json { ignoreUnknownKeys = true }
     private val httpClient = HttpClient {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
-                ignoreUnknownKeys = true
-            })
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    ignoreUnknownKeys = true
+                },
+            )
         }
     }
 
@@ -44,11 +43,14 @@ class Steam : Extension() {
         get() = "steam"
 
     class SteamSearchArguments : Arguments() {
-        val gameName by coalescedString("game-name", "Which game do you want to search for?")
+        val gameName by coalescingString {
+            name = "game-name"
+            description = "Which game do you want to search for?"
+        }
     }
 
     override suspend fun setup() {
-        chatCommand(::SteamSearchArguments) {
+        publicSlashCommand(::SteamSearchArguments) {
             name = "steam"
             description = "Searches Steam for your query."
             action {
@@ -57,119 +59,64 @@ class Steam : Extension() {
                 val url = "https://store.steampowered.com/api/storesearch?cc=us&l=en&term=${arguments.gameName}"
                 httpClient.requestAndCatch(
                     {
-                        steamSearchModel = get<SteamSearchModel>(url)
-                    }, {
+                        steamSearchModel = get(url).body()
+                    },
+                    {
                         when (response.status) {
                             HttpStatusCode.BadRequest -> {
                                 getKoin().logger.log(Level.ERROR, localizedMessage)
                             }
+
                             HttpStatusCode.NotFound -> {
-                                this@action.message.respond("Can't the data for requested game!")
+                                this@action.respond { content = "Can't the data for requested game!" }
                             }
+
                             else -> getKoin().logger.log(Level.ERROR, localizedMessage)
                         }
-                    })
+                    },
+                )
                 if (steamSearchModel?.gameItems == null ||
                     steamSearchModel?.gameItems?.isEmpty() != false
                 ) {
-                    message.respond { content = "Can't the data for requested game!" }
+                    respond { content = "Can't the data for requested game!" }
                     return@action
                 }
                 steamSearchModel?.gameItems?.get(0)?.let {
                     if (it.id == null) {
-                        message.respond { content = "Can't the data for requested game!" }
+                        respond { content = "Can't the data for requested game!" }
                         return@action
                     }
                     httpClient.requestAndCatch(
                         {
                             val steamGameUrl = "https://store.steampowered.com/api/appdetails?appids=${it.id}"
-                            steamGameJsonObject = this.get(steamGameUrl)
+                            steamGameJsonObject = get(steamGameUrl).body()
                         },
                         {
                             when (response.status) {
                                 HttpStatusCode.BadRequest -> {
                                     getKoin().logger.log(Level.ERROR, localizedMessage)
                                 }
+
                                 HttpStatusCode.NotFound -> {
-                                    this@action.message.respond("Can't the data for requested game!")
+                                    this@action.respond { content = "Can't the data for requested game!" }
                                 }
+
                                 else -> getKoin().logger.log(Level.ERROR, localizedMessage)
                             }
-                        }
+                        },
                     )
                 }
                 val steamGameJsonString =
                     (steamGameJsonObject?.get(steamGameJsonObject?.entries?.first()?.key) as JsonObject)["data"]
-                jsonSerializer.decodeFromString<SteamGameModel?>(steamGameJsonString.toString())?.let {
-                    message.channel.createEmbed {
-                        setupSteamEmbed(it, getGamePlatforms(it))
-                    }
-                }
-            }
-        }
-        publicSlashCommand(::SteamSearchArguments) {
-            name = "steam"
-            description = "Searches Steam for your query."
-            action {
-                respond {
-                    var steamSearchModelForSlashCommand: SteamSearchModel? = null
-                    var steamGameJsonObject: JsonObject? = null
-                    val url = "https://store.steampowered.com/api/storesearch?cc=us&l=en&term=${arguments.gameName}"
-                    httpClient.requestAndCatch(
-                        {
-                            steamSearchModelForSlashCommand = get<SteamSearchModel>(url)
-                        }, {
-                            when (response.status) {
-                                HttpStatusCode.BadRequest -> {
-                                    getKoin().logger.log(Level.ERROR, localizedMessage)
+                if (steamGameJsonString != null) {
+                    jsonSerializer.decodeFromString<SteamGameModel?>(steamGameJsonString.toString())
+                        ?.let { steamGameModel ->
+                            respond {
+                                embed {
+                                    setupSteamEmbed(steamGameModel, getGamePlatforms(steamGameModel))
                                 }
-                                HttpStatusCode.NotFound -> {
-                                    this@action.respond { content = "Can't the data for requested game!" }
-                                }
-                                else -> getKoin().logger.log(Level.ERROR, localizedMessage)
                             }
-                        })
-                    if (steamSearchModelForSlashCommand?.gameItems == null ||
-                        steamSearchModelForSlashCommand?.gameItems?.isEmpty() != false
-                    ) {
-                        respond { content = "Can't the data for requested game!" }
-                        return@action
-                    }
-                    steamSearchModelForSlashCommand?.gameItems?.get(0)?.let {
-                        if (it.id == null) {
-                            respond { content = "Can't the data for requested game!" }
-                            return@action
                         }
-                        httpClient.requestAndCatch(
-                            {
-                                val steamGameUrl = "https://store.steampowered.com/api/appdetails?appids=${it.id}"
-                                steamGameJsonObject = this.get(steamGameUrl)
-                            },
-                            {
-                                when (response.status) {
-                                    HttpStatusCode.BadRequest -> {
-                                        getKoin().logger.log(Level.ERROR, localizedMessage)
-                                    }
-                                    HttpStatusCode.NotFound -> {
-                                        this@action.respond { content = "Can't the data for requested game!" }
-                                    }
-                                    else -> getKoin().logger.log(Level.ERROR, localizedMessage)
-                                }
-                            }
-                        )
-                    }
-                    val steamGameJsonString =
-                        (steamGameJsonObject?.get(steamGameJsonObject?.entries?.first()?.key) as JsonObject)["data"]
-                    if (steamGameJsonString != null) {
-                        jsonSerializer.decodeFromString<SteamGameModel?>(steamGameJsonString.toString())
-                            ?.let { steamGameModel ->
-                                respond {
-                                    embed {
-                                        setupSteamEmbed(steamGameModel, getGamePlatforms(steamGameModel))
-                                    }
-                                }
-                            }
-                    }
                 }
             }
         }

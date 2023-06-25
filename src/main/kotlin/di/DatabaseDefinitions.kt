@@ -1,7 +1,7 @@
 package di
 
 import com.kotlindiscord.kord.extensions.utils.env
-import io.ktor.http.*
+import io.ktor.http.encodeURLPath
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo

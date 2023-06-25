@@ -5,5 +5,5 @@ data class KickLogs(
     val userName: String,
     val reason: String,
     val kickedAt: String,
-    val kickedBy: String,
+    val kickedBy: String
 )

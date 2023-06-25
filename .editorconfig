@@ -1,0 +1,13 @@
+root = true
+
+[*.{kt,kts}]
+ktlint_code_style = ktlint_official
+ktlint_no-wildcard-imports = disabled
+ktlint_standard_import-ordering = disabled
+ktlint_standard_trailing-comma-on-declaration-site = disabled
+ktlint_standard_indent = disabled
+
+indent_size = 4
+max_line_length = 180
+indent_style = space
+insert_final_newline = true

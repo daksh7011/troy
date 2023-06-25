@@ -1,4 +1,4 @@
-package commands.`fun`
+package commands.funstuff
 
 import apiModels.OwlDictModel
 import com.kotlindiscord.kord.extensions.commands.Arguments
@@ -9,11 +9,14 @@ import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.env
 import dev.kord.core.Kord
 import dev.kord.rest.builder.message.create.embed
-import io.ktor.client.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
@@ -25,15 +28,18 @@ class Dictionary : Extension() {
 
     private val kordClient: Kord by inject()
     private val httpClient = HttpClient {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer()
+        install(ContentNegotiation) {
+            json()
         }
     }
     override val name: String
         get() = "dictionary"
 
     class DictionaryArguments : Arguments() {
-        val word by string("word", "Which word do you wanna search?")
+        val word by string {
+            name = "word"
+            description = "Which word do you wanna search?"
+        }
     }
 
     override suspend fun setup() {
@@ -43,11 +49,11 @@ class Dictionary : Extension() {
             action {
                 val url = "https://owlbot.info/api/v4/dictionary/" + arguments.word
                 httpClient.requestAndCatch({
-                    get<OwlDictModel>(url) {
+                    get(url) {
                         headers {
                             append(HttpHeaders.Authorization, "Token ${env(Environment.OWL_DICT_TOKEN)}")
                         }
-                    }.let {
+                    }.body<OwlDictModel>().let {
                         respond {
                             val definition = it.definitions.first()
                             embed {
@@ -79,6 +85,7 @@ class Dictionary : Extension() {
                         HttpStatusCode.NotFound -> {
                             respond { content = "No results found for ${arguments.word}" }
                         }
+
                         else -> getKoin().logger.log(Level.ERROR, localizedMessage)
                     }
                 })

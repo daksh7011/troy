@@ -4,7 +4,7 @@ data class GlobalGuildConfig(
     val guildId: String,
     val warnMode: Int = WarningMode.Kick().warningMode,
     val maxWarnings: Int = 3,
-    val inviteLink: String = "",
+    val inviteLink: String = ""
 )
 
 sealed class WarningMode(val warningMode: Int) {

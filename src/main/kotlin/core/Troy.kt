@@ -5,12 +5,32 @@ import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.getKoin
 import commands.config.InviteLink
-import commands.`fun`.*
+import commands.funstuff.Bullshit
+import commands.funstuff.Burn
+import commands.funstuff.Dictionary
+import commands.funstuff.Doggo
+import commands.funstuff.Emoji
+import commands.funstuff.Fact
+import commands.funstuff.Flip
+import commands.funstuff.ItsOur
+import commands.funstuff.Poll
+import commands.funstuff.Pun
+import commands.funstuff.SarcasticCatNo
+import commands.funstuff.Sike
+import commands.funstuff.SorryDidi
+import commands.funstuff.Tereko
+import commands.funstuff.Understandable
+import commands.funstuff.UrbanDictionary
 import commands.misc.Avatar
 import commands.misc.Invite
 import commands.misc.Repo
 import commands.misc.Steam
-import commands.mod.*
+import commands.mod.Ban
+import commands.mod.Kick
+import commands.mod.Prune
+import commands.mod.Reboot
+import commands.mod.ResetWarnings
+import commands.mod.Warn
 import commands.nsfw.Nudes
 import commands.nsfw.Rule34
 import dev.kord.common.entity.PresenceStatus
@@ -97,6 +117,6 @@ private fun registerKoinModules() {
         listOf(
             mongoModule,
             repositoryModule,
-        )
+        ),
     )
 }

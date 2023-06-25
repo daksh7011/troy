@@ -9,12 +9,12 @@ class BanLogsRepository(private val bansCollection: CoroutineCollection<BanLogs>
     suspend fun insertBanLog(user: User, banReason: String, moderator: String) {
         bansCollection.insertOne(
             BanLogs(
-                user.id.asString,
+                user.id.toString(),
                 "${user.username}#${user.discriminator}",
                 banReason,
                 Clock.System.now().toString(),
-                moderator
-            )
+                moderator,
+            ),
         )
     }
 }

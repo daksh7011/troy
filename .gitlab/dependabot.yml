@@ -7,5 +7,5 @@ updates:
     open-pull-requests-limit: 20
     rebase-strategy: auto
     reviewers:
-      - "daksh7011" 
+      - "daksh7011"
     auto-merge: false

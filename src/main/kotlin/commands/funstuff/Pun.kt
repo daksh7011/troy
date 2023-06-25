@@ -1,21 +1,22 @@
-package commands.`fun`
+package commands.funstuff
 
 import apiModels.PunsModel
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import io.ktor.client.HttpClient
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
+import io.ktor.serialization.kotlinx.json.json
 import org.koin.core.logger.Level
 import utils.requestAndCatch
 
 class Pun : Extension() {
 
     private val httpClient = HttpClient {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer()
+        install(ContentNegotiation) {
+            json()
         }
     }
     private var punsModel: PunsModel? = null
@@ -30,8 +31,8 @@ class Pun : Extension() {
             action {
                 val url = "https://icanhazdadjoke.com/"
                 httpClient.requestAndCatch(
-                    { punsModel = get(url) },
-                    { getKoin().logger.log(Level.ERROR, localizedMessage) }
+                    { punsModel = get(url).body() },
+                    { getKoin().logger.log(Level.ERROR, localizedMessage) },
                 )
                 if (punsModel != null) {
                     respond { content = punsModel?.joke }

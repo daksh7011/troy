@@ -1,9 +1,4 @@
 import com.kotlindiscord.kord.extensions.DISCORD_RED
-import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedChecksEvent
-import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedParsingEvent
-import com.kotlindiscord.kord.extensions.commands.events.ChatCommandFailedWithExceptionEvent
-import com.kotlindiscord.kord.extensions.commands.events.ChatCommandInvocationEvent
-import com.kotlindiscord.kord.extensions.commands.events.ChatCommandSucceededEvent
 import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedChecksEvent
 import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedParsingEvent
 import com.kotlindiscord.kord.extensions.commands.events.PublicSlashCommandFailedWithExceptionEvent
@@ -56,8 +51,8 @@ suspend fun main() {
             val intersectList = domainList.intersect(listOfDomainsInMessage.toSet())
             if (intersectList.isNotEmpty()) {
                 val descriptionOfEmbed: String = "There is phishing website in the message.\n" +
-                        "Do NOT open it. Stay away from it. You have been warned.\n" +
-                        "Detected malicious domains:\n"
+                    "Do NOT open it. Stay away from it. You have been warned.\n" +
+                    "Detected malicious domains:\n"
                 var listOfBlacklistDomains = ""
                 intersectList.forEachIndexed { index, domain ->
                     listOfBlacklistDomains = "${index + 1}. - $domain\n"
@@ -76,28 +71,6 @@ suspend fun main() {
                 }
             }
         }
-    }
-    troy.on<ChatCommandInvocationEvent> {
-        val commandName = this.command.name
-        val userName = this.event.message.author?.username
-        val userDiscriminator = this.event.message.author?.discriminator
-        kordLogger.info("Chat Command: $commandName of triggered by $userName#$userDiscriminator")
-    }
-    troy.on<ChatCommandSucceededEvent> {
-        kordLogger.info("${this.command.name} was successfully executed.")
-    }
-    troy.on<ChatCommandFailedChecksEvent> {
-        val commandName = this.command.name
-        kordLogger.info("Command: $commandName failed because checks did not pass.")
-    }
-    troy.on<ChatCommandFailedParsingEvent> {
-        val commandName = this.command.name
-        kordLogger.info("Command: $commandName failed because there of a parsing issue.")
-    }
-    troy.on<ChatCommandFailedWithExceptionEvent> {
-        val commandName = this.command.name
-        kordLogger.info("Command: $commandName failed because there of an exception.")
-        kordLogger.info("More details about exception: ${this.throwable.stackTrace}")
     }
     troy.on<PublicSlashCommandInvocationEvent> {
         val commandName = this.command.name
@@ -122,7 +95,7 @@ suspend fun main() {
         kordLogger.info("More details about exception: ${this.throwable.localizedMessage}")
     }
     troy.on<ReadyEvent> {
-        PresenceManager.setPresence()
+        PresenceManager.setPresence(this.kord)
         // GreetingsHelper.scheduleRecurringGreetingsCall()
         if (env(Environment.IS_DEBUG).toBoolean().not()) {
             val stats = kordClient.guilds.count()
@@ -131,7 +104,7 @@ suspend fun main() {
         }
         val globalGuildRepository: GlobalGuildRepository = troy.getKoin().get()
         kordClient.guilds.collect { guild ->
-            globalGuildRepository.insertGlobalGuildConfig(guild.id.asString)
+            globalGuildRepository.insertGlobalGuildConfig(guild.id.toString())
         }
     }
     troy.on<DisconnectEvent> {

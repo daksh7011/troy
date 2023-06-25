@@ -1,7 +1,7 @@
 package apiModels
-import kotlinx.serialization.Serializable
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class OwlDictModel(
@@ -10,7 +10,7 @@ data class OwlDictModel(
     @SerialName("word")
     val word: String,
     @SerialName("pronunciation")
-    val pronunciation: String?,
+    val pronunciation: String?
 )
 
 @Serializable
@@ -24,5 +24,5 @@ data class Definition(
     @SerialName("image_url")
     val imageUrl: String?,
     @SerialName("emoji")
-    val emoji: String?,
+    val emoji: String?
 )

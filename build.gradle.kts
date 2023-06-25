@@ -1,14 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.7.0"
-    kotlin("plugin.serialization") version "1.7.0"
-    id("org.jmailen.kotlinter") version "3.4.5"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    kotlin("jvm") version "1.8.22"
+    kotlin("plugin.serialization") version "1.8.21"
+    id("org.jmailen.kotlinter") version "3.15.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "in.technowolf"
-version = "1.1.2"
+version = "1.2"
 
 repositories {
     mavenCentral()
@@ -22,19 +22,20 @@ repositories {
 }
 
 dependencies {
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.5.1-RC1")
-    implementation("com.kotlindiscord.kord.extensions:time4j:1.5.1-RC1")
-    implementation("org.slf4j:slf4j-simple:1.7.36")
+    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.5.8-SNAPSHOT")
+    implementation("com.kotlindiscord.kord.extensions:time4j:1.5.8-SNAPSHOT")
+    implementation("org.slf4j:slf4j-simple:2.0.7")
     implementation("net.dean.jraw:JRAW:1.1.0")
-    implementation("io.getunleash:unleash-client-java:5.1.0")
+    implementation("io.getunleash:unleash-client-java:8.1.0")
     implementation("dev.kord.x:emoji:0.5.0")
-    implementation("com.github.discordbotlist:dbl-java-library:2.0.1")
-    implementation("org.litote.kmongo:kmongo-coroutine:4.6.1")
+    implementation("com.github.discordbotlist:dbl-java-library:2.1.2")
+    implementation("org.litote.kmongo:kmongo-coroutine:4.9.0")
     implementation("com.gitlab.technowolf:links-detektor:1.0.1")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1")
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "16"
+    kotlinOptions.jvmTarget = "17"
 }
 
 tasks.withType(KotlinCompile::class).all {
@@ -53,8 +54,5 @@ tasks.check {
 
 kotlinter {
     ignoreFailures = false
-    indentSize = 4
     reporters = arrayOf("checkstyle", "plain")
-    experimentalRules = false
-    disabledRules = arrayOf("no-wildcard-imports", "import-ordering", "indent")
 }

@@ -1,4 +1,4 @@
-package commands.`fun`
+package commands.funstuff
 
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand

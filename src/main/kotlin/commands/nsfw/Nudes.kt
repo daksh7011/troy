@@ -1,17 +1,14 @@
 package commands.nsfw
 
+import apiModels.NoodsModel
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingString
 import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
-import com.kotlindiscord.kord.extensions.utils.respond
 import dev.kord.core.Kord
-import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.datetime.Clock
-import apiModels.NoodsModel
 import net.dean.jraw.models.SubredditSort
 import org.koin.core.component.inject
 import utils.DataProvider
@@ -28,38 +25,14 @@ class Nudes : Extension() {
     override val name: String get() = "nudes"
 
     class NudesArguments : Arguments() {
-        val category by defaultingString("category", "What will tickle your pickle?", "random")
+        val category by defaultingString {
+            name = "category"
+            description = "What will tickle your pickle?"
+            defaultValue = "random"
+        }
     }
 
     override suspend fun setup() {
-        chatCommand(::NudesArguments) {
-            name = "nudes"
-            description = "Finds some spicy nudes."
-            aliases = arrayOf("noods", "gulabi", "nsfw")
-            action {
-                if (kordClient.getChannel(channel.id)?.data?.nsfw?.orElse(false) == false) {
-                    this@action.message.respond("Eh, Are you lost boi?")
-                } else {
-                    val nudeUrl = getNudeUrl(arguments.category)
-                    if (nudeUrl.isNullOrBlank()) {
-                        val randomCategoryList = nudesCatalog.random().value
-                        message.channel.createMessage(
-                            "Can not find nude for given category. Try different category.\n" +
-                                    "Maybe try anything form this: ${randomCategoryList.take(2).joinToString()}"
-                        )
-                    } else {
-                        message.channel.createEmbed {
-                            title = "Go. Enjoy those 10 seconds."
-                            description = getCategoriesFromCatalog(arguments.category)[0].fullName
-                            image = nudeUrl
-                            footer = message.getEmbedFooter()
-                            timestamp = Clock.System.now()
-                        }
-                    }
-                }
-            }
-        }
-
         publicSlashCommand(::NudesArguments) {
             name = "nudes"
             description = "Finds some spicy noods."
@@ -74,7 +47,7 @@ class Nudes : Extension() {
                         if (nudeUrl.isNullOrBlank()) {
                             val randomCategoryList = nudesCatalog.random().value
                             content = "Can not find nude for given category. Try different category.\n" +
-                                    "Maybe try anything form this: ${randomCategoryList.take(2).joinToString()}"
+                                "Maybe try anything form this: ${randomCategoryList.take(2).joinToString()}"
                         } else {
                             embed {
                                 title = "Go. Enjoy those 10 seconds."
@@ -104,14 +77,17 @@ class Nudes : Extension() {
     }
 
     private fun getCategoriesFromCatalog(categoryName: String?): List<NoodsModel> {
-        return if (categoryName.isNullOrBlank()) listOf()
-        else nudesCatalog.filter { it.categoryName.contains(categoryName) }
+        return if (categoryName.isNullOrBlank()) {
+            listOf()
+        } else nudesCatalog.filter { it.categoryName.contains(categoryName) }
     }
 
     private fun getRandomCategory(categoryToFetch: List<NoodsModel>): String? {
-        return if (categoryToFetch.isNotEmpty())
+        return if (categoryToFetch.isNotEmpty()) {
             categoryToFetch[0].value[floor(Math.random() * categoryToFetch.size).toInt()]
-        else null
+        } else {
+            null
+        }
     }
 
     private fun getPostsFromReddit(category: String) =
