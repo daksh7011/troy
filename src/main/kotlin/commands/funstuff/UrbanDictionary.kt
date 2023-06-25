@@ -32,7 +32,7 @@ class UrbanDictionary : Extension() {
                 Json {
                     prettyPrint = true
                     ignoreUnknownKeys = true
-                }
+                },
             )
         }
     }

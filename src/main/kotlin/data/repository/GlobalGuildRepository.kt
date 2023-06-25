@@ -27,21 +27,21 @@ class GlobalGuildRepository(private val guildCollection: CoroutineCollection<Glo
     suspend fun updateInviteLinkForGuild(guildId: String, inviteLink: String) {
         guildCollection.updateOne(
             GlobalGuildConfig::guildId eq guildId,
-            setValue(GlobalGuildConfig::inviteLink, inviteLink)
+            setValue(GlobalGuildConfig::inviteLink, inviteLink),
         )
     }
 
     suspend fun updateWarningModeForGuild(guildId: String, warnMode: WarningMode) {
         guildCollection.updateOne(
             GlobalGuildConfig::guildId eq guildId,
-            setValue(GlobalGuildConfig::warnMode, warnMode.warningMode)
+            setValue(GlobalGuildConfig::warnMode, warnMode.warningMode),
         )
     }
 
     suspend fun updateMaxWarningForGuild(guildId: String, maxWarnings: Int) {
         guildCollection.updateOne(
             GlobalGuildConfig::guildId eq guildId,
-            setValue(GlobalGuildConfig::maxWarnings, maxWarnings)
+            setValue(GlobalGuildConfig::maxWarnings, maxWarnings),
         )
     }
 

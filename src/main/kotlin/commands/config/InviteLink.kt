@@ -43,7 +43,7 @@ class InviteLink : Extension() {
                         respond("Invite link updated for $guildName")
                     } else {
                         respond(
-                            "You might want to check your link. It does not look like a **Discord invite link**."
+                            "You might want to check your link. It does not look like a **Discord invite link**.",
                         )
                     }
                 } else {
@@ -51,7 +51,7 @@ class InviteLink : Extension() {
                         if (it.inviteLink.isEmptyOrBlank()) {
                             respond(
                                 "No invite link has been set for $guildName.\n You can set it by executing same " +
-                                    "command, but followed by **URL** of the invite link."
+                                    "command, but followed by **URL** of the invite link.",
                             )
                         } else {
                             respond("Invite link for $guildName: ${it.inviteLink}")

@@ -13,8 +13,8 @@ class BanLogsRepository(private val bansCollection: CoroutineCollection<BanLogs>
                 "${user.username}#${user.discriminator}",
                 banReason,
                 Clock.System.now().toString(),
-                moderator
-            )
+                moderator,
+            ),
         )
     }
 }

@@ -5,34 +5,31 @@ import dev.kord.core.Kord
 import dev.kord.gateway.builder.PresenceBuilder
 import kotlinx.coroutines.flow.count
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import kotlin.math.floor
 
 object PresenceManager : KoinComponent {
 
-    private val kordClient: Kord by inject()
-
-    suspend fun setPresence() {
-        callScheduler()
+    suspend fun setPresence(kord: Kord) {
+        callScheduler(kord)
     }
 
-    private suspend fun callScheduler() {
-        val listOfPresence = getPresenceList()
+    private suspend fun callScheduler(kord: Kord) {
+        val listOfPresence = getPresenceList(kord)
         Scheduler().schedule(
             60L,
             callback = {
-                kordClient.editPresence(listOfPresence[floor(Math.random() * listOfPresence.size).toInt()])
-                callScheduler()
+                kord.editPresence(listOfPresence[floor(Math.random() * listOfPresence.size).toInt()])
+                callScheduler(kord)
             },
-            name = "Presence Task"
+            name = "Presence Task",
         )
     }
 
-    private suspend fun getPresenceList(): List<PresenceBuilder.() -> Unit> {
+    private suspend fun getPresenceList(kord: Kord): List<PresenceBuilder.() -> Unit> {
         val listOfPresence = mutableListOf<PresenceBuilder.() -> Unit>()
-        val totalServers = kordClient.guilds.count()
+        val totalServers = kord.guilds.count()
         var totalChannels = 0
-        kordClient.guilds.collect {
+        kord.guilds.collect {
             totalChannels += it.channels.count()
         }
         listOfPresence.add { watching("$totalServers servers") }

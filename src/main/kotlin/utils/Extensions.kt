@@ -52,7 +52,7 @@ suspend fun Kord.getEmbedFooter(): EmbedBuilder.Footer {
 
 fun getTestGuildSnowflake(): Snowflake {
     return Snowflake(
-        env(Environment.TEST_GUILD_ID).toLong()
+        env(Environment.TEST_GUILD_ID).toLong(),
     )
 }
 

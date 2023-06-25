@@ -31,7 +31,7 @@ class Rule34 : Extension() {
                 Json {
                     isLenient = true
                     ignoreUnknownKeys = true
-                }
+                },
             )
         }
     }

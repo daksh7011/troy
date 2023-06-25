@@ -14,8 +14,8 @@ class WarningLogsRepository(private val warningCollection: CoroutineCollection<W
                 "${user.username}#${user.discriminator}",
                 warningReason,
                 Clock.System.now().toString(),
-                moderator
-            )
+                moderator,
+            ),
         )
     }
 

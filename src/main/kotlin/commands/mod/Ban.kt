@@ -63,7 +63,7 @@ class Ban : Extension() {
                                 user.mention,
                                 banReason,
                                 member?.mention.orEmpty(),
-                                kordClient
+                                kordClient,
                             )
                         }
                     }

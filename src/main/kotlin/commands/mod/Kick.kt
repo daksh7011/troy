@@ -61,7 +61,7 @@ class Kick : Extension() {
                                 user.mention,
                                 kickReason,
                                 member?.mention.orEmpty(),
-                                kordClient
+                                kordClient,
                             )
                         }
                     }

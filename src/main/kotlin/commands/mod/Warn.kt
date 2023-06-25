@@ -88,7 +88,7 @@ class Warn : Extension() {
                                             arguments.warnedUser.mention,
                                             reason,
                                             member?.mention.orEmpty(),
-                                            kordClient
+                                            kordClient,
                                         )
                                     }
                                 } catch (exception: Exception) {
@@ -109,7 +109,7 @@ class Warn : Extension() {
                                             arguments.warnedUser.mention,
                                             reason,
                                             member?.mention.orEmpty(),
-                                            kordClient
+                                            kordClient,
                                         )
                                     }
                                 } catch (exception: Exception) {
@@ -132,7 +132,7 @@ class Warn : Extension() {
                                 arguments.warnedUser.mention,
                                 warnReason,
                                 member?.mention.orEmpty(),
-                                "$userWarnings/$guildMaxWarnings"
+                                "$userWarnings/$guildMaxWarnings",
                             )
                         }
                     }

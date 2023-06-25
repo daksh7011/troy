@@ -34,7 +34,7 @@ class Steam : Extension() {
             json(
                 Json {
                     ignoreUnknownKeys = true
-                }
+                },
             )
         }
     }
@@ -74,7 +74,7 @@ class Steam : Extension() {
 
                                 else -> getKoin().logger.log(Level.ERROR, localizedMessage)
                             }
-                        }
+                        },
                     )
                     if (steamSearchModel?.gameItems == null ||
                         steamSearchModel?.gameItems?.isEmpty() != false
@@ -104,7 +104,7 @@ class Steam : Extension() {
 
                                     else -> getKoin().logger.log(Level.ERROR, localizedMessage)
                                 }
-                            }
+                            },
                         )
                     }
                     val steamGameJsonString =

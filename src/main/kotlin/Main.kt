@@ -19,6 +19,7 @@ import kotlinx.datetime.Clock
 import org.discordbots.api.client.DiscordBotListAPI
 import utils.Environment
 import utils.PhishingDomainsHelper
+import utils.PresenceManager
 import utils.containsF
 import utils.containsNigga
 import utils.containsTableFlip
@@ -94,7 +95,7 @@ suspend fun main() {
         kordLogger.info("More details about exception: ${this.throwable.localizedMessage}")
     }
     troy.on<ReadyEvent> {
-//        PresenceManager.setPresence()
+        PresenceManager.setPresence(this.kord)
         // GreetingsHelper.scheduleRecurringGreetingsCall()
         if (env(Environment.IS_DEBUG).toBoolean().not()) {
             val stats = kordClient.guilds.count()

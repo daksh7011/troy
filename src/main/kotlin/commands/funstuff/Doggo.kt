@@ -63,7 +63,7 @@ class Doggo : Extension() {
 
                             else -> getKoin().logger.log(Level.ERROR, localizedMessage)
                         }
-                    }
+                    },
                 )
                 if (doggoModel != null) {
                     respond {

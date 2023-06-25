@@ -35,7 +35,7 @@ class Poll : Extension() {
         seven.toReaction(),
         eight.toReaction(),
         nine.toReaction(),
-        keycapTen.toReaction()
+        keycapTen.toReaction(),
     )
 
     override val name: String

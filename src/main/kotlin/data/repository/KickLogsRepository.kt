@@ -13,8 +13,8 @@ class KickLogsRepository(private val kicksCollection: CoroutineCollection<KickLo
                 "${user.username}#${user.discriminator}",
                 kickReason,
                 Clock.System.now().toString(),
-                moderator
-            )
+                moderator,
+            ),
         )
     }
 }

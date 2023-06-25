@@ -32,7 +32,7 @@ class Pun : Extension() {
                 val url = "https://icanhazdadjoke.com/"
                 httpClient.requestAndCatch(
                     { punsModel = get(url).body() },
-                    { getKoin().logger.log(Level.ERROR, localizedMessage) }
+                    { getKoin().logger.log(Level.ERROR, localizedMessage) },
                 )
                 if (punsModel != null) {
                     respond { content = punsModel?.joke }

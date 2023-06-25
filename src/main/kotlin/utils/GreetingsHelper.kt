@@ -33,7 +33,7 @@ object GreetingsHelper : KoinComponent {
             json(
                 Json {
                     ignoreUnknownKeys = true
-                }
+                },
             )
         }
     }
@@ -45,7 +45,7 @@ object GreetingsHelper : KoinComponent {
                 pollForAyodhyaWeather()
                 scheduleRecurringGreetingsCall()
             },
-            name = "Greetings Scheduler"
+            name = "Greetings Scheduler",
         )
     }
 
@@ -88,14 +88,14 @@ object GreetingsHelper : KoinComponent {
                 callback = {
                     channelBehaviour.createMessage("Good Morning! Jay Shree Ram")
                 },
-                name = "Morning Greetings"
+                name = "Morning Greetings",
             )
             Scheduler().schedule(
                 delay = nightDateDelay.toKotlinDuration(),
                 callback = {
                     channelBehaviour.createMessage("Good Night! Jay Shree Ram")
                 },
-                name = "Evening Greetings"
+                name = "Evening Greetings",
             )
         }
     }
