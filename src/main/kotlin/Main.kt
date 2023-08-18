@@ -47,9 +47,9 @@ suspend fun main() {
         if (message.containsTableFlip() && message.isNotBot()) {
             message.channel.createMessage("┬─┬ ノ( ゜-゜ノ)")
         }
-        if (message.containsBs() && message.isNotBot()) {
-            message.channel.createMessage("It a Bulseet :poop:")
-        }
+        //if (message.containsBs() && message.isNotBot()) {
+        //    message.channel.createMessage("It a Bulseet :poop:")
+        //}
         if (message.isNotBot()) {
             val listOfDomainsInMessage = message.content.extractLinksFromMessage()
             val intersectList = domainList.intersect(listOfDomainsInMessage.toSet())
