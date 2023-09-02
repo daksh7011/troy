@@ -16,10 +16,10 @@ import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.kordLogger
 import kotlinx.coroutines.flow.count
 import kotlinx.datetime.Clock
-import org.discordbots.api.client.DiscordBotListAPI
 import utils.Environment
 import utils.PhishingDomainsHelper
 import utils.PresenceManager
+import utils.bold
 import utils.containsBs
 import utils.containsF
 import utils.containsNigga
@@ -27,13 +27,10 @@ import utils.containsTableFlip
 import utils.extractLinksFromMessage
 import utils.getEmbedFooter
 import utils.isNotBot
+import utils.italic
 
 suspend fun main() {
     val troy = getTroy()
-    val api: DiscordBotListAPI = DiscordBotListAPI.Builder()
-        .token(env(Environment.TOP_GG_TOKEN))
-        .botId(env(Environment.BOT_ID))
-        .build()
     val kordClient: Kord = troy.getKoin().get()
     val domainList = PhishingDomainsHelper.fetchDomains()
 
@@ -47,26 +44,26 @@ suspend fun main() {
         if (message.containsTableFlip() && message.isNotBot()) {
             message.channel.createMessage("┬─┬ ノ( ゜-゜ノ)")
         }
-        //if (message.containsBs() && message.isNotBot()) {
-        //    message.channel.createMessage("It a Bulseet :poop:")
-        //}
+        if (message.containsBs() && message.isNotBot()) {
+            message.channel.createMessage("It a Bulseet :poop:")
+        }
         if (message.isNotBot()) {
             val listOfDomainsInMessage = message.content.extractLinksFromMessage()
             val intersectList = domainList.intersect(listOfDomainsInMessage.toSet())
             if (intersectList.isNotEmpty()) {
-                val descriptionOfEmbed: String = "There is phishing website in the message.\n" +
-                    "Do NOT open it. Stay away from it. You have been warned.\n" +
-                    "Detected malicious domains:\n"
+                val descriptionOfEmbed: String = "There is phishing website in the message.\n\n" +
+                    "Do NOT open it. Stay away from it. You have been warned.\n\n".bold() +
+                    "Detected malicious domains:"
                 var listOfBlacklistDomains = ""
                 intersectList.forEachIndexed { index, domain ->
-                    listOfBlacklistDomains = "${index + 1}. - $domain\n"
+                    listOfBlacklistDomains = "${index + 1}. $domain\n".italic()
                 }
                 message.channel.createEmbed {
                     title = "Warning"
                     color = DISCORD_RED
                     description = "$descriptionOfEmbed\n$listOfBlacklistDomains"
                     field {
-                        name = "Author"
+                        name = "Message sent by"
                         value = message.author?.mention.orEmpty()
                         inline = true
                     }
@@ -104,7 +101,6 @@ suspend fun main() {
         if (env(Environment.IS_DEBUG).toBoolean().not()) {
             val stats = kordClient.guilds.count()
             kordLogger.info("Server Count: $stats")
-            api.setStats(stats)
         }
         val globalGuildRepository: GlobalGuildRepository = troy.getKoin().get()
         kordClient.guilds.collect { guild ->

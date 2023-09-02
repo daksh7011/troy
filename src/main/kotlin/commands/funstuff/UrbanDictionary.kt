@@ -16,28 +16,21 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
+import java.net.URLEncoder
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
+import utils.encodeQuery
 import utils.getEmbedFooter
+import utils.httpClient
 import utils.requestAndCatch
 
 class UrbanDictionary : Extension() {
 
     private val kordClient: Kord by inject()
-    private val httpClient = HttpClient {
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    prettyPrint = true
-                    ignoreUnknownKeys = true
-                },
-            )
-        }
-    }
 
-    private val urbanApiUrl = "https://api.urbandictionary.com/v0/define?term="
+    private val urbanApiUrl = "https://api.urbandictionary.com/v0/define?term"
 
     override val name: String
         get() = "urban"
@@ -55,8 +48,9 @@ class UrbanDictionary : Extension() {
             description = "Returns a definition from Urban Dictionary"
             action {
                 var urbanDictModel: UrbanDictModel? = null
+                val search = arguments.search.encodeQuery()
                 httpClient.requestAndCatch({
-                    urbanDictModel = this.get(urbanApiUrl + arguments.search).body()
+                    urbanDictModel = this.get("$urbanApiUrl=$search").body()
                 }, {
                     when (response.status) {
                         HttpStatusCode.NotFound -> {

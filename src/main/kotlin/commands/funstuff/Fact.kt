@@ -15,16 +15,13 @@ import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
 import utils.getEmbedFooter
+import utils.httpClient
 import utils.requestAndCatch
 
 class Fact : Extension() {
 
     private val kordClient: Kord by inject()
-    private val httpClient = HttpClient {
-        install(ContentNegotiation) {
-            json()
-        }
-    }
+
     override val name: String
         get() = "fact"
 

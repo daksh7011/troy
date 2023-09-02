@@ -16,20 +16,19 @@ import io.getunleash.Unleash
 import io.getunleash.util.UnleashConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
+import java.net.URLEncoder
+import kotlinx.serialization.json.Json
 
 fun Message.isBot(): Boolean = author?.isBot ?: true
 fun Message.isNotBot(): Boolean = isBot().not()
 fun Message.containsF(): Boolean = content.lowercase() == "f"
 fun Message.containsNigga(): Boolean = content.lowercase().contains("nigga")
 fun Message.containsTableFlip(): Boolean = content.lowercase().contains("(╯°□°）╯︵ ┻━┻")
-fun Message.containsBs(): Boolean = checkContainsMultiple("bullshit", "BullSheet", "bull-shit")
+fun Message.containsBs(): Boolean = content.lowercase().contains("bullshit")
 fun Snowflake.isOwner(): Boolean = toString() == env(Environment.OWNER_ID)
 fun Snowflake.isGirlfriend(): Boolean = toString() == env(Environment.GIRLFRIEND_ID)
-
-fun Message.checkContainsMultiple(vararg check: String): Boolean {
-    val message = this.content.lowercase()
-    return check.toList().any { it.contains(message) }
-}
 
 suspend fun <T> HttpClient.requestAndCatch(
     block: suspend HttpClient.() -> T,
@@ -62,8 +61,7 @@ fun getTestGuildSnowflake(): Snowflake {
     )
 }
 
-fun provideUnleashClient(): Unleash? {
-    if (env(Environment.IS_DEBUG).toBoolean().not()) {
+val unleashClient: Unleash get() {
         val config = UnleashConfig.builder()
             .appName("Troy")
             .instanceId(env(Environment.UNLEASH_INSTANCE_ID))
@@ -71,8 +69,6 @@ fun provideUnleashClient(): Unleash? {
             .build()
         return DefaultUnleash(config)
     }
-    return null
-}
 
 fun String?.bold(): String {
     return "**$this**"
@@ -114,3 +110,17 @@ fun String.extractLinksFromMessage(): List<String?> {
 
     return finalList
 }
+
+val httpClient = HttpClient {
+    install(ContentNegotiation) {
+        json(
+            Json {
+                prettyPrint = true
+                isLenient = true
+                ignoreUnknownKeys = true
+            },
+        )
+    }
+}
+
+fun String.encodeQuery(): String = URLEncoder.encode(this, "utf-8")

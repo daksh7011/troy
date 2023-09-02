@@ -22,22 +22,15 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
+import utils.encodeQuery
 import utils.getEmbedFooter
+import utils.httpClient
 import utils.requestAndCatch
 
 class Steam : Extension() {
 
     private val kordClient: Kord by inject()
     private val jsonSerializer = Json { ignoreUnknownKeys = true }
-    private val httpClient = HttpClient {
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    ignoreUnknownKeys = true
-                },
-            )
-        }
-    }
 
     override val name: String
         get() = "steam"
@@ -56,7 +49,7 @@ class Steam : Extension() {
             action {
                 var steamSearchModel: SteamSearchModel? = null
                 var steamGameJsonObject: JsonObject? = null
-                val url = "https://store.steampowered.com/api/storesearch?cc=us&l=en&term=${arguments.gameName}"
+                val url = "https://store.steampowered.com/api/storesearch?cc=us&l=en&term=${arguments.gameName.encodeQuery()}"
                 httpClient.requestAndCatch(
                     {
                         steamSearchModel = get(url).body()

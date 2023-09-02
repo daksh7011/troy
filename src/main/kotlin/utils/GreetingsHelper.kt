@@ -25,16 +25,6 @@ import kotlin.time.toKotlinDuration
 // TODO: 28-Oct-21 Add dynamic subscription for this via bot command for particular guilds.
 object GreetingsHelper : KoinComponent {
 
-    private val httpClient = HttpClient {
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    ignoreUnknownKeys = true
-                },
-            )
-        }
-    }
-
     suspend fun scheduleRecurringGreetingsCall(kord: Kord) {
         Scheduler().schedule(
             6.hours,

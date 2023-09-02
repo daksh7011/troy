@@ -13,12 +13,6 @@ object PhishingDomainsHelper : KoinComponent {
 
     private const val DOMAIN_URL = "https://technowolf.in/phishingDomains"
 
-    private val httpClient = HttpClient {
-        install(ContentNegotiation) {
-            json()
-        }
-    }
-
     suspend fun fetchDomains(): List<String> {
         return httpClient.requestAndCatch({
             get(DOMAIN_URL).body<PhishingDomainModel>().domains

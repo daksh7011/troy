@@ -10,15 +10,11 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import org.koin.core.logger.Level
+import utils.httpClient
 import utils.requestAndCatch
 
 class Pun : Extension() {
 
-    private val httpClient = HttpClient {
-        install(ContentNegotiation) {
-            json()
-        }
-    }
     private var punsModel: PunsModel? = null
 
     override val name: String

@@ -25,13 +25,13 @@ dependencies {
     implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.5.8-SNAPSHOT")
     implementation("com.kotlindiscord.kord.extensions:time4j:1.5.8-SNAPSHOT")
     implementation("org.slf4j:slf4j-simple:2.0.7")
-    implementation("net.dean.jraw:JRAW:1.1.0")
+//    implementation("net.dean.jraw:JRAW:1.1.0")
+    implementation(files("libs/JRAW-1.1.0.jar"))
     implementation("io.getunleash:unleash-client-java:8.1.0")
     implementation("dev.kord.x:emoji:0.5.0")
-    implementation("com.github.discordbotlist:dbl-java-library:2.1.2")
-    implementation("org.litote.kmongo:kmongo-coroutine:4.9.0")
+    implementation("org.litote.kmongo:kmongo-coroutine:4.10.0")
     implementation("com.gitlab.technowolf:links-detektor:1.0.1")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
 }
 
 tasks.withType<KotlinCompile> {

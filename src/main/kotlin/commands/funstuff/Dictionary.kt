@@ -22,16 +22,13 @@ import org.koin.core.component.inject
 import org.koin.core.logger.Level
 import utils.Environment
 import utils.getEmbedFooter
+import utils.httpClient
 import utils.requestAndCatch
 
 class Dictionary : Extension() {
 
     private val kordClient: Kord by inject()
-    private val httpClient = HttpClient {
-        install(ContentNegotiation) {
-            json()
-        }
-    }
+
     override val name: String
         get() = "dictionary"
 

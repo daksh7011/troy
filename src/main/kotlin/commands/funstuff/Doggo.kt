@@ -18,17 +18,13 @@ import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
 import utils.getEmbedFooter
+import utils.httpClient
 import utils.requestAndCatch
 
 class Doggo : Extension() {
 
     private val kordClient: Kord by inject()
     private var doggoModel: DoggoModel? = null
-    private val httpClient = HttpClient {
-        install(ContentNegotiation) {
-            json()
-        }
-    }
 
     override val name: String
         get() = "doggo"
@@ -49,7 +45,7 @@ class Doggo : Extension() {
                 val url = if (arguments.breed == "random") {
                     "https://dog.ceo/api/breeds/image/random"
                 } else {
-                    "https://dog.ceo/api/breed/${arguments.breed}/images/random"
+                    "https://dog.ceo/api/breed/${arguments.breed.replace(" ","")}/images/random"
                 }
                 httpClient.requestAndCatch(
                     {

@@ -18,23 +18,13 @@ import kotlinx.serialization.json.Json
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
 import utils.getEmbedFooter
+import utils.httpClient
 
 class Rule34 : Extension() {
 
     override val name: String = "rule34"
 
     private val kordClient: Kord by inject()
-
-    private val httpClient = HttpClient {
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                },
-            )
-        }
-    }
 
     class Rule34Arguments : Arguments() {
         val search by string {
