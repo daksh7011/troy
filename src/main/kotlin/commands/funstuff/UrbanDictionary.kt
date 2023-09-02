@@ -10,15 +10,10 @@ import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.core.Kord
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.embed
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.kotlinx.json.json
-import java.net.URLEncoder
 import kotlinx.datetime.Clock
-import kotlinx.serialization.json.Json
 import org.koin.core.component.inject
 import org.koin.core.logger.Level
 import utils.encodeQuery
