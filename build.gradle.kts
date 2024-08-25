@@ -1,58 +1,97 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import dev.kordex.gradle.plugins.docker.file.copy
+import dev.kordex.gradle.plugins.docker.file.emptyLine
+import dev.kordex.gradle.plugins.docker.file.entryPointExec
+import dev.kordex.gradle.plugins.docker.file.from
+import dev.kordex.gradle.plugins.docker.file.runShell
+import dev.kordex.gradle.plugins.docker.file.workdir
+import dev.kordex.gradle.plugins.kordex.DataCollection
 
 plugins {
-    kotlin("jvm") version "1.8.22"
-    kotlin("plugin.serialization") version "1.8.21"
-    id("org.jmailen.kotlinter") version "3.15.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-}
+    kotlin("jvm")
+    kotlin("plugin.serialization")
 
-group = "in.technowolf"
-version = "1.2.1"
+    id("com.github.johnrengelman.shadow")
+    id("io.gitlab.arturbosch.detekt")
+
+    id("dev.kordex.gradle.docker")
+    id("dev.kordex.gradle.kordex")
+}
+val projectVersion: String = (System.getenv("VERSION") ?: "").ifEmpty { "1.0" }
+
+group = "troy"
+version = projectVersion
 
 repositories {
     mavenCentral()
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
-    maven {
-        name = "Kotlin Discord"
-        url = uri("https://maven.kotlindiscord.com/repository/maven-public/")
-    }
-    maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
     maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.5.8-SNAPSHOT")
-    implementation("com.kotlindiscord.kord.extensions:time4j:1.5.8-SNAPSHOT")
-    implementation("org.slf4j:slf4j-simple:2.0.7")
-//    implementation("net.dean.jraw:JRAW:1.1.0")
+    detektPlugins(libs.detekt)
+
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kx.ser)
+    implementation(libs.kord.emoji)
+    implementation(libs.unleash)
+    implementation(libs.kmongo.coroutine)
+    implementation(libs.links.detektor)
+
+    // TODO: fix this by forking original repo and fixing critical CVEs.
     implementation(files("libs/JRAW-1.1.0.jar"))
-    implementation("io.getunleash:unleash-client-java:8.1.0")
-    implementation("dev.kord.x:emoji:0.5.0")
-    implementation("org.litote.kmongo:kmongo-coroutine:4.10.0")
-    implementation("com.gitlab.technowolf:links-detektor:1.0.1")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
+
+    // Logging dependencies
+    implementation(libs.groovy)
+    implementation(libs.jansi)
+    implementation(libs.logback)
+    implementation(libs.logback.groovy)
+    implementation(libs.logging)
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
-}
+kordEx {
+    ignoreIncompatibleKotlinVersion = true
+    bot {
+        // See https://docs.kordex.dev/data-collection.html
+        dataCollection(DataCollection.None)
 
-tasks.withType(KotlinCompile::class).all {
-    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-}
-
-tasks.withType<Jar> {
-    manifest {
-        attributes["Main-Class"] = "MainKt"
+        mainClass = "troy.AppKt"
     }
 }
 
-tasks.check {
-    dependsOn("installKotlinterPrePushHook")
+detekt {
+    buildUponDefaultConfig = true
+    autoCorrect = true
+    config.from(rootProject.files("detekt.yml"))
 }
 
-kotlinter {
-    ignoreFailures = false
-    reporters = arrayOf("checkstyle", "plain")
+// Automatically generate a Dockerfile. Set `generateOnBuild` to `false` if you'd prefer to manually run the
+// `createDockerfile` task instead of having it run whenever you build.
+docker {
+    // Create the Dockerfile in the root folder.
+    file(rootProject.file("Dockerfile"))
+    commands {
+        // Each function (aside from comment/emptyLine) corresponds to a Dockerfile instruction.
+        // See: https://docs.docker.com/reference/dockerfile/
+
+        from("openjdk:21-jdk-slim")
+
+        emptyLine()
+
+        runShell("mkdir -p /bot/plugins")
+        runShell("mkdir -p /bot/data")
+
+        emptyLine()
+
+        copy("build/libs/$name-*-all.jar", "/bot/bot.jar")
+
+        emptyLine()
+
+        workdir("/bot")
+
+        emptyLine()
+
+        entryPointExec(
+            "java", "-Xms2G", "-Xmx2G",
+            "-jar", "/bot/bot.jar"
+        )
+    }
 }
