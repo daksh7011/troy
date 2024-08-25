@@ -1,0 +1,27 @@
+package troy.utils
+
+object Environment {
+    const val OWNER_ID = "ownerId"
+    const val GIRLFRIEND_ID = "girlfriendId"
+    const val PREFIX = "prefix"
+    const val TOKEN = "token"
+    const val BOT_ID = "botId"
+    const val IS_DEBUG = "isDebug"
+    const val REDDIT_USERNAME = "redditUsername"
+    const val REDDIT_PASSWORD = "redditPassword"
+    const val REDDIT_APP_ID = "redditAppId"
+    const val REDDIT_APP_SECRET = "redditAppSecret"
+    const val REDDIT_USER_AGENT = "redditUserAgent"
+    const val STACKOVERFLOW_API_KEY = "stackoverflowApiKey"
+    const val GENIUS_API_KEY = "geniusApiKey"
+    const val OPEN_WEATHER_API_KEY = "openWeatherKey"
+    const val SENTRY_DSN = "sentryDsn"
+    const val TEST_GUILD_ID = "testGuildId"
+    const val UNLEASH_URL = "unleashUrl"
+    const val UNLEASH_INSTANCE_ID = "unleashInstanceId"
+    const val TOP_GG_TOKEN = "topGgToken"
+    const val MONGO_URL = "mongoUrl"
+    const val MONGO_USERNAME = "mongoUserName"
+    const val MONGO_PASSWORD = "mongoPassword"
+    const val OWL_DICT_TOKEN = "owlDictToken"
+}
