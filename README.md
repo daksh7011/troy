@@ -12,14 +12,14 @@
     <h4 align="center">Troy is a feature rich discord bot developed in Kotlin for Discord Servers.</h4>
 </div>
 <div align="center">
-    <a href="https://gitlab.com/technowolf/troy/-/blob/master/LICENSE" target="_blank">
+    <a href="https://github.com/daksh7011/troy/blob/develop/LICENSE" target="_blank">
         <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" alt="License: MIT">
     </a>
     <a href="https://makeapullrequest.com" target="_blank">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat" alt="Make a MR">
     </a>
-    <a href="https://gitlab.com/technowolf/troy/commits/master">
-        <img alt="pipeline status" src="https://gitlab.com/technowolf/troy/badges/master/pipeline.svg" />
+    <a href="https://github.com/daksh7011/troy/actions/workflows/master.yml">
+        <img alt="pipeline status" src="https://github.com/daksh7011/troy/actions/workflows/master.yml/badge.svg" />
     </a>
     <a href="https://www.paypal.me/daksh7011" target="_blank">
         <img src="https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&amp;style=flat" alt="donate">
@@ -93,10 +93,28 @@ ideas or even fix some typos. You are just an issue away. Don't hesitate to crea
 
 ## License
 
-[MIT License](LICENSE) Copyright (c) 2021 TechnoWolf FOSS
+[MIT License](LICENSE) Troy is available under terms of MIT license.
 
-Troy is available under terms of MIT license.
+Copyright (c) 2024 TechnoWolf FOSS
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ## Links
 
-[Issue Tracker](https://gitlab.com/technowolf/troy/issues)
+[Issue Tracker](https://github.com/daksh7011/troy/issues)
