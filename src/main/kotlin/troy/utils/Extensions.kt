@@ -21,7 +21,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import java.net.URLEncoder
 
-fun Message.isBot(): Boolean = author?.isBot ?: true
+fun Message.isBot(): Boolean = author?.isBot != false
 fun Message.isNotBot(): Boolean = isBot().not()
 fun Message.containsF(): Boolean = content.lowercase() == "f"
 fun Message.containsNigga(): Boolean = content.lowercase().contains("nigga")
