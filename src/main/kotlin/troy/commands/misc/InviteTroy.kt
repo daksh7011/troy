@@ -2,6 +2,7 @@ package troy.commands.misc
 
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 
 class InviteTroy : Extension() {
 
@@ -10,8 +11,8 @@ class InviteTroy : Extension() {
 
     override suspend fun setup() {
         publicSlashCommand {
-            name = "inviteTroy"
-            description = "Returns invite link for Troy."
+            name = "inviteTroy".toKey()
+            description = "Returns invite link for Troy.".toKey()
             action {
                 respond {
                     content =

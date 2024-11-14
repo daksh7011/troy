@@ -10,8 +10,15 @@ pluginManagement {
         id("com.github.jakemarsden.git-hooks") version "0.0.2"
         id("com.github.johnrengelman.shadow") version "8.1.1"
 
-        id("dev.kordex.gradle.docker") version "1.4.2"
-        id("dev.kordex.gradle.kordex") version "1.4.2"
+        id("dev.kordex.gradle.docker") version "1.5.6"
+        id("dev.kordex.gradle.kordex") version "1.5.6"
+    }
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven("https://snapshots-repo.kordex.dev")
+        maven("https://releases-repo.kordex.dev")
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
 

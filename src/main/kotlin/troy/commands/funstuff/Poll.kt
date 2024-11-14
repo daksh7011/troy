@@ -17,6 +17,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.string
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import org.koin.core.component.inject
 import troy.utils.getEmbedFooter
 
@@ -42,19 +43,19 @@ class Poll : Extension() {
 
     inner class PollArguments : Arguments() {
         val title by string {
-            name = "title"
-            description = "Title for poll"
+            name = "title".toKey()
+            description = "Title for poll".toKey()
         }
         val options by string {
-            name = "options"
-            description = "Options for poll separated by comma"
+            name = "options".toKey()
+            description = "Options for poll separated by comma".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(::PollArguments) {
-            name = "poll"
-            description = "Gives a poll for provided options"
+            name = "poll".toKey()
+            description = "Gives a poll for provided options".toKey()
             action {
                 val optionList = arguments.options.split(",")
                 respond {

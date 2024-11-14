@@ -6,6 +6,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.string
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.datetime.Clock
@@ -23,15 +24,15 @@ class Rule34 : Extension() {
 
     class Rule34Arguments : Arguments() {
         val search by string {
-            name = "search"
-            description = "What do you want to see?"
+            name = "search".toKey()
+            description = "What do you want to see?".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(Rule34::Rule34Arguments) {
-            name = "rule34"
-            description = "Provides Rule34 content for given search query."
+            name = "rule34".toKey()
+            description = "Provides Rule34 content for given search query.".toKey()
             action {
                 if (kordClient.getChannel(channel.id)?.data?.nsfw?.orElse(false) == false) {
                     respond {

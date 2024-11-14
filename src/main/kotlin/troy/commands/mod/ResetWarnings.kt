@@ -7,6 +7,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.user
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import org.koin.core.component.inject
 import troy.data.repository.WarningLogsRepository
 
@@ -19,16 +20,16 @@ class ResetWarnings : Extension() {
 
     inner class WarnResetArguments : Arguments() {
         val user by user {
-            name = "user"
-            description = "Which user do you want to reset warnings for?"
+            name = "user".toKey()
+            description = "Which user do you want to reset warnings for?".toKey()
         }
     }
 
     override suspend fun setup() {
         val warningLogsRepository: WarningLogsRepository by inject()
         publicSlashCommand(::WarnResetArguments) {
-            name = "reset-warnings"
-            description = "Resets warnings for mentioned user."
+            name = "reset-warnings".toKey()
+            description = "Resets warnings for mentioned user.".toKey()
             check {
                 hasPermission(Permission.Administrator)
                 requireBotPermissions(Permission.KickMembers)

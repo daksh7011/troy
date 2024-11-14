@@ -7,6 +7,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.string
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
@@ -31,15 +32,15 @@ class UrbanDictionary : Extension() {
 
     class UrbanDictArguments : Arguments() {
         val search by string {
-            name = "query"
-            description = "What do you want to search at UrbanDictionary?"
+            name = "query".toKey()
+            description = "What do you want to search at UrbanDictionary?".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(UrbanDictionary::UrbanDictArguments) {
-            name = "urban"
-            description = "Returns a definition from Urban Dictionary"
+            name = "urban".toKey()
+            description = "Returns a definition from Urban Dictionary".toKey()
             action {
                 var urbanDictModel: UrbanDictModel? = null
                 val search = arguments.search.encodeQuery()
