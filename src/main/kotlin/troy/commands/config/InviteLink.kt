@@ -6,6 +6,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.string
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import org.koin.core.component.inject
 import troy.data.repository.GlobalGuildRepository
 import troy.utils.bold
@@ -18,16 +19,16 @@ class InviteLink : Extension() {
 
     inner class InviteLinkArgument : Arguments() {
         val inviteLink by string {
-            name = "url"
-            description = "Provide Permanent invite link for this server."
+            name = "url".toKey()
+            description = "Provide Permanent invite link for this server.".toKey()
         }
     }
 
     override suspend fun setup() {
         val globalGuildRepository: GlobalGuildRepository by inject()
         publicSlashCommand(::InviteLinkArgument) {
-            name = "invite-link"
-            description = "Setup invite link for this server"
+            name = "invite-link".toKey()
+            description = "Setup invite link for this server".toKey()
             check { hasPermission(Permission.Administrator) }
             action {
                 val guildId = guild?.id?.toString().orEmpty()

@@ -8,6 +8,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.coalescingString
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
@@ -34,15 +35,15 @@ class Steam : Extension() {
 
     class SteamSearchArguments : Arguments() {
         val gameName by coalescingString {
-            name = "game-name"
-            description = "Which game do you want to search for?"
+            name = "game-name".toKey()
+            description = "Which game do you want to search for?".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(Steam::SteamSearchArguments) {
-            name = "steam"
-            description = "Searches Steam for your query."
+            name = "steam".toKey()
+            description = "Searches Steam for your query.".toKey()
             action {
                 var steamSearchModel: SteamSearchModel? = null
                 var steamGameJsonObject: JsonObject? = null

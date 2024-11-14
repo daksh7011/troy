@@ -10,6 +10,7 @@ import dev.kordex.core.commands.converters.impl.string
 import dev.kordex.core.commands.converters.impl.user
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.data.repository.KickLogsRepository
@@ -25,20 +26,20 @@ class Kick : Extension() {
 
     inner class KickArguments : Arguments() {
         val user by user {
-            name = "user"
-            description = "Which user do you want to kick?"
+            name = "user".toKey()
+            description = "Which user do you want to kick?".toKey()
         }
         val reason by string {
-            name = "reason"
-            description = "Reason for the kick"
+            name = "reason".toKey()
+            description = "Reason for the kick".toKey()
         }
     }
 
     override suspend fun setup() {
         val kickLogsRepository: KickLogsRepository by inject()
         publicSlashCommand(::KickArguments) {
-            name = "kick"
-            description = "Kicks user with reason."
+            name = "kick".toKey()
+            description = "Kicks user with reason.".toKey()
             check {
                 hasPermission(Permission.Administrator)
                 requireBotPermissions(Permission.KickMembers)

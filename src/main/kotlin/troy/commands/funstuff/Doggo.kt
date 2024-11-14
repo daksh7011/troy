@@ -6,6 +6,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.defaultingString
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
@@ -27,16 +28,16 @@ class Doggo : Extension() {
 
     class DoggoArguments : Arguments() {
         val breed by defaultingString {
-            name = "breed"
-            description = "Which breed of good boi you want to see?"
+            name = "breed".toKey()
+            description = "Which breed of good boi you want to see?".toKey()
             defaultValue = "random"
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(Doggo::DoggoArguments) {
-            name = "doggo"
-            description = "Finds some cute doggo images."
+            name = "doggo".toKey()
+            description = "Finds some cute doggo images.".toKey()
             action {
                 val url = if (arguments.breed == "random") {
                     "https://dog.ceo/api/breeds/image/random"

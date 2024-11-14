@@ -6,6 +6,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.string
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import dev.kordex.core.utils.env
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -30,15 +31,15 @@ class Dictionary : Extension() {
 
     class DictionaryArguments : Arguments() {
         val word by string {
-            name = "word"
-            description = "Which word do you wanna search?"
+            name = "word".toKey()
+            description = "Which word do you wanna search?".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(Dictionary::DictionaryArguments) {
-            name = "dictionary"
-            description = "Finds definition for given word with image, emoji and examples."
+            name = "dictionary".toKey()
+            description = "Finds definition for given word with image, emoji and examples.".toKey()
             action {
                 val url = "https://owlbot.info/api/v4/dictionary/" + arguments.word
                 httpClient.requestAndCatch({
