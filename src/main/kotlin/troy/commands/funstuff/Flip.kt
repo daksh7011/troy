@@ -2,6 +2,7 @@ package troy.commands.funstuff
 
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import kotlin.math.floor
 
 class Flip : Extension() {
@@ -11,8 +12,8 @@ class Flip : Extension() {
 
     override suspend fun setup() {
         publicSlashCommand {
-            name = "flip"
-            description = "Flips a coin for you."
+            name = "flip".toKey()
+            description = "Flips a coin for you.".toKey()
             action {
                 respond {
                     val result = if (floor(Math.random() * 2).toInt() == 0) {

@@ -6,6 +6,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.defaultingString
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import kotlinx.datetime.Clock
 import net.dean.jraw.models.SubredditSort
 import org.koin.core.component.inject
@@ -25,16 +26,16 @@ class Nudes : Extension() {
 
     class NudesArguments : Arguments() {
         val category by defaultingString {
-            name = "category"
-            description = "What will tickle your pickle?"
+            name = "category".toKey()
+            description = "What will tickle your pickle?".toKey()
             defaultValue = "random"
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(Nudes::NudesArguments) {
-            name = "nudes"
-            description = "Finds some spicy noods."
+            name = "nudes".toKey()
+            description = "Finds some spicy noods.".toKey()
             action {
                 if (kordClient.getChannel(channel.id)?.data?.nsfw?.orElse(false) == false) {
                     this@action.respond {
@@ -46,7 +47,7 @@ class Nudes : Extension() {
                         if (nudeUrl.isNullOrBlank()) {
                             val randomCategoryList = nudesCatalog.random().value
                             content = "Can not find nude for given category. Try different category.\n" +
-                                "Maybe try anything form this: ${randomCategoryList.take(2).joinToString()}"
+                                    "Maybe try anything form this: ${randomCategoryList.take(2).joinToString()}"
                         } else {
                             embed {
                                 title = "Go. Enjoy those 10 seconds."

@@ -8,20 +8,17 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.coalescingString
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.http.HttpStatusCode
+import dev.kordex.core.i18n.toKey
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import org.koin.core.component.inject
 import troy.apiModels.SteamGameModel
 import troy.apiModels.SteamSearchModel
-import troy.utils.commonLogger
-import troy.utils.encodeQuery
-import troy.utils.getEmbedFooter
-import troy.utils.httpClient
-import troy.utils.requestAndCatch
+import troy.utils.*
 
 class Steam : Extension() {
 
@@ -34,15 +31,15 @@ class Steam : Extension() {
 
     class SteamSearchArguments : Arguments() {
         val gameName by coalescingString {
-            name = "game-name"
-            description = "Which game do you want to search for?"
+            name = "game-name".toKey()
+            description = "Which game do you want to search for?".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(Steam::SteamSearchArguments) {
-            name = "steam"
-            description = "Searches Steam for your query."
+            name = "steam".toKey()
+            description = "Searches Steam for your query.".toKey()
             action {
                 var steamSearchModel: SteamSearchModel? = null
                 var steamGameJsonObject: JsonObject? = null
