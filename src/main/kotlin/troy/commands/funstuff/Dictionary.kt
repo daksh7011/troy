@@ -6,20 +6,15 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.string
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import dev.kordex.core.utils.env
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.client.request.headers
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.apiModels.OwlDictModel
-import troy.utils.Environment
-import troy.utils.commonLogger
-import troy.utils.getEmbedFooter
-import troy.utils.httpClient
-import troy.utils.requestAndCatch
+import troy.utils.*
 
 class Dictionary : Extension() {
 
@@ -30,15 +25,15 @@ class Dictionary : Extension() {
 
     class DictionaryArguments : Arguments() {
         val word by string {
-            name = "word"
-            description = "Which word do you wanna search?"
+            name = "word".toKey()
+            description = "Which word do you wanna search?".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(Dictionary::DictionaryArguments) {
-            name = "dictionary"
-            description = "Finds definition for given word with image, emoji and examples."
+            name = "dictionary".toKey()
+            description = "Finds definition for given word with image, emoji and examples.".toKey()
             action {
                 val url = "https://owlbot.info/api/v4/dictionary/" + arguments.word
                 httpClient.requestAndCatch({

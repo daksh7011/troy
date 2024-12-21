@@ -4,6 +4,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.optionalUser
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 
 class SorryDidi : Extension() {
 
@@ -12,15 +13,15 @@ class SorryDidi : Extension() {
 
     inner class SorryDidiArguments : Arguments() {
         val user by optionalUser {
-            name = "user"
-            description = "Which woke didi you want to apologise to?."
+            name = "user".toKey()
+            description = "Which woke didi you want to apologise to?.".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(::SorryDidiArguments) {
-            name = "sorry-didi"
-            description = "Apologizes to woke didis out there."
+            name = "sorry-didi".toKey()
+            description = "Apologizes to woke didis out there.".toKey()
             action {
                 if (arguments.user == null) {
                     respond {

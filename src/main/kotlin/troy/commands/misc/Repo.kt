@@ -2,6 +2,7 @@ package troy.commands.misc
 
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 
 class Repo : Extension() {
 
@@ -10,12 +11,12 @@ class Repo : Extension() {
 
     override suspend fun setup() {
         publicSlashCommand {
-            name = "repo"
-            description = "Returns Troy's GitLab repo url."
+            name = "repo".toKey()
+            description = "Returns Troy's Github repo url.".toKey()
             action {
                 respond {
-                    content = "https://gitlab.com/technowolf/troy" +
-                        "\nNote: Please checkout develop branch if you want to contribute."
+                    content = "https://github.com/daksh7011/troy" +
+                            "\nNote: Please checkout develop branch if you want to contribute."
                 }
             }
         }
