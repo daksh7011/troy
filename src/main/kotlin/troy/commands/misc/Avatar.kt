@@ -6,6 +6,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.optionalUser
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.utils.getEmbedFooter
@@ -19,15 +20,15 @@ class Avatar : Extension() {
 
     inner class AvatarArguments : Arguments() {
         val user by optionalUser {
-            name = "user"
-            description = "Get avatar of mentioned user or yours if no user is mentioned."
+            name = "user".toKey()
+            description = "Get avatar of mentioned user or yours if no user is mentioned.".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(::AvatarArguments) {
-            name = "avatar"
-            description = "Get the avatar URL of the tagged user, or your own avatar."
+            name = "avatar".toKey()
+            description = "Get the avatar URL of the tagged user, or your own avatar.".toKey()
             action {
                 if (arguments.user == null) {
                     val memberAvatarUrl = member?.asUser()?.avatar?.cdnUrl?.toUrl()

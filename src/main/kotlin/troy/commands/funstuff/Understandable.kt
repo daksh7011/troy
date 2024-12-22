@@ -4,6 +4,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.optionalUser
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 
 class Understandable : Extension() {
 
@@ -12,15 +13,15 @@ class Understandable : Extension() {
 
     inner class UnderstandableArgument : Arguments() {
         val user by optionalUser {
-            name = "user"
-            description = "Which user you want to wish great day."
+            name = "user".toKey()
+            description = "Which user you want to wish great day.".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(::UnderstandableArgument) {
-            name = "understandable"
-            description = "Sends understandable have a great day on request."
+            name = "understandable".toKey()
+            description = "Sends understandable have a great day on request.".toKey()
             action {
                 if (arguments.user == null) {
                     respond {

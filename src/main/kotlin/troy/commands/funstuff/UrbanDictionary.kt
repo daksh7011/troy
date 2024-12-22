@@ -7,18 +7,15 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.string
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.http.HttpStatusCode
+import dev.kordex.core.i18n.toKey
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.apiModels.UrbanDictItem
 import troy.apiModels.UrbanDictModel
-import troy.utils.commonLogger
-import troy.utils.encodeQuery
-import troy.utils.getEmbedFooter
-import troy.utils.httpClient
-import troy.utils.requestAndCatch
+import troy.utils.*
 
 class UrbanDictionary : Extension() {
 
@@ -31,15 +28,15 @@ class UrbanDictionary : Extension() {
 
     class UrbanDictArguments : Arguments() {
         val search by string {
-            name = "query"
-            description = "What do you want to search at UrbanDictionary?"
+            name = "query".toKey()
+            description = "What do you want to search at UrbanDictionary?".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(UrbanDictionary::UrbanDictArguments) {
-            name = "urban"
-            description = "Returns a definition from Urban Dictionary"
+            name = "urban".toKey()
+            description = "Returns a definition from Urban Dictionary".toKey()
             action {
                 var urbanDictModel: UrbanDictModel? = null
                 val search = arguments.search.encodeQuery()
@@ -63,8 +60,8 @@ class UrbanDictionary : Extension() {
                         if (definitionCount + exampleCount + authorCount > MAX_CHARS) {
                             this.respond {
                                 content = "Can not send the response since it is too long, " +
-                                    "Here is the link to that page for you instead.\n" +
-                                    urbanDictItem.permalink
+                                        "Here is the link to that page for you instead.\n" +
+                                        urbanDictItem.permalink
                             }
                         } else {
                             this.respond {

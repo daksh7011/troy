@@ -5,6 +5,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.user
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
+import dev.kordex.core.i18n.toKey
 import org.koin.core.component.inject
 import troy.utils.DataProvider
 import troy.utils.isGirlfriend
@@ -19,15 +20,15 @@ class Burn : Extension() {
 
     class BurnArguments : Arguments() {
         val user by user {
-            name = "user"
-            description = "Which user do you want to light on fire?"
+            name = "user".toKey()
+            description = "Which user do you want to light on fire?".toKey()
         }
     }
 
     override suspend fun setup() {
         publicSlashCommand(Burn::BurnArguments) {
-            name = "burn"
-            description = "Lights fire to mentioned user."
+            name = "burn".toKey()
+            description = "Lights fire to mentioned user.".toKey()
             action {
                 val burnList = DataProvider.getBurnData()
                 val randomBurn = burnList[kotlin.math.floor(Math.random() * burnList.size).toInt()]

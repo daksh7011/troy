@@ -6,6 +6,7 @@ import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.string
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.chatCommand
+import dev.kordex.core.i18n.toKey
 import kotlinx.coroutines.flow.take
 
 class Prune : Extension() {
@@ -15,15 +16,14 @@ class Prune : Extension() {
 
     class PurgeArguments : Arguments() {
         val amount by string {
-            name = "number"
-            description = "How many messages you want to purge?"
+            name = "number".toKey()
+            description = "How many messages you want to purge?".toKey()
         }
     }
 
     override suspend fun setup() {
         chatCommand(Prune::PurgeArguments) {
-            name = "purge"
-            aliases = arrayOf("purge", "bulk", "clean")
+            name = "purge".toKey()
             check {
                 hasPermission(Permission.Administrator)
                 requireBotPermissions(Permission.ManageMessages)
