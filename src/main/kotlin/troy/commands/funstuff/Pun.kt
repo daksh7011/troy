@@ -13,11 +13,6 @@ import troy.utils.requestAndCatch
 
 class Pun : Extension() {
 
-    companion object {
-        private const val PUN_API_URL = "https://icanhazdadjoke.com/"
-        private const val REQUEST_TIMEOUT_MS = 5000L
-    }
-
     override val name: String
         get() = "pun"
 
@@ -48,5 +43,10 @@ class Pun : Extension() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val PUN_API_URL = "https://icanhazdadjoke.com/"
+        private const val REQUEST_TIMEOUT_MS = 5000L
     }
 }

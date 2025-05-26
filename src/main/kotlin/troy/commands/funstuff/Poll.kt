@@ -1,7 +1,6 @@
 package troy.commands.funstuff
 
 import dev.kord.core.Kord
-import dev.kord.core.entity.ReactionEmoji
 import dev.kord.rest.builder.message.embed
 import dev.kord.x.emoji.Emojis.eight
 import dev.kord.x.emoji.Emojis.five
@@ -25,22 +24,6 @@ import troy.utils.getEmbedFooter
 class Poll : Extension() {
 
     private val kordClient: Kord by inject()
-
-    companion object {
-        // Pre-compute reactions list as a static property to avoid recreating it for each instance
-        private val REACTIONS = listOf(
-            one.toReaction(),
-            two.toReaction(),
-            three.toReaction(),
-            four.toReaction(),
-            five.toReaction(),
-            six.toReaction(),
-            seven.toReaction(),
-            eight.toReaction(),
-            nine.toReaction(),
-            keycapTen.toReaction(),
-        )
-    }
 
     override val name: String
         get() = "poll"
@@ -97,5 +80,21 @@ class Poll : Extension() {
                 }
             }
         }
+    }
+
+    companion object {
+        // Pre-compute reactions list as a static property to avoid recreating it for each instance
+        private val REACTIONS = listOf(
+            one.toReaction(),
+            two.toReaction(),
+            three.toReaction(),
+            four.toReaction(),
+            five.toReaction(),
+            six.toReaction(),
+            seven.toReaction(),
+            eight.toReaction(),
+            nine.toReaction(),
+            keycapTen.toReaction(),
+        )
     }
 }

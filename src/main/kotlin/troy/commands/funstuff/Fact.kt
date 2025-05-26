@@ -7,6 +7,7 @@ import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.apiModels.FactModel
@@ -27,27 +28,45 @@ class Fact : Extension() {
             name = "fact".toKey()
             description = "Finds some useless facts.".toKey()
             action {
-                val url = "https://uselessfacts.jsph.pl/random.json?language=en"
-                httpClient.requestAndCatch({
-                    get(url).body<FactModel>().let {
-                        respond {
-                            embed {
-                                title = "A useless fact for you"
-                                description = it.text
-                                field {
-                                    name = "Source"
-                                    value = it.permalink
-                                    inline = false
-                                }
-                                footer = kordClient.getEmbedFooter()
-                                timestamp = Clock.System.now()
+                var factModel: FactModel? = null
+
+                // Add timeout to HTTP request to prevent hanging
+                val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
+                    httpClient.requestAndCatch({
+                        factModel = get(FACT_API_URL).body()
+                        true
+                    }, {
+                        commonLogger.error { localizedMessage }
+                        false
+                    })
+                } ?: false
+
+                if (success && factModel != null) {
+                    respond {
+                        embed {
+                            title = TITLE
+                            description = factModel!!.text
+                            field {
+                                name = SOURCE_FIELD_NAME
+                                value = factModel!!.permalink
+                                inline = false
                             }
+                            footer = kordClient.getEmbedFooter()
+                            timestamp = Clock.System.now()
                         }
                     }
-                }, {
-                    commonLogger.error { localizedMessage }
-                })
+                } else {
+                    respond { content = ERROR_MESSAGE }
+                }
             }
         }
+    }
+
+    companion object {
+        private const val FACT_API_URL = "https://uselessfacts.jsph.pl/random.json?language=en"
+        private const val REQUEST_TIMEOUT_MS = 5000L
+        private const val TITLE = "A useless fact for you"
+        private const val SOURCE_FIELD_NAME = "Source"
+        private const val ERROR_MESSAGE = "Sorry, I couldn't fetch a fact at the moment. Please try again later."
     }
 }

@@ -14,12 +14,6 @@ import troy.utils.isEmptyOrBlank
 
 class InviteLink : Extension() {
 
-    companion object {
-        // Pre-compile regex patterns to avoid recompilation on each validation
-        private val PATTERN_DISCORD_COM = Regex("^((https?)://)+(discord)+\\.(com)+/(invite)/.*")
-        private val PATTERN_DISCORD_GG = Regex("^((https?)://)+(discord)+\\.(gg)/.*")
-    }
-
     override val name: String
         get() = "invite-link"
 
@@ -68,8 +62,12 @@ class InviteLink : Extension() {
         }
     }
 
-    private fun isProvidedLinkValid(inviteLink: String): Boolean {
-        // Use pre-compiled patterns from companion object
-        return inviteLink.matches(PATTERN_DISCORD_COM) || inviteLink.matches(PATTERN_DISCORD_GG)
+    private fun isProvidedLinkValid(inviteLink: String): Boolean =
+        inviteLink.matches(PATTERN_DISCORD_COM) || inviteLink.matches(PATTERN_DISCORD_GG)
+
+    companion object {
+        // Pre-compile regex patterns to avoid recompilation on each validation
+        private val PATTERN_DISCORD_COM = Regex("^((https?)://)+(discord)+\\.(com)+/(invite)/.*")
+        private val PATTERN_DISCORD_GG = Regex("^((https?)://)+(discord)+\\.(gg)/.*")
     }
 }

@@ -11,6 +11,7 @@ import dev.kordex.core.utils.env
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.apiModels.OwlDictModel
@@ -35,49 +36,67 @@ class Dictionary : Extension() {
             name = "dictionary".toKey()
             description = "Finds definition for given word with image, emoji and examples.".toKey()
             action {
-                val url = "https://owlbot.info/api/v4/dictionary/" + arguments.word
-                httpClient.requestAndCatch({
-                    get(url) {
-                        headers {
-                            append(HttpHeaders.Authorization, "Token ${env(Environment.OWL_DICT_TOKEN)}")
-                        }
-                    }.body<OwlDictModel>().let {
-                        respond {
-                            val definition = it.definitions.first()
-                            embed {
-                                title = "Definition for ${arguments.word}"
-                                description = "Definition: ${definition.definition}"
-                                image = definition.imageUrl
-                                field {
-                                    name = "Type"
-                                    value = definition.type.orNotAvailable()
-                                    inline = true
-                                }
-                                field {
-                                    name = "Emoji"
-                                    value = definition.emoji.orNotAvailable()
-                                    inline = true
-                                }
-                                field {
-                                    name = "Example"
-                                    value = definition.example.orNotAvailable()
-                                    inline = false
-                                }
-                                footer = kordClient.getEmbedFooter()
-                                timestamp = Clock.System.now()
+                val url = "$API_BASE_URL${arguments.word}"
+                var owlDictModel: OwlDictModel? = null
+
+                // Add timeout to HTTP request to prevent hanging
+                val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
+                    httpClient.requestAndCatch({
+                        get(url) {
+                            headers {
+                                append(HttpHeaders.Authorization, "Token ${env(Environment.OWL_DICT_TOKEN)}")
                             }
+                        }.body<OwlDictModel>().let {
+                            owlDictModel = it
+                        }
+                        true
+                    }, {
+                        if (response.status == HttpStatusCode.NotFound) {
+                            respond { content = "No results found for ${arguments.word}" }
+                        } else {
+                            commonLogger.error { localizedMessage }
+                        }
+                        false
+                    })
+                } ?: false
+
+                if (success && owlDictModel != null) {
+                    respond {
+                        val definition = owlDictModel!!.definitions.first()
+                        embed {
+                            title = "Definition for ${arguments.word}"
+                            description = "Definition: ${definition.definition}"
+                            image = definition.imageUrl
+                            field {
+                                name = "Type"
+                                value = definition.type.orNotAvailable()
+                                inline = true
+                            }
+                            field {
+                                name = "Emoji"
+                                value = definition.emoji.orNotAvailable()
+                                inline = true
+                            }
+                            field {
+                                name = "Example"
+                                value = definition.example.orNotAvailable()
+                                inline = false
+                            }
+                            footer = kordClient.getEmbedFooter()
+                            timestamp = Clock.System.now()
                         }
                     }
-                }, {
-                    if (response.status == HttpStatusCode.NotFound) {
-                        respond { content = "No results found for ${arguments.word}" }
-                    } else {
-                        commonLogger.error { localizedMessage }
-                    }
-                })
+                } else if (!success) {
+                    respond { content = "Sorry, I couldn't fetch the definition at the moment. Please try again later." }
+                }
             }
         }
     }
-}
 
-private fun String?.orNotAvailable(): String = this ?: "Not available"
+    companion object {
+        private const val API_BASE_URL = "https://owlbot.info/api/v4/dictionary/"
+        private const val REQUEST_TIMEOUT_MS = 5000L
+
+        private fun String?.orNotAvailable(): String = this ?: "Not available"
+    }
+}

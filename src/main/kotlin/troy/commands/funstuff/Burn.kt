@@ -10,6 +10,7 @@ import org.koin.core.component.inject
 import troy.utils.DataProvider
 import troy.utils.isGirlfriend
 import troy.utils.isOwner
+import kotlin.random.Random
 
 class Burn : Extension() {
 
@@ -31,24 +32,23 @@ class Burn : Extension() {
             description = "Lights fire to mentioned user.".toKey()
             action {
                 val burnList = DataProvider.getBurnData()
-                val randomBurn = burnList[kotlin.math.floor(Math.random() * burnList.size).toInt()]
+                val randomBurn = burnList[Random.nextInt(burnList.size)]
                 with(arguments) {
                     when {
                         user.id.isOwner() -> {
                             respond {
-                                content = "You can't hurt the god, But here's one for you.\n${member?.mention}, $randomBurn"
+                                content = "${CANT_HURT_GOD_MESSAGE}${member?.mention}, $randomBurn"
                             }
                             return@action
                         }
                         user.id.isGirlfriend() -> {
                             respond {
-                                content =
-                                    "You can't hurt her. But here is one for you. Asshole.\n${member?.mention}, $randomBurn"
+                                content = "${CANT_HURT_HER_MESSAGE}${member?.mention}, $randomBurn"
                             }
                             return@action
                         }
                         user.id == kordClient.selfId -> respond {
-                            content = "Huh, Burn me? But, $randomBurn"
+                            content = "${BURN_ME_MESSAGE}$randomBurn"
                         }
                         else -> respond {
                             content = "${user.mention}, $randomBurn"
@@ -57,5 +57,11 @@ class Burn : Extension() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val CANT_HURT_GOD_MESSAGE = "You can't hurt the god, But here's one for you.\n"
+        private const val CANT_HURT_HER_MESSAGE = "You can't hurt her. But here is one for you. Asshole.\n"
+        private const val BURN_ME_MESSAGE = "Huh, Burn me? But, "
     }
 }

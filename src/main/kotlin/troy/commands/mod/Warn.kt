@@ -26,7 +26,7 @@ import troy.utils.isOwner
 
 class Warn : Extension() {
 
-    val kordClient: Kord by inject()
+    private val kordClient: Kord by inject()
 
     override val name: String
         get() = "warn"
@@ -63,7 +63,7 @@ class Warn : Extension() {
                 val moderator = "${member?.asUser()?.username}#${member?.asUser()?.discriminator}"
 
                 if (arguments.warnedUser.id.isOwner()) {
-                    respond { content = "You can't hurt the god!" }
+                    respond { content = CANT_HURT_GOD_MESSAGE }
                     return@action
                 }
 
@@ -76,7 +76,7 @@ class Warn : Extension() {
 
                 respond {
                     if (didMaxWarningExceeded) {
-                        val reason = "Max warnings exceeded!"
+                        val reason = MAX_WARNINGS_EXCEEDED
                         when (guildWarnMode) {
                             is WarningMode.Kick -> try {
                                 kickLogsRepository.insertKickLog(arguments.warnedUser, reason, "Troy")
@@ -92,8 +92,7 @@ class Warn : Extension() {
                                 }
                             } catch (exception: Exception) {
                                 respond {
-                                    content = "Could not kick the user. Please check my hierarchy in guild roles." +
-                                            " If everything looks in order, Please contact the bot developers."
+                                    content = KICK_ERROR_MESSAGE
                                 }
                             }
                             is WarningMode.Ban -> try {
@@ -110,8 +109,7 @@ class Warn : Extension() {
                                 }
                             } catch (exception: Exception) {
                                 respond {
-                                    content = "Could not ban the user. Please check my hierarchy in guild roles." +
-                                            " If everything looks in order, Please contact the bot developers."
+                                    content = BAN_ERROR_MESSAGE
                                 }
                             }
                             is WarningMode.None -> embed {
@@ -139,23 +137,23 @@ class Warn : Extension() {
         warnedBy: String,
         warningsCount: String
     ) {
-        title = "Warning Event"
+        title = WARNING_EVENT_TITLE
         field {
-            name = "Warned User"
+            name = WARNED_USER_FIELD
             value = userMention
             inline = true
         }
         field {
-            name = "Reason of warning"
+            name = REASON_FIELD
             value = reason
             inline = true
         }
         field {
-            name = "Warned by"
+            name = WARNED_BY_FIELD
             value = warnedBy
         }
         field {
-            name = "Warnings"
+            name = WARNINGS_FIELD
             value = warningsCount
         }
         timestamp = Clock.System.now()
@@ -163,11 +161,24 @@ class Warn : Extension() {
     }
 
     private suspend fun EmbedBuilder.setupEmbedForNoneWarningMode(userMention: String) {
-        title = "Warning Event"
-        description = "$userMention exceeded maximum warnings but warning mode is set to **None** for this guild. " +
-                "Hence no action is taken. To modify this behaviour, Please change the warning mode for automated " +
-                "Kick or Bans when user exceeds max number of warnings."
+        title = WARNING_EVENT_TITLE
+        description = "$userMention $NONE_WARNING_MODE_DESCRIPTION"
         timestamp = Clock.System.now()
         footer = kordClient.getEmbedFooter()
+    }
+
+    companion object {
+        private const val CANT_HURT_GOD_MESSAGE = "You can't hurt the god!"
+        private const val MAX_WARNINGS_EXCEEDED = "Max warnings exceeded!"
+        private const val KICK_ERROR_MESSAGE = "Could not kick the user. Please check my hierarchy in guild roles. If everything looks in order, Please contact the bot developers."
+        private const val BAN_ERROR_MESSAGE = "Could not ban the user. Please check my hierarchy in guild roles. If everything looks in order, Please contact the bot developers."
+        private const val WARNING_EVENT_TITLE = "Warning Event"
+        private const val WARNED_USER_FIELD = "Warned User"
+        private const val REASON_FIELD = "Reason of warning"
+        private const val WARNED_BY_FIELD = "Warned by"
+        private const val WARNINGS_FIELD = "Warnings"
+        private const val NONE_WARNING_MODE_DESCRIPTION = "exceeded maximum warnings but warning mode is set to **None** for this guild. " +
+            "Hence no action is taken. To modify this behaviour, Please change the warning mode for automated " +
+            "Kick or Bans when user exceeds max number of warnings."
     }
 }

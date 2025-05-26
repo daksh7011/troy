@@ -14,7 +14,7 @@ class Prune : Extension() {
     override val name: String
         get() = "prune"
 
-    class PurgeArguments : Arguments() {
+    inner class PurgeArguments : Arguments() {
         val amount by string {
             name = "number".toKey()
             description = "How many messages you want to purge?".toKey()
@@ -22,7 +22,7 @@ class Prune : Extension() {
     }
 
     override suspend fun setup() {
-        chatCommand(Prune::PurgeArguments) {
+        chatCommand(::PurgeArguments) {
             name = "purge".toKey()
             check {
                 hasPermission(Permission.Administrator)
@@ -32,8 +32,12 @@ class Prune : Extension() {
                 val amount = arguments.amount.toIntOrNull() ?: 0
                 channel.getMessagesBefore(message.id).take(amount).collect { it.delete() }
                 message.delete()
-                message.channel.createMessage("Purged $amount messages.")
+                message.channel.createMessage("${PURGE_SUCCESS_MESSAGE_PREFIX}$amount messages.")
             }
         }
+    }
+
+    companion object {
+        private const val PURGE_SUCCESS_MESSAGE_PREFIX = "Purged "
     }
 }
