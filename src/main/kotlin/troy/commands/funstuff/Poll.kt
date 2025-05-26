@@ -1,6 +1,7 @@
 package troy.commands.funstuff
 
 import dev.kord.core.Kord
+import dev.kord.core.entity.ReactionEmoji
 import dev.kord.rest.builder.message.embed
 import dev.kord.x.emoji.Emojis.eight
 import dev.kord.x.emoji.Emojis.five
@@ -25,18 +26,21 @@ class Poll : Extension() {
 
     private val kordClient: Kord by inject()
 
-    private val reactions = listOf(
-        one.toReaction(),
-        two.toReaction(),
-        three.toReaction(),
-        four.toReaction(),
-        five.toReaction(),
-        six.toReaction(),
-        seven.toReaction(),
-        eight.toReaction(),
-        nine.toReaction(),
-        keycapTen.toReaction(),
-    )
+    companion object {
+        // Pre-compute reactions list as a static property to avoid recreating it for each instance
+        private val REACTIONS = listOf(
+            one.toReaction(),
+            two.toReaction(),
+            three.toReaction(),
+            four.toReaction(),
+            five.toReaction(),
+            six.toReaction(),
+            seven.toReaction(),
+            eight.toReaction(),
+            nine.toReaction(),
+            keycapTen.toReaction(),
+        )
+    }
 
     override val name: String
         get() = "poll"
@@ -57,7 +61,17 @@ class Poll : Extension() {
             name = "poll".toKey()
             description = "Gives a poll for provided options".toKey()
             action {
-                val optionList = arguments.options.split(",")
+                // Split by comma and trim each option to remove extra spaces
+                val optionList = arguments.options.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+
+                // Check if we have any valid options
+                if (optionList.isEmpty()) {
+                    respond {
+                        content = "Please provide at least one valid option for the poll."
+                    }
+                    return@action
+                }
+
                 respond {
                     embed {
                         title = "Poll for ${arguments.title}"
@@ -74,9 +88,11 @@ class Poll : Extension() {
                             value = "Make sure you add comma after each option for poll."
                         }
                     }
-                }.let {
-                    optionList.forEachIndexed { index, _ ->
-                        it.message.addReaction(reactions[index])
+                }.let { response ->
+                    // Process options and add reactions more efficiently
+                    val validOptions = optionList.size.coerceAtMost(REACTIONS.size)
+                    for (index in 0 until validOptions) {
+                        response.message.addReaction(REACTIONS[index])
                     }
                 }
             }
