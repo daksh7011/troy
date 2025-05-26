@@ -19,7 +19,7 @@ import troy.utils.isOwner
 
 class Kick : Extension() {
 
-    val kordClient: Kord by inject()
+    private val kordClient: Kord by inject()
 
     override val name: String
         get() = "kick"
@@ -49,7 +49,7 @@ class Kick : Extension() {
                 val moderator = "${member?.asUser()?.username}#${member?.asUser()?.discriminator}"
 
                 if (arguments.user.id.isOwner()) {
-                    respond { content = "You can't hurt the god!" }
+                    respond { content = CANT_HURT_GOD_MESSAGE }
                     return@action
                 }
                 try {
@@ -67,8 +67,7 @@ class Kick : Extension() {
                     }
                 } catch (exception: Exception) {
                     respond {
-                        content = "Could not kick the user. Please check my hierarchy in guild roles." +
-                                " If everything looks in order, Please contact the bot developers."
+                        content = ERROR_MESSAGE
                     }
                 }
             }
@@ -76,25 +75,32 @@ class Kick : Extension() {
     }
 
     companion object {
+        private const val CANT_HURT_GOD_MESSAGE = "You can't hurt the god!"
+        private const val ERROR_MESSAGE = "Could not kick the user. Please check my hierarchy in guild roles. If everything looks in order, Please contact the bot developers."
+        private const val KICK_EVENT_TITLE = "Kick Event"
+        private const val KICKED_USER_FIELD = "Kicked User"
+        private const val REASON_FIELD = "Reason of kick"
+        private const val KICKED_BY_FIELD = "Kicked by"
+
         suspend fun EmbedBuilder.setupKickedEmbed(
             userMention: String,
             reason: String,
             kickedBy: String,
             kordClient: Kord
         ) {
-            title = "Kick Event"
+            title = KICK_EVENT_TITLE
             field {
-                name = "Kicked User"
+                name = KICKED_USER_FIELD
                 value = userMention
                 inline = true
             }
             field {
-                name = "Reason of kick"
+                name = REASON_FIELD
                 value = reason
                 inline = true
             }
             field {
-                name = "Kicked by"
+                name = KICKED_BY_FIELD
                 value = kickedBy
             }
             timestamp = Clock.System.now()
