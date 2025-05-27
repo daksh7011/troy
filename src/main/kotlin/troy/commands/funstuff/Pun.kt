@@ -27,11 +27,19 @@ class Pun : Extension() {
                 // Add timeout to HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
                     httpClient.requestAndCatch(
-                        { punsModel = get(PUN_API_URL).body() },
-                        { commonLogger.error { "Failed to fetch pun: $localizedMessage" } },
+                        {
+                            punsModel = get(PUN_API_URL).body()
+                            true
+                        },
+                        {
+                            commonLogger.error { "Failed to fetch pun: $localizedMessage" }
+                            false
+                        }
                     )
-                    true
-                } ?: false
+                } ?: run {
+                    commonLogger.error { "Timeout occurred while fetching pun" }
+                    false
+                }
 
                 // Store joke in a local variable to avoid smart cast issues
                 val joke = if (success) punsModel?.joke else null

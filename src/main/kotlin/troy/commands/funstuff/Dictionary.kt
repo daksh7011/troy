@@ -54,11 +54,14 @@ class Dictionary : Extension() {
                         if (response.status == HttpStatusCode.NotFound) {
                             respond { content = "No results found for ${arguments.word}" }
                         } else {
-                            commonLogger.error { localizedMessage }
+                            commonLogger.error { "Failed to fetch dictionary definition: $localizedMessage" }
                         }
                         false
                     })
-                } ?: false
+                } ?: run {
+                    commonLogger.error { "Timeout occurred while fetching dictionary definition for ${arguments.word}" }
+                    false
+                }
 
                 if (success && owlDictModel != null) {
                     respond {

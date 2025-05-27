@@ -116,7 +116,7 @@ fun Collection<String?>.buildFormattedDomainList(): String {
     if (isEmpty()) return ""
 
     return buildString {
-        forEachIndexed { index, domain ->
+        filterNotNull().forEachIndexed { index, domain ->
             append("${index + 1}. $domain\n".italic())
         }
     }

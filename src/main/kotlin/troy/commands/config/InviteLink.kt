@@ -67,7 +67,9 @@ class InviteLink : Extension() {
 
     companion object {
         // Pre-compile regex patterns to avoid recompilation on each validation
-        private val PATTERN_DISCORD_COM = Regex("^((https?)://)+(discord)+\\.(com)+/(invite)/.*")
-        private val PATTERN_DISCORD_GG = Regex("^((https?)://)+(discord)+\\.(gg)/.*")
+        private val PATTERN_DISCORD_COM =
+            Regex("^((https?)://)+(discord)+\\.(com)+/(invite)/.*", RegexOption.IGNORE_CASE)
+        private val PATTERN_DISCORD_GG =
+            Regex("^((https?)://)+(discord)+\\.(gg)/.*", RegexOption.IGNORE_CASE)
     }
 }
