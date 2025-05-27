@@ -51,11 +51,14 @@ class UrbanDictionary : Extension() {
                                 content = "${NOT_FOUND_MESSAGE}${arguments.search}"
                             }
                         } else {
-                            commonLogger.error { localizedMessage }
+                            commonLogger.error { "Failed to fetch urban dictionary definition: $localizedMessage" }
                         }
                         false
                     })
-                } ?: false
+                } ?: run {
+                    commonLogger.error { "Timeout occurred while fetching urban dictionary definition for: ${arguments.search}" }
+                    false
+                }
 
                 if (success && urbanDictModel != null && urbanDictModel!!.list.isNotEmpty()) {
                     val urbanDictItem = urbanDictModel!!.list.first()

@@ -36,10 +36,13 @@ class Fact : Extension() {
                         factModel = get(FACT_API_URL).body()
                         true
                     }, {
-                        commonLogger.error { localizedMessage }
+                        commonLogger.error { "Failed to fetch fact: $localizedMessage" }
                         false
                     })
-                } ?: false
+                } ?: run {
+                    commonLogger.error { "Timeout occurred while fetching fact" }
+                    false
+                }
 
                 if (success && factModel != null) {
                     respond {

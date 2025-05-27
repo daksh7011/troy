@@ -59,12 +59,15 @@ class Doggo : Extension() {
                             if (response.status == HttpStatusCode.NotFound) {
                                 this@action.respond { content = NO_PHOTO_MESSAGE }
                             } else {
-                                commonLogger.error { localizedMessage }
+                                commonLogger.error { "Failed to fetch doggo image: $localizedMessage" }
                             }
                             false
                         },
                     )
-                } ?: false
+                } ?: run {
+                    commonLogger.error { "Timeout occurred while fetching doggo image for breed: ${arguments.breed}" }
+                    false
+                }
 
                 if (success && doggoModel != null) {
                     respond {
