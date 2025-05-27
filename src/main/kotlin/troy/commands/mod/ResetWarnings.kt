@@ -1,7 +1,6 @@
 package troy.commands.mod
 
 import dev.kord.common.entity.Permission
-import dev.kord.core.Kord
 import dev.kordex.core.checks.hasPermission
 import dev.kordex.core.commands.Arguments
 import dev.kordex.core.commands.converters.impl.user
@@ -12,8 +11,6 @@ import org.koin.core.component.inject
 import troy.data.repository.WarningLogsRepository
 
 class ResetWarnings : Extension() {
-
-    val kordClient: Kord by inject()
 
     override val name: String
         get() = "reset-warnings"
@@ -38,9 +35,13 @@ class ResetWarnings : Extension() {
             action {
                 warningLogsRepository.deleteWarningsForUser(arguments.user.id.toString())
                 respond {
-                    content = "Warnings have been reset for ${arguments.user.mention} by moderator ${member?.mention}"
+                    content = RESET_WARNINGS_MESSAGE.format(arguments.user.mention, member?.mention)
                 }
             }
         }
+    }
+
+    companion object {
+        private const val RESET_WARNINGS_MESSAGE = "Warnings have been reset for %s by moderator %s"
     }
 }

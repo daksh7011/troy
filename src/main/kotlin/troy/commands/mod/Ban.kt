@@ -20,7 +20,7 @@ import troy.utils.isOwner
 
 class Ban : Extension() {
 
-    val kordClient: Kord by inject()
+    private val kordClient: Kord by inject()
 
     override val name: String
         get() = "ban"
@@ -49,7 +49,7 @@ class Ban : Extension() {
                 val moderator = "${member?.asUser()?.username}#${member?.asUser()?.discriminator}"
                 val banReason = arguments.reason
                 if (arguments.user.id.isOwner()) {
-                    respond { content = "You can't hurt the god!" }
+                    respond { content = CANT_HURT_GOD_MESSAGE }
                     return@action
                 }
                 try {
@@ -69,8 +69,7 @@ class Ban : Extension() {
                     }
                 } catch (exception: Exception) {
                     respond {
-                        content = "Could not ban the user. Please check my hierarchy in guild roles." +
-                                " If everything looks in order, Please contact the bot developers."
+                        content = ERROR_MESSAGE
                     }
                 }
             }
@@ -78,25 +77,32 @@ class Ban : Extension() {
     }
 
     companion object {
+        private const val CANT_HURT_GOD_MESSAGE = "You can't hurt the god!"
+        private const val ERROR_MESSAGE = "Could not ban the user. Please check my hierarchy in guild roles. If everything looks in order, Please contact the bot developers."
+        private const val BAN_EVENT_TITLE = "Ban Event"
+        private const val BANNED_USER_FIELD = "Banned User"
+        private const val REASON_FIELD = "Reason of ban"
+        private const val BANNED_BY_FIELD = "Banned by"
+
         suspend fun EmbedBuilder.setupBannedEmbed(
             userMention: String,
             reason: String,
             bannedBy: String,
             kordClient: Kord
         ) {
-            title = "Ban Event"
+            title = BAN_EVENT_TITLE
             field {
-                name = "Banned User"
+                name = BANNED_USER_FIELD
                 value = userMention
                 inline = true
             }
             field {
-                name = "Reason of ban"
+                name = REASON_FIELD
                 value = reason
                 inline = true
             }
             field {
-                name = "Banned by"
+                name = BANNED_BY_FIELD
                 value = bannedBy
             }
             timestamp = Clock.System.now()

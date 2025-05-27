@@ -62,9 +62,14 @@ class InviteLink : Extension() {
         }
     }
 
-    private fun isProvidedLinkValid(inviteLink: String): Boolean {
-        val patternForDiscordCom = Regex("^((https?)://)+(discord)+\\.(com)+/(invite)/.*")
-        val patternForDiscordGg = Regex("^((https?)://)+(discord)+\\.(gg)/.*")
-        return inviteLink.matches(patternForDiscordCom) || inviteLink.matches(patternForDiscordGg)
+    private fun isProvidedLinkValid(inviteLink: String): Boolean =
+        inviteLink.matches(PATTERN_DISCORD_COM) || inviteLink.matches(PATTERN_DISCORD_GG)
+
+    companion object {
+        // Pre-compile regex patterns to avoid recompilation on each validation
+        private val PATTERN_DISCORD_COM =
+            Regex("^((https?)://)+(discord)+\\.(com)+/(invite)/.*", RegexOption.IGNORE_CASE)
+        private val PATTERN_DISCORD_GG =
+            Regex("^((https?)://)+(discord)+\\.(gg)/.*", RegexOption.IGNORE_CASE)
     }
 }

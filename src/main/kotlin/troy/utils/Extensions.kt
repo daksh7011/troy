@@ -109,6 +109,19 @@ fun String.extractLinksFromMessage(): List<String?> {
     return finalList
 }
 
+/**
+ * Builds a formatted list of domains with numbering and italic formatting.
+ */
+fun Collection<String?>.buildFormattedDomainList(): String {
+    if (isEmpty()) return ""
+
+    return buildString {
+        filterNotNull().forEachIndexed { index, domain ->
+            append("${index + 1}. $domain\n".italic())
+        }
+    }
+}
+
 val httpClient = HttpClient {
     install(ContentNegotiation) {
         json(

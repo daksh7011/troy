@@ -10,6 +10,7 @@ import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.apiModels.DoggoModel
@@ -21,7 +22,6 @@ import troy.utils.requestAndCatch
 class Doggo : Extension() {
 
     private val kordClient: Kord by inject()
-    private var doggoModel: DoggoModel? = null
 
     override val name: String
         get() = "doggo"
@@ -39,35 +39,60 @@ class Doggo : Extension() {
             name = "doggo".toKey()
             description = "Finds some cute doggo images.".toKey()
             action {
+                // Use local variable instead of class property to avoid concurrency issues
+                var doggoModel: DoggoModel? = null
+
                 val url = if (arguments.breed == "random") {
-                    "https://dog.ceo/api/breeds/image/random"
+                    RANDOM_DOG_URL
                 } else {
-                    "https://dog.ceo/api/breed/${arguments.breed.replace(" ", "")}/images/random"
+                    "$BREED_BASE_URL${arguments.breed.replace(" ", "")}/images/random"
                 }
-                httpClient.requestAndCatch(
-                    {
-                        doggoModel = get(url).body()
-                    },
-                    {
-                        if (response.status == HttpStatusCode.NotFound) {
-                            this@action.respond { content = "Can't find any good boi photo." }
-                        } else {
-                            commonLogger.error { localizedMessage }
-                        }
-                    },
-                )
-                if (doggoModel != null) {
+
+                // Add timeout to HTTP request to prevent hanging
+                val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
+                    httpClient.requestAndCatch(
+                        {
+                            doggoModel = get(url).body()
+                            true
+                        },
+                        {
+                            if (response.status == HttpStatusCode.NotFound) {
+                                this@action.respond { content = NO_PHOTO_MESSAGE }
+                            } else {
+                                commonLogger.error { "Failed to fetch doggo image: $localizedMessage" }
+                            }
+                            false
+                        },
+                    )
+                } ?: run {
+                    commonLogger.error { "Timeout occurred while fetching doggo image for breed: ${arguments.breed}" }
+                    false
+                }
+
+                if (success && doggoModel != null) {
                     respond {
                         embed {
-                            title = "Woof Woof \uD83D\uDC36"
-                            description = "A cute doggo image for you."
+                            title = TITLE
+                            description = DESCRIPTION
                             image = doggoModel?.message
                             footer = kordClient.getEmbedFooter()
                             timestamp = Clock.System.now()
                         }
                     }
+                } else if (!success) {
+                    respond { content = ERROR_MESSAGE }
                 }
             }
         }
+    }
+
+    companion object {
+        private const val RANDOM_DOG_URL = "https://dog.ceo/api/breeds/image/random"
+        private const val BREED_BASE_URL = "https://dog.ceo/api/breed/"
+        private const val REQUEST_TIMEOUT_MS = 5000L
+        private const val TITLE = "Woof Woof \uD83D\uDC36"
+        private const val DESCRIPTION = "A cute doggo image for you."
+        private const val NO_PHOTO_MESSAGE = "Can't find any good boi photo."
+        private const val ERROR_MESSAGE = "Sorry, I couldn't fetch a doggo image at the moment. Please try again later."
     }
 }
