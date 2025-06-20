@@ -5,14 +5,13 @@ import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import kotlinx.coroutines.withTimeoutOrNull
 import troy.apiModels.PunsModel
 import troy.utils.commonLogger
 import troy.utils.httpClient
 import troy.utils.requestAndCatch
 
 class Pun : Extension() {
-
-    private var punsModel: PunsModel? = null
 
     override val name: String
         get() = "pun"
@@ -22,15 +21,40 @@ class Pun : Extension() {
             name = "pun".toKey()
             description = "Sends a pun".toKey()
             action {
-                val url = "https://icanhazdadjoke.com/"
-                httpClient.requestAndCatch(
-                    { punsModel = get(url).body() },
-                    { commonLogger.error { localizedMessage } },
-                )
-                if (punsModel != null) {
-                    respond { content = punsModel?.joke }
+                // Use local variable instead of class property to avoid concurrency issues
+                var punsModel: PunsModel? = null
+
+                // Add timeout to HTTP request to prevent hanging
+                val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
+                    httpClient.requestAndCatch(
+                        {
+                            punsModel = get(PUN_API_URL).body()
+                            true
+                        },
+                        {
+                            commonLogger.error { "Failed to fetch pun: $localizedMessage" }
+                            false
+                        }
+                    )
+                } ?: run {
+                    commonLogger.error { "Timeout occurred while fetching pun" }
+                    false
+                }
+
+                // Store joke in a local variable to avoid smart cast issues
+                val joke = if (success) punsModel?.joke else null
+
+                if (joke != null) {
+                    respond { content = joke }
+                } else {
+                    respond { content = "Sorry, I couldn't fetch a pun at the moment. Please try again later." }
                 }
             }
         }
+    }
+
+    companion object {
+        private const val PUN_API_URL = "https://icanhazdadjoke.com/"
+        private const val REQUEST_TIMEOUT_MS = 5000L
     }
 }

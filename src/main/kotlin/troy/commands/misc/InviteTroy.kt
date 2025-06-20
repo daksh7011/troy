@@ -15,10 +15,15 @@ class InviteTroy : Extension() {
             description = "Returns invite link for Troy.".toKey()
             action {
                 respond {
-                    content =
-                        "https://discord.com/oauth2/authorize?client_id=871836869493661736&permissions=397820423367&scope=bot%20applications.commands"
+                    content = TROY_INVITE_URL
                 }
             }
         }
+    }
+
+    companion object {
+        // Store the URL as a constant to avoid recreating the string each time
+        private const val TROY_INVITE_URL =
+            "https://discord.com/oauth2/authorize?client_id=871836869493661736&permissions=397820423367&scope=bot%20applications.commands"
     }
 }

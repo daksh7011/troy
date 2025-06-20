@@ -2,6 +2,7 @@ package troy
 
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createEmbed
+import dev.kord.core.entity.Message
 import dev.kord.core.event.gateway.DisconnectEvent
 import dev.kord.core.event.gateway.ReadyEvent
 import dev.kord.core.event.message.MessageCreateEvent
@@ -20,6 +21,7 @@ import troy.utils.Environment
 import troy.utils.PhishingDomainsHelper
 import troy.utils.PresenceManager
 import troy.utils.bold
+import troy.utils.buildFormattedDomainList
 import troy.utils.containsBs
 import troy.utils.containsF
 import troy.utils.containsNigga
@@ -27,7 +29,32 @@ import troy.utils.containsTableFlip
 import troy.utils.extractLinksFromMessage
 import troy.utils.getEmbedFooter
 import troy.utils.isNotBot
-import troy.utils.italic
+
+/**
+ * Check for phishing domains in a message and send a warning if found.
+ */
+private suspend fun checkForPhishingDomains(message: Message, domainList: Collection<String>) {
+    val listOfDomainsInMessage = message.content.extractLinksFromMessage()
+    val intersectList = domainList.intersect(listOfDomainsInMessage.toSet())
+
+    if (intersectList.isNotEmpty()) {
+        val descriptionOfEmbed = "$PHISHING_WARNING_PREFIX${PHISHING_WARNING_TEXT.bold()}$PHISHING_WARNING_SUFFIX"
+        val listOfBlacklistDomains = intersectList.buildFormattedDomainList()
+
+        message.channel.createEmbed {
+            title = PHISHING_WARNING_TITLE
+            color = DISCORD_RED
+            description = "$descriptionOfEmbed\n$listOfBlacklistDomains"
+            field {
+                name = PHISHING_SENDER_FIELD
+                value = message.author?.mention.orEmpty()
+                inline = true
+            }
+            footer = message.getEmbedFooter()
+            timestamp = Clock.System.now()
+        }
+    }
+}
 
 suspend fun main() {
     val troy = getTroy()
@@ -35,42 +62,18 @@ suspend fun main() {
     val domainList = PhishingDomainsHelper.fetchDomains()
 
     troy.on<MessageCreateEvent> {
-        if (message.containsF() && message.isNotBot()) {
-            message.channel.createMessage("f")
-        }
-        if (message.containsNigga() && message.isNotBot()) {
-            message.channel.createMessage("Why do I have to remind you everytime?, Its aggiN")
-        }
-        if (message.containsTableFlip() && message.isNotBot()) {
-            message.channel.createMessage("┬─┬ ノ( ゜-゜ノ)")
-        }
-        if (message.containsBs() && message.isNotBot()) {
-            message.channel.createMessage("It a Bulseet :poop:")
-        }
+        // Only process messages from non-bot users
         if (message.isNotBot()) {
-            val listOfDomainsInMessage = message.content.extractLinksFromMessage()
-            val intersectList = domainList.intersect(listOfDomainsInMessage.toSet())
-            if (intersectList.isNotEmpty()) {
-                val descriptionOfEmbed: String = "There is phishing website in the message.\n\n" +
-                    "Do NOT open it. Stay away from it. You have been warned.\n\n".bold() +
-                    "Detected malicious domains:"
-                var listOfBlacklistDomains = ""
-                intersectList.forEachIndexed { index, domain ->
-                    listOfBlacklistDomains = "${index + 1}. $domain\n".italic()
-                }
-                message.channel.createEmbed {
-                    title = "Warning"
-                    color = DISCORD_RED
-                    description = "$descriptionOfEmbed\n$listOfBlacklistDomains"
-                    field {
-                        name = "Message sent by"
-                        value = message.author?.mention.orEmpty()
-                        inline = true
-                    }
-                    footer = message.getEmbedFooter()
-                    timestamp = Clock.System.now()
-                }
+            // Handle special message responses
+            when {
+                message.containsF() -> message.channel.createMessage(RESPONSE_F)
+                message.containsNigga() -> message.channel.createMessage(RESPONSE_NIGGA)
+                message.containsTableFlip() -> message.channel.createMessage(RESPONSE_TABLE_FLIP)
+                message.containsBs() -> message.channel.createMessage(RESPONSE_BS)
             }
+
+            // Check for phishing domains
+            checkForPhishingDomains(message, domainList)
         }
     }
     troy.on<PublicSlashCommandInvocationEvent> {
@@ -112,3 +115,16 @@ suspend fun main() {
     }
     troy.start()
 }
+
+// Response messages
+private const val RESPONSE_F = "f"
+private const val RESPONSE_NIGGA = "Why do I have to remind you everytime?, Its aggiN"
+private const val RESPONSE_TABLE_FLIP = "┬─┬ ノ( ゜-゜ノ)"
+private const val RESPONSE_BS = "It a Bulseet :poop:"
+
+// Phishing warning messages
+private const val PHISHING_WARNING_TITLE = "Warning"
+private const val PHISHING_WARNING_PREFIX = "There is phishing website in the message.\n\n"
+private const val PHISHING_WARNING_TEXT = "Do NOT open it. Stay away from it. You have been warned.\n\n"
+private const val PHISHING_WARNING_SUFFIX = "Detected malicious domains:"
+private const val PHISHING_SENDER_FIELD = "Message sent by"

@@ -11,6 +11,7 @@ import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.apiModels.UrbanDictItem
@@ -20,8 +21,6 @@ import troy.utils.*
 class UrbanDictionary : Extension() {
 
     private val kordClient: Kord by inject()
-
-    private val urbanApiUrl = "https://api.urbandictionary.com/v0/define?term"
 
     override val name: String
         get() = "urban"
@@ -40,54 +39,63 @@ class UrbanDictionary : Extension() {
             action {
                 var urbanDictModel: UrbanDictModel? = null
                 val search = arguments.search.encodeQuery()
-                httpClient.requestAndCatch({
-                    urbanDictModel = this.get("$urbanApiUrl=$search").body()
-                }, {
-                    if (response.status == HttpStatusCode.NotFound) {
-                        this@action.respond {
-                            content = "Can't the data for ${arguments.search}"
-                        }
-                    } else {
-                        commonLogger.error { localizedMessage }
-                    }
-                })
-                urbanDictModel?.let {
-                    if (it.list.isNotEmpty()) {
-                        val urbanDictItem = it.list.first()
-                        val definitionCount = urbanDictItem.definition.count()
-                        val exampleCount = urbanDictItem.example.count()
-                        val authorCount = urbanDictItem.author.count()
-                        if (definitionCount + exampleCount + authorCount > MAX_CHARS) {
-                            this.respond {
-                                content = "Can not send the response since it is too long, " +
-                                        "Here is the link to that page for you instead.\n" +
-                                        urbanDictItem.permalink
+
+                // Add timeout to HTTP request to prevent hanging
+                val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
+                    httpClient.requestAndCatch({
+                        urbanDictModel = get("$URBAN_API_URL=$search").body()
+                        true
+                    }, {
+                        if (response.status == HttpStatusCode.NotFound) {
+                            this@action.respond {
+                                content = "${NOT_FOUND_MESSAGE}${arguments.search}"
                             }
                         } else {
-                            this.respond {
-                                embed {
-                                    setupUrbanDictEmbed(arguments, urbanDictItem)
-                                }
+                            commonLogger.error { "Failed to fetch urban dictionary definition: $localizedMessage" }
+                        }
+                        false
+                    })
+                } ?: run {
+                    commonLogger.error { "Timeout occurred while fetching urban dictionary definition for: ${arguments.search}" }
+                    false
+                }
+
+                if (success && urbanDictModel != null && urbanDictModel!!.list.isNotEmpty()) {
+                    val urbanDictItem = urbanDictModel!!.list.first()
+                    val definitionCount = urbanDictItem.definition.count()
+                    val exampleCount = urbanDictItem.example.count()
+                    val authorCount = urbanDictItem.author.count()
+
+                    if (definitionCount + exampleCount + authorCount > MAX_CHARS) {
+                        respond {
+                            content = "$TOO_LONG_MESSAGE${urbanDictItem.permalink}"
+                        }
+                    } else {
+                        respond {
+                            embed {
+                                setupUrbanDictEmbed(arguments, urbanDictItem)
                             }
                         }
                     }
+                } else if (!success) {
+                    respond { content = ERROR_MESSAGE }
                 }
             }
         }
     }
 
     private suspend fun EmbedBuilder.setupUrbanDictEmbed(arguments: UrbanDictArguments, urbanDictItem: UrbanDictItem) {
-        title = "Urban Dictionary"
+        title = EMBED_TITLE
         field {
             name = arguments.search
             value = urbanDictItem.definition
         }
         field {
-            name = "Example"
+            name = EXAMPLE_FIELD_NAME
             value = urbanDictItem.example
         }
         field {
-            name = "Added by"
+            name = AUTHOR_FIELD_NAME
             value = urbanDictItem.author
             inline = true
         }
@@ -95,7 +103,15 @@ class UrbanDictionary : Extension() {
         timestamp = Clock.System.now()
     }
 
-    private companion object {
+    companion object {
         private const val MAX_CHARS = 2000
+        private const val URBAN_API_URL = "https://api.urbandictionary.com/v0/define?term"
+        private const val REQUEST_TIMEOUT_MS = 5000L
+        private const val EMBED_TITLE = "Urban Dictionary"
+        private const val EXAMPLE_FIELD_NAME = "Example"
+        private const val AUTHOR_FIELD_NAME = "Added by"
+        private const val NOT_FOUND_MESSAGE = "Can't find the data for "
+        private const val TOO_LONG_MESSAGE = "Can not send the response since it is too long, Here is the link to that page for you instead.\n"
+        private const val ERROR_MESSAGE = "Sorry, I couldn't fetch the definition at the moment. Please try again later."
     }
 }
