@@ -44,18 +44,21 @@ class Fact : Extension() {
                     false
                 }
 
-                if (success && factModel != null) {
-                    respond {
-                        embed {
-                            title = TITLE
-                            description = factModel!!.text
-                            field {
-                                name = SOURCE_FIELD_NAME
-                                value = factModel!!.permalink
-                                inline = false
+                if (success) {
+                    // Create a local non-null reference to factModel
+                    factModel?.let { model ->
+                        respond {
+                            embed {
+                                title = TITLE
+                                description = model.text
+                                field {
+                                    name = SOURCE_FIELD_NAME
+                                    value = model.permalink
+                                    inline = false
+                                }
+                                footer = kordClient.getEmbedFooter()
+                                timestamp = Clock.System.now()
                             }
-                            footer = kordClient.getEmbedFooter()
-                            timestamp = Clock.System.now()
                         }
                     }
                 } else {

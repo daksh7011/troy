@@ -40,7 +40,7 @@ class UrbanDictionary : Extension() {
                 var urbanDictModel: UrbanDictModel? = null
                 val search = arguments.search.encodeQuery()
 
-                // Add timeout to HTTP request to prevent hanging
+                // Add timeout to an HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
                     httpClient.requestAndCatch({
                         urbanDictModel = get("$URBAN_API_URL=$search").body()
@@ -60,20 +60,21 @@ class UrbanDictionary : Extension() {
                     false
                 }
 
-                if (success && urbanDictModel != null && urbanDictModel!!.list.isNotEmpty()) {
-                    val urbanDictItem = urbanDictModel!!.list.first()
-                    val definitionCount = urbanDictItem.definition.count()
-                    val exampleCount = urbanDictItem.example.count()
-                    val authorCount = urbanDictItem.author.count()
+                if (success && urbanDictModel?.list.isNotNullNorEmpty()) {
+                    urbanDictModel?.list?.firstOrNull()?.let { urbanDictItem ->
+                        val definitionCount = urbanDictItem.definition.count()
+                        val exampleCount = urbanDictItem.example.count()
+                        val authorCount = urbanDictItem.author.count()
 
-                    if (definitionCount + exampleCount + authorCount > MAX_CHARS) {
-                        respond {
-                            content = "$TOO_LONG_MESSAGE${urbanDictItem.permalink}"
-                        }
-                    } else {
-                        respond {
-                            embed {
-                                setupUrbanDictEmbed(arguments, urbanDictItem)
+                        if (definitionCount + exampleCount + authorCount > MAX_CHARS) {
+                            respond {
+                                content = "$TOO_LONG_MESSAGE${urbanDictItem.permalink}"
+                            }
+                        } else {
+                            respond {
+                                embed {
+                                    setupUrbanDictEmbed(arguments, urbanDictItem)
+                                }
                             }
                         }
                     }
