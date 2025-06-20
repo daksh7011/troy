@@ -63,30 +63,38 @@ class Dictionary : Extension() {
                     false
                 }
 
-                if (success && owlDictModel != null) {
-                    respond {
-                        val definition = owlDictModel!!.definitions.first()
-                        embed {
-                            title = "Definition for ${arguments.word}"
-                            description = "Definition: ${definition.definition}"
-                            image = definition.imageUrl
-                            field {
-                                name = "Type"
-                                value = definition.type.orNotAvailable()
-                                inline = true
+                if (success) {
+                    // Since we've already checked owlDictModel is not null, we can safely use it
+                    owlDictModel?.let { model ->
+                        respond {
+                            // Check if definitions list is not empty before accessing first element
+                            if (model.definitions.isNotEmpty()) {
+                                val definition = model.definitions.first()
+                                embed {
+                                    title = "Definition for ${arguments.word}"
+                                    description = "Definition: ${definition.definition}"
+                                    image = definition.imageUrl
+                                    field {
+                                        name = "Type"
+                                        value = definition.type.orNotAvailable()
+                                        inline = true
+                                    }
+                                    field {
+                                        name = "Emoji"
+                                        value = definition.emoji.orNotAvailable()
+                                        inline = true
+                                    }
+                                    field {
+                                        name = "Example"
+                                        value = definition.example.orNotAvailable()
+                                        inline = false
+                                    }
+                                    footer = kordClient.getEmbedFooter()
+                                    timestamp = Clock.System.now()
+                                }
+                            } else {
+                                content = "No definitions found for ${arguments.word}"
                             }
-                            field {
-                                name = "Emoji"
-                                value = definition.emoji.orNotAvailable()
-                                inline = true
-                            }
-                            field {
-                                name = "Example"
-                                value = definition.example.orNotAvailable()
-                                inline = false
-                            }
-                            footer = kordClient.getEmbedFooter()
-                            timestamp = Clock.System.now()
                         }
                     }
                 } else if (!success) {
