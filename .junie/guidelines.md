@@ -1,0 +1,9 @@
+# Junie's Instructions for the Project
+
+- Dependencies should be managed, updated, or added to the `libs.version.toml` file in the root of the project.
+- Include KDoc (Kotlin documentation) for all public APIs and classes, which are not located under an `internal` package.
+- Public APIs should be well-documented, with clear descriptions of their purpose, parameters, and return values.
+- Suggest improvements to the codebase, such as refactoring opportunities, performance enhancements, or code organization.
+- The project is written in Kotlin, use Kotlin 2.1 features when applicable. No Java code is allowed. Refactor Java code to Kotlin when applicable.
+- The project does not allow warnings or deprecated APIs in the codebase, ensure.
+- Follow the project's coding style and conventions.
