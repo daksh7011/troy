@@ -104,7 +104,7 @@ class Dictionary : Extension() {
                             }
                         }
                     }
-                } else if (!success) {
+                } else {
                     respond { content = "Sorry, I couldn't fetch the definition at the moment. Please try again later." }
                 }
             }

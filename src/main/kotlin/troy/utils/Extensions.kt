@@ -261,7 +261,7 @@ suspend fun <T : Arguments, M : ModalForm> PublicSlashCommandContext<T, M>.respo
 fun String.extractLinksFromMessage(): List<String> {
     // Use all available options
     // Use sequence for more efficient processing
-    return LinksDetektorOptions.values().asSequence()
+    return LinksDetektorOptions.entries.asSequence()
         .flatMap { option ->
             LinksDetektor(this, option).detect().asSequence().mapNotNull { it.host }
         }
