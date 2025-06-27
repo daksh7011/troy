@@ -18,6 +18,7 @@ import org.koin.core.component.inject
 import troy.apiModels.UrbanDictItem
 import troy.apiModels.UrbanDictModel
 import troy.utils.*
+import troy.utils.requestAndCatchResponse
 
 class UrbanDictionary : Extension() {
 
@@ -43,23 +44,20 @@ class UrbanDictionary : Extension() {
 
                 // Add timeout to an HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
-                    httpClient.requestAndCatch({
-                        urbanDictModel = get("$URBAN_API_URL=$search").body()
-                        true
-                    }, {
-                        if (this is ResponseException) {
-                            if (response.status == HttpStatusCode.NotFound) {
-                                this@action.respond {
-                                    content = "${NOT_FOUND_MESSAGE}${arguments.search}"
-                                }
-                            } else {
-                                commonLogger.error { "Failed to fetch urban dictionary definition: $localizedMessage" }
+                    val result = httpClient.requestAndCatchResponse(
+                        block = {
+                            urbanDictModel = get("$URBAN_API_URL=$search").body()
+                            true
+                        },
+                        notFoundHandler = {
+                            this@action.respond {
+                                content = "${NOT_FOUND_MESSAGE}${arguments.search}"
                             }
-                        } else {
-                            commonLogger.error { "Failed to fetch urban dictionary definition: $localizedMessage" }
-                        }
-                        false
-                    })
+                            false
+                        },
+                        logPrefix = "Failed to fetch urban dictionary definition"
+                    )
+                    result ?: false
                 } ?: run {
                     commonLogger.error { "Timeout occurred while fetching urban dictionary definition for: ${arguments.search}" }
                     false

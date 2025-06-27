@@ -10,11 +10,9 @@ object PhishingDomainsHelper : KoinComponent {
     private const val DOMAIN_URL = "https://technowolf.in/phishingDomains"
 
     suspend fun fetchDomains(): List<String> {
-        return httpClient.requestAndCatch({
-            get(DOMAIN_URL).body<PhishingDomainModel>().domains
-        }, {
-            commonLogger.error { localizedMessage }
-            emptyList()
-        })
+        return httpClient.requestAndCatchResponse(
+            block = { get(DOMAIN_URL).body<PhishingDomainModel>().domains },
+            logPrefix = "Failed to fetch phishing domains"
+        ) ?: emptyList()
     }
 }

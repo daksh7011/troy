@@ -45,13 +45,10 @@ object GreetingsHelper : KoinComponent {
     private suspend fun requestForWeather(
         ayodhyaWeatherUrl: String
     ): OpenWeatherModel? {
-        var ayodhyaWeather: OpenWeatherModel? = null
-        httpClient.requestAndCatch({
-            ayodhyaWeather = get(ayodhyaWeatherUrl).body()
-        }, {
-            commonLogger.error { localizedMessage }
-        })
-        return ayodhyaWeather
+        return httpClient.requestAndCatchResponse(
+            block = { get(ayodhyaWeatherUrl).body() },
+            logPrefix = "Failed to fetch weather data"
+        )
     }
 
     private suspend fun scheduleGreetings(ayodhyaWeather: OpenWeatherModel, kord: Kord) {

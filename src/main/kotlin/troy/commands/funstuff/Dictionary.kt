@@ -42,27 +42,24 @@ class Dictionary : Extension() {
 
                 // Add timeout to HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
-                    httpClient.requestAndCatch({
-                        get(url) {
-                            headers {
-                                append(HttpHeaders.Authorization, "Token ${env(Environment.OWL_DICT_TOKEN)}")
+                    val result = httpClient.requestAndCatchResponse(
+                        block = {
+                            get(url) {
+                                headers {
+                                    append(HttpHeaders.Authorization, "Token ${env(Environment.OWL_DICT_TOKEN)}")
+                                }
+                            }.body<OwlDictModel>().let {
+                                owlDictModel = it
                             }
-                        }.body<OwlDictModel>().let {
-                            owlDictModel = it
-                        }
-                        true
-                    }, {
-                        if (this is ResponseException) {
-                            if (response.status == HttpStatusCode.NotFound) {
-                                respond { content = "No results found for ${arguments.word}" }
-                            } else {
-                                commonLogger.error { "Failed to fetch dictionary definition: $localizedMessage" }
-                            }
-                        } else {
-                            commonLogger.error { "Failed to fetch dictionary definition: $localizedMessage" }
-                        }
-                        false
-                    })
+                            true
+                        },
+                        notFoundHandler = {
+                            respond { content = "No results found for ${arguments.word}" }
+                            false
+                        },
+                        logPrefix = "Failed to fetch dictionary definition"
+                    )
+                    result ?: false
                 } ?: run {
                     commonLogger.error { "Timeout occurred while fetching dictionary definition for ${arguments.word}" }
                     false

@@ -10,9 +10,7 @@ import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.body
-import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.get
-import io.ktor.http.HttpStatusCode
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -20,11 +18,10 @@ import kotlinx.serialization.json.JsonObject
 import org.koin.core.component.inject
 import troy.apiModels.SteamGameModel
 import troy.apiModels.SteamSearchModel
-import troy.utils.commonLogger
 import troy.utils.encodeQuery
 import troy.utils.getEmbedFooter
 import troy.utils.httpClient
-import troy.utils.requestAndCatch
+import troy.utils.requestAndCatchResponse
 
 class Steam : Extension() {
 
@@ -53,27 +50,16 @@ class Steam : Extension() {
         gameName: String,
         respondWithError: suspend (String) -> Unit
     ): SteamSearchModel? {
-        var steamSearchModel: SteamSearchModel? = null
         val url = "https://store.steampowered.com/api/storesearch?cc=us&l=en&term=${gameName.encodeQuery()}"
 
-        httpClient.requestAndCatch(
-            {
-                steamSearchModel = get(url).body()
+        return httpClient.requestAndCatchResponse(
+            block = { get(url).body() },
+            notFoundHandler = {
+                respondWithError(dataNotFound)
+                null
             },
-            {
-                if (this is ResponseException) {
-                    when (response.status) {
-                        HttpStatusCode.BadRequest -> commonLogger.error { localizedMessage }
-                        HttpStatusCode.NotFound -> respondWithError(dataNotFound)
-                        else -> commonLogger.error { localizedMessage }
-                    }
-                } else {
-                    commonLogger.error { "Failed to fetch Steam search results: $localizedMessage" }
-                }
-            },
+            logPrefix = "Failed to fetch Steam search results"
         )
-
-        return steamSearchModel
     }
 
     /**
@@ -87,27 +73,16 @@ class Steam : Extension() {
         gameId: Int,
         respondWithError: suspend (String) -> Unit
     ): JsonObject? {
-        var steamGameJsonObject: JsonObject? = null
         val steamGameUrl = "https://store.steampowered.com/api/appdetails?appids=$gameId"
 
-        httpClient.requestAndCatch(
-            {
-                steamGameJsonObject = get(steamGameUrl).body()
+        return httpClient.requestAndCatchResponse(
+            block = { get(steamGameUrl).body() },
+            notFoundHandler = {
+                respondWithError(dataNotFound)
+                null
             },
-            {
-                if (this is ResponseException) {
-                    when (response.status) {
-                        HttpStatusCode.BadRequest -> commonLogger.error { localizedMessage }
-                        HttpStatusCode.NotFound -> respondWithError(dataNotFound)
-                        else -> commonLogger.error { localizedMessage }
-                    }
-                } else {
-                    commonLogger.error { "Failed to fetch Steam game details: $localizedMessage" }
-                }
-            },
+            logPrefix = "Failed to fetch Steam game details"
         )
-
-        return steamGameJsonObject
     }
 
     /**

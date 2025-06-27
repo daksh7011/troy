@@ -9,7 +9,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import troy.apiModels.PunsModel
 import troy.utils.commonLogger
 import troy.utils.httpClient
-import troy.utils.requestAndCatch
+import troy.utils.requestAndCatchResponse
 
 class Pun : Extension() {
 
@@ -26,16 +26,14 @@ class Pun : Extension() {
 
                 // Add timeout to HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
-                    httpClient.requestAndCatch(
-                        {
+                    val result = httpClient.requestAndCatchResponse(
+                        block = {
                             punsModel = get(PUN_API_URL).body()
                             true
                         },
-                        {
-                            commonLogger.error { "Failed to fetch pun: $localizedMessage" }
-                            false
-                        }
+                        logPrefix = "Failed to fetch pun"
                     )
+                    result ?: false
                 } ?: run {
                     commonLogger.error { "Timeout occurred while fetching pun" }
                     false
