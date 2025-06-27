@@ -9,7 +9,6 @@ import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import dev.kordex.core.utils.env
 import io.ktor.client.call.*
-import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.withTimeoutOrNull
@@ -43,6 +42,7 @@ class Dictionary : Extension() {
                 // Add timeout to HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
                     val result = httpClient.requestAndCatchResponse(
+                        identifier = this@Dictionary.name,
                         block = {
                             get(url) {
                                 headers {

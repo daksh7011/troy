@@ -81,41 +81,99 @@ fun Snowflake.isOwner(): Boolean = toString() == env(Environment.OWNER_ID)
 fun Snowflake.isGirlfriend(): Boolean = toString() == env(Environment.GIRLFRIEND_ID)
 
 /**
- * Executes an HTTP request and handles ResponseException with status-specific handlers.
- * Non-ResponseException errors will be rethrown.
+ * Executes an HTTP request and handles various response scenarios.
  *
- * @param T The return type of the request and error handlers
- * @param block The HTTP request to execute
- * @param notFoundHandler Function to handle HTTP 404 Not Found responses (optional)
- * @param badRequestHandler Function to handle HTTP 400 Bad Request responses (optional)
- * @param otherStatusHandler Function to handle other HTTP status codes (optional)
- * @param logPrefix Prefix for error log messages
- * @return The result of the request or null if an error occurred
- * @throws Throwable Any non-ResponseException that occurred during the request
+ * @param identifier Optional identifier for logging purposes. If null, "Unknown" will be used.
+ * @param block The HTTP request to execute.
+ * @param notFoundHandler Optional handler for 404 Not Found responses.
+ * @param badRequestHandler Optional handler for 400 Bad Request responses.
+ * @param otherStatusHandler Optional handler for other HTTP status codes.
+ * @param logPrefix Prefix for error log messages.
+ * @return The result of the HTTP request, or null if an error occurred.
  */
 suspend fun <T> HttpClient.requestAndCatchResponse(
+    identifier: String,
     block: suspend HttpClient.() -> T,
     notFoundHandler: (suspend () -> T)? = null,
     badRequestHandler: (suspend () -> T)? = null,
     otherStatusHandler: (suspend (HttpStatusCode) -> T)? = null,
     logPrefix: String = "Request failed"
 ): T? {
-    return try {
+    return runCatching {
         block()
-    } catch (e: ResponseException) {
-        when (e.response.status) {
-            HttpStatusCode.NotFound -> notFoundHandler?.invoke() ?: run {
-                commonLogger.error { "$logPrefix: Not Found - ${e.localizedMessage}" }
-                null
-            }
-            HttpStatusCode.BadRequest -> badRequestHandler?.invoke() ?: run {
-                commonLogger.error { "$logPrefix: Bad Request - ${e.localizedMessage}" }
-                null
-            }
-            else -> otherStatusHandler?.invoke(e.response.status) ?: run {
-                commonLogger.error { "$logPrefix: ${e.response.status} - ${e.localizedMessage}" }
-                null
-            }
+    }.fold(
+        onSuccess = {
+            commonLogger.info { "$identifier executed an API call with success" }
+            it
+        },
+        onFailure = { exception ->
+            commonLogger.info { "$identifier executed an API call with failure" }
+            handleRequestException(exception, notFoundHandler, badRequestHandler, otherStatusHandler, logPrefix)
+        }
+    )
+}
+
+/**
+ * Handles exceptions from HTTP requests.
+ *
+ * @param exception The exception that occurred.
+ * @param notFoundHandler Optional handler for 404 Not Found responses.
+ * @param badRequestHandler Optional handler for 400 Bad Request responses.
+ * @param otherStatusHandler Optional handler for other HTTP status codes.
+ * @param logPrefix Prefix for error log messages.
+ * @return The result from the appropriate handler, or null if no handler is provided.
+ */
+private suspend fun <T> handleRequestException(
+    exception: Throwable,
+    notFoundHandler: (suspend () -> T)?,
+    badRequestHandler: (suspend () -> T)?,
+    otherStatusHandler: (suspend (HttpStatusCode) -> T)?,
+    logPrefix: String
+): T? {
+    return when (exception) {
+        is ResponseException -> handleResponseException(
+            exception,
+            notFoundHandler,
+            badRequestHandler,
+            otherStatusHandler,
+            logPrefix,
+        )
+        else -> {
+            commonLogger.error { "$logPrefix: ${exception.localizedMessage}" }
+            null
+        }
+    }
+}
+
+/**
+ * Handles ResponseException based on HTTP status code.
+ *
+ * @param exception The ResponseException that occurred.
+ * @param notFoundHandler Optional handler for 404 Not Found responses.
+ * @param badRequestHandler Optional handler for 400 Bad Request responses.
+ * @param otherStatusHandler Optional handler for other HTTP status codes.
+ * @param logPrefix Prefix for error log messages.
+ * @return The result from the appropriate handler, or null if no handler is provided.
+ */
+private suspend fun <T> handleResponseException(
+    exception: ResponseException,
+    notFoundHandler: (suspend () -> T)?,
+    badRequestHandler: (suspend () -> T)?,
+    otherStatusHandler: (suspend (HttpStatusCode) -> T)?,
+    logPrefix: String
+): T? {
+    return when (exception.response.status) {
+        HttpStatusCode.NotFound -> notFoundHandler?.invoke() ?: run {
+            commonLogger.error { "$logPrefix: Not Found - ${exception.localizedMessage}" }
+            null
+        }
+        HttpStatusCode.BadRequest -> badRequestHandler?.invoke() ?: run {
+            commonLogger.error { "$logPrefix: Bad Request - ${exception.localizedMessage}" }
+            null
+        }
+        else -> otherStatusHandler?.invoke(exception.response.status) ?: run {
+            commonLogger.error { "$logPrefix: ${exception.response.status} - ${exception.localizedMessage}" }
+            null
         }
     }
 }

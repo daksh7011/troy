@@ -33,6 +33,7 @@ class Fact : Extension() {
                 // Add timeout to HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
                     val result = httpClient.requestAndCatchResponse(
+                        identifier = this@Fact.name,
                         block = {
                             factModel = get(FACT_API_URL).body()
                             true

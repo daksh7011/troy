@@ -9,8 +9,8 @@ import dev.kordex.core.commands.converters.impl.coalescingString
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
-import io.ktor.client.call.body
-import io.ktor.client.request.get
+import io.ktor.client.call.*
+import io.ktor.client.request.*
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -53,6 +53,7 @@ class Steam : Extension() {
         val url = "https://store.steampowered.com/api/storesearch?cc=us&l=en&term=${gameName.encodeQuery()}"
 
         return httpClient.requestAndCatchResponse(
+            identifier = this@Steam.name,
             block = { get(url).body() },
             notFoundHandler = {
                 respondWithError(dataNotFound)
@@ -76,6 +77,7 @@ class Steam : Extension() {
         val steamGameUrl = "https://store.steampowered.com/api/appdetails?appids=$gameId"
 
         return httpClient.requestAndCatchResponse(
+            identifier = this@Steam.name,
             block = { get(steamGameUrl).body() },
             notFoundHandler = {
                 respondWithError(dataNotFound)
