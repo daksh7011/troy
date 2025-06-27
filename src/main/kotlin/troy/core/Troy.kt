@@ -31,12 +31,21 @@ import troy.commands.mod.Prune
 import troy.commands.mod.Reboot
 import troy.commands.mod.ResetWarnings
 import troy.commands.mod.Warn
-import troy.commands.nsfw.Nudes
 import troy.commands.nsfw.Rule34
 import troy.di.mongoModule
 import troy.di.repositoryModule
 import troy.utils.Environment
 
+/**
+ * Creates and configures the Troy Discord bot.
+ *
+ * This function initializes the ExtensibleBot with the necessary configuration,
+ * including command settings, extensions, presence status, and Koin modules.
+ * It sets up all the command extensions, help configuration, and optional Sentry
+ * integration for error reporting.
+ *
+ * @return A configured ExtensibleBot instance ready to be started
+ */
 suspend fun getTroy(): ExtensibleBot {
     val troy = ExtensibleBot(env(Environment.TOKEN)) {
         chatCommands {
@@ -81,7 +90,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Dictionary)
             add(::Fact)
             add(::Steam)
-            add(::Nudes)
+//            add(::Nudes)
             add(::Rule34)
             add(::Warn)
             add(::ResetWarnings)
