@@ -56,6 +56,13 @@ private suspend fun checkForPhishingDomains(message: Message, domainList: Collec
     }
 }
 
+/**
+ * Main entry point for the Troy Discord bot.
+ *
+ * Initializes the bot, sets up event handlers for various Discord events,
+ * and starts the bot. The bot responds to specific message content,
+ * checks for phishing domains, and logs command executions.
+ */
 suspend fun main() {
     val troy = getTroy()
     val kordClient: Kord = troy.getKoin().get()

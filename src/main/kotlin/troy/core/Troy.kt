@@ -36,6 +36,16 @@ import troy.di.mongoModule
 import troy.di.repositoryModule
 import troy.utils.Environment
 
+/**
+ * Creates and configures the Troy Discord bot.
+ *
+ * This function initializes the ExtensibleBot with the necessary configuration,
+ * including command settings, extensions, presence status, and Koin modules.
+ * It sets up all the command extensions, help configuration, and optional Sentry
+ * integration for error reporting.
+ *
+ * @return A configured ExtensibleBot instance ready to be started
+ */
 suspend fun getTroy(): ExtensibleBot {
     val troy = ExtensibleBot(env(Environment.TOKEN)) {
         chatCommands {
