@@ -9,16 +9,13 @@ import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.*
-import io.ktor.client.plugins.*
 import io.ktor.client.request.*
-import io.ktor.http.*
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.apiModels.UrbanDictItem
 import troy.apiModels.UrbanDictModel
 import troy.utils.*
-import troy.utils.requestAndCatchResponse
 
 class UrbanDictionary : Extension() {
 
@@ -45,6 +42,7 @@ class UrbanDictionary : Extension() {
                 // Add timeout to an HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
                     val result = httpClient.requestAndCatchResponse(
+                        identifier = this@UrbanDictionary.name,
                         block = {
                             urbanDictModel = get("$URBAN_API_URL=$search").body()
                             true

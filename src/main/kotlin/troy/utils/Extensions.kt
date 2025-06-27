@@ -80,44 +80,45 @@ fun Snowflake.isOwner(): Boolean = toString() == env(Environment.OWNER_ID)
  */
 fun Snowflake.isGirlfriend(): Boolean = toString() == env(Environment.GIRLFRIEND_ID)
 
-/**
- * Executes an HTTP request and handles ResponseException with status-specific handlers.
- * Non-ResponseException errors will be rethrown.
- *
- * @param T The return type of the request and error handlers
- * @param block The HTTP request to execute
- * @param notFoundHandler Function to handle HTTP 404 Not Found responses (optional)
- * @param badRequestHandler Function to handle HTTP 400 Bad Request responses (optional)
- * @param otherStatusHandler Function to handle other HTTP status codes (optional)
- * @param logPrefix Prefix for error log messages
- * @return The result of the request or null if an error occurred
- * @throws Throwable Any non-ResponseException that occurred during the request
- */
 suspend fun <T> HttpClient.requestAndCatchResponse(
+    identifier: String,
     block: suspend HttpClient.() -> T,
     notFoundHandler: (suspend () -> T)? = null,
     badRequestHandler: (suspend () -> T)? = null,
     otherStatusHandler: (suspend (HttpStatusCode) -> T)? = null,
     logPrefix: String = "Request failed"
 ): T? {
-    return try {
+    return runCatching {
         block()
-    } catch (e: ResponseException) {
-        when (e.response.status) {
-            HttpStatusCode.NotFound -> notFoundHandler?.invoke() ?: run {
-                commonLogger.error { "$logPrefix: Not Found - ${e.localizedMessage}" }
-                null
-            }
-            HttpStatusCode.BadRequest -> badRequestHandler?.invoke() ?: run {
-                commonLogger.error { "$logPrefix: Bad Request - ${e.localizedMessage}" }
-                null
-            }
-            else -> otherStatusHandler?.invoke(e.response.status) ?: run {
-                commonLogger.error { "$logPrefix: ${e.response.status} - ${e.localizedMessage}" }
-                null
+    }.fold(
+        onSuccess = {
+            commonLogger.info { "$identifier executed an API call with success" }
+            it
+        },
+        onFailure = { exception ->
+            commonLogger.info { "$identifier executed an API call with failure" }
+            when (exception) {
+                is ResponseException -> when (exception.response.status) {
+                    HttpStatusCode.NotFound -> notFoundHandler?.invoke() ?: run {
+                        commonLogger.error { "$logPrefix: Not Found - ${exception.localizedMessage}" }
+                        null
+                    }
+                    HttpStatusCode.BadRequest -> badRequestHandler?.invoke() ?: run {
+                        commonLogger.error { "$logPrefix: Bad Request - ${exception.localizedMessage}" }
+                        null
+                    }
+                    else -> otherStatusHandler?.invoke(exception.response.status) ?: run {
+                        commonLogger.error { "$logPrefix: ${exception.response.status} - ${exception.localizedMessage}" }
+                        null
+                    }
+                }
+                else -> {
+                    commonLogger.error { "$logPrefix: ${exception.localizedMessage}" }
+                    null
+                }
             }
         }
-    }
+    )
 }
 
 /**
