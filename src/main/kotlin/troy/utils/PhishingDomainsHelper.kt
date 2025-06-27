@@ -1,18 +1,18 @@
 package troy.utils
 
-import io.ktor.client.call.body
-import io.ktor.client.request.get
 import org.koin.core.component.KoinComponent
-import troy.apiModels.PhishingDomainModel
 
 object PhishingDomainsHelper : KoinComponent {
 
-    private const val DOMAIN_URL = "https://technowolf.in/phishingDomains"
+    fun fetchDomains(): List<String> = emptyList()
 
-    suspend fun fetchDomains(): List<String> {
+//    private const val DOMAIN_URL = "https://technowolf.in/phishingDomains"
+
+    /*suspend fun fetchDomains(): List<String> {
         return httpClient.requestAndCatchResponse(
+            identifier = "fetchPhishingDomains",
             block = { get(DOMAIN_URL).body<PhishingDomainModel>().domains },
             logPrefix = "Failed to fetch phishing domains"
         ) ?: emptyList()
-    }
+    }*/
 }

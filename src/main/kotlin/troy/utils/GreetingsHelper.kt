@@ -4,8 +4,8 @@ import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.MessageChannelBehavior
 import dev.kordex.core.utils.env
 import dev.kordex.core.utils.scheduling.Scheduler
-import io.ktor.client.call.body
-import io.ktor.client.request.get
+import io.ktor.client.call.*
+import io.ktor.client.request.*
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import org.koin.core.component.KoinComponent
@@ -46,6 +46,7 @@ object GreetingsHelper : KoinComponent {
         ayodhyaWeatherUrl: String
     ): OpenWeatherModel? {
         return httpClient.requestAndCatchResponse(
+            identifier = "pollForAyodhyaWeather",
             block = { get(ayodhyaWeatherUrl).body() },
             logPrefix = "Failed to fetch weather data"
         )

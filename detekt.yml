@@ -32,7 +32,7 @@ console-reports:
 output-reports:
   active: true
   exclude:
-     - 'HtmlOutputReport'
+    - 'HtmlOutputReport'
     # - 'TxtOutputReport'
     # - 'XmlOutputReport'
 
@@ -659,7 +659,7 @@ style:
   UseEmptyCounterpart:
     active: true
   UseIfInsteadOfWhen:
-    active: true
+    active: false
   UseRequire:
     active: true
   UseRequireNotNull:

@@ -50,6 +50,7 @@ class Doggo : Extension() {
                 // Add timeout to HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
                     val result = httpClient.requestAndCatchResponse(
+                        identifier = this@Doggo.name,
                         block = {
                             doggoModel = get(url).body()
                             true
