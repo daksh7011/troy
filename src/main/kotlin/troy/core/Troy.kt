@@ -31,7 +31,6 @@ import troy.commands.mod.Prune
 import troy.commands.mod.Reboot
 import troy.commands.mod.ResetWarnings
 import troy.commands.mod.Warn
-import troy.commands.nsfw.Nudes
 import troy.commands.nsfw.Rule34
 import troy.di.mongoModule
 import troy.di.repositoryModule
@@ -81,7 +80,7 @@ suspend fun getTroy(): ExtensibleBot {
             add(::Dictionary)
             add(::Fact)
             add(::Steam)
-            add(::Nudes)
+//            add(::Nudes)
             add(::Rule34)
             add(::Warn)
             add(::ResetWarnings)
