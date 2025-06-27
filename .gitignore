@@ -167,3 +167,4 @@ gradle-app.setting
 
 # ignore kordex data collection toml file
 /data/kordex/
+/docs/*.md
