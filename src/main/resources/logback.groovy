@@ -1,4 +1,8 @@
-// Do not replace the full qualifier names with imports sometimes IDE removes it because it is somehow unused.
+/*
+ * Use fully qualified class names (e.g., ch.qos.logback.core.joran.spi.ConsoleTarget) instead of imports.
+ * Some IDEs may remove seemingly unused imports, which can cause build or runtime failures in Groovy configuration files.
+ * Keeping the full qualifier ensures reliable reference resolution and prevents accidental breakage.
+ */
 
 def environment = System.getenv("ENVIRONMENT") ?: "dev"
 
