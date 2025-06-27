@@ -45,6 +45,19 @@ dependencies {
     implementation(libs.logback)
     implementation(libs.logback.groovy)
     implementation(libs.logging)
+
+    // Testing dependencies
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.params)
+    testImplementation(libs.mockk)
+    testRuntimeOnly(libs.junit.engine)
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 
 kordEx {

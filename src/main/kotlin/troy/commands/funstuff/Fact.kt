@@ -14,7 +14,7 @@ import troy.apiModels.FactModel
 import troy.utils.commonLogger
 import troy.utils.getEmbedFooter
 import troy.utils.httpClient
-import troy.utils.requestAndCatch
+import troy.utils.requestAndCatchResponse
 
 class Fact : Extension() {
 
@@ -32,13 +32,14 @@ class Fact : Extension() {
 
                 // Add timeout to HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
-                    httpClient.requestAndCatch({
-                        factModel = get(FACT_API_URL).body()
-                        true
-                    }, {
-                        commonLogger.error { "Failed to fetch fact: $localizedMessage" }
-                        false
-                    })
+                    val result = httpClient.requestAndCatchResponse(
+                        block = {
+                            factModel = get(FACT_API_URL).body()
+                            true
+                        },
+                        logPrefix = "Failed to fetch fact"
+                    )
+                    result ?: false
                 } ?: run {
                     commonLogger.error { "Timeout occurred while fetching fact" }
                     false

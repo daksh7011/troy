@@ -9,6 +9,7 @@ import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import dev.kordex.core.utils.env
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.withTimeoutOrNull
@@ -41,23 +42,24 @@ class Dictionary : Extension() {
 
                 // Add timeout to HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
-                    httpClient.requestAndCatch({
-                        get(url) {
-                            headers {
-                                append(HttpHeaders.Authorization, "Token ${env(Environment.OWL_DICT_TOKEN)}")
+                    val result = httpClient.requestAndCatchResponse(
+                        block = {
+                            get(url) {
+                                headers {
+                                    append(HttpHeaders.Authorization, "Token ${env(Environment.OWL_DICT_TOKEN)}")
+                                }
+                            }.body<OwlDictModel>().let {
+                                owlDictModel = it
                             }
-                        }.body<OwlDictModel>().let {
-                            owlDictModel = it
-                        }
-                        true
-                    }, {
-                        if (response.status == HttpStatusCode.NotFound) {
+                            true
+                        },
+                        notFoundHandler = {
                             respond { content = "No results found for ${arguments.word}" }
-                        } else {
-                            commonLogger.error { "Failed to fetch dictionary definition: $localizedMessage" }
-                        }
-                        false
-                    })
+                            false
+                        },
+                        logPrefix = "Failed to fetch dictionary definition"
+                    )
+                    result ?: false
                 } ?: run {
                     commonLogger.error { "Timeout occurred while fetching dictionary definition for ${arguments.word}" }
                     false

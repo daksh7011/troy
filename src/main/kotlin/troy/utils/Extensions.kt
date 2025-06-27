@@ -17,6 +17,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import java.net.URLEncoder
@@ -80,25 +81,44 @@ fun Snowflake.isOwner(): Boolean = toString() == env(Environment.OWNER_ID)
 fun Snowflake.isGirlfriend(): Boolean = toString() == env(Environment.GIRLFRIEND_ID)
 
 /**
- * Executes an HTTP request and handles ResponseException with a custom error handler.
+ * Executes an HTTP request and handles ResponseException with status-specific handlers.
+ * Non-ResponseException errors will be rethrown.
  *
- * @param T The return type of both the request and error handler
+ * @param T The return type of the request and error handlers
  * @param block The HTTP request to execute
- * @param errorHandler A function to handle ResponseException if it occurs
- * @return The result of the request or the error handler
- * @throws Throwable Any exception other than ResponseException is rethrown
+ * @param notFoundHandler Function to handle HTTP 404 Not Found responses (optional)
+ * @param badRequestHandler Function to handle HTTP 400 Bad Request responses (optional)
+ * @param otherStatusHandler Function to handle other HTTP status codes (optional)
+ * @param logPrefix Prefix for error log messages
+ * @return The result of the request or null if an error occurred
+ * @throws Throwable Any non-ResponseException that occurred during the request
  */
-suspend fun <T> HttpClient.requestAndCatch(
+suspend fun <T> HttpClient.requestAndCatchResponse(
     block: suspend HttpClient.() -> T,
-    errorHandler: suspend ResponseException.() -> T
-): T = runCatching { block() }
-    .getOrElse {
-        if (it is ResponseException) {
-            it.errorHandler()
-        } else {
-            throw it
+    notFoundHandler: (suspend () -> T)? = null,
+    badRequestHandler: (suspend () -> T)? = null,
+    otherStatusHandler: (suspend (HttpStatusCode) -> T)? = null,
+    logPrefix: String = "Request failed"
+): T? {
+    return try {
+        block()
+    } catch (e: ResponseException) {
+        when (e.response.status) {
+            HttpStatusCode.NotFound -> notFoundHandler?.invoke() ?: run {
+                commonLogger.error { "$logPrefix: Not Found - ${e.localizedMessage}" }
+                null
+            }
+            HttpStatusCode.BadRequest -> badRequestHandler?.invoke() ?: run {
+                commonLogger.error { "$logPrefix: Bad Request - ${e.localizedMessage}" }
+                null
+            }
+            else -> otherStatusHandler?.invoke(e.response.status) ?: run {
+                commonLogger.error { "$logPrefix: ${e.response.status} - ${e.localizedMessage}" }
+                null
+            }
         }
     }
+}
 
 /**
  * Creates a standardized embed footer for a message.
@@ -140,30 +160,31 @@ fun getTestGuildSnowflake(): Snowflake {
  *
  * The client is configured with the application name "Troy" and
  * instance ID and API URL from environment variables.
+ *
+ * The client is lazily initialized to improve performance.
  */
-val unleashClient: Unleash
-    get() {
-        val config = UnleashConfig.builder()
-            .appName("Troy")
-            .instanceId(env(Environment.UNLEASH_INSTANCE_ID))
-            .unleashAPI(env(Environment.UNLEASH_URL))
-            .build()
-        return DefaultUnleash(config)
-    }
+val unleashClient: Unleash by lazy {
+    val config = UnleashConfig.builder()
+        .appName("Troy")
+        .instanceId(env(Environment.UNLEASH_INSTANCE_ID))
+        .unleashAPI(env(Environment.UNLEASH_URL))
+        .build()
+    DefaultUnleash(config)
+}
 
 /**
  * Formats a nullable string with Discord's bold markdown syntax.
  *
- * @return A string surrounded by "**" for Discord bold formatting
+ * @return A string surrounded by "**" for Discord bold formatting, or an empty string if the input is null
  */
-fun String?.bold(): String = "**$this**"
+fun String?.bold(): String = if (this != null) "**$this**" else ""
 
 /**
  * Formats a nullable string with Discord's italic markdown syntax.
  *
- * @return A string surrounded by "*" for Discord italic formatting
+ * @return A string surrounded by "*" for Discord italic formatting, or an empty string if the input is null
  */
-fun String?.italic(): String = "*$this*"
+fun String?.italic(): String = if (this != null) "*$this*" else ""
 
 /**
  * Checks if a string is either empty or contains only whitespace.
@@ -194,34 +215,20 @@ suspend fun <T : Arguments, M : ModalForm> PublicSlashCommandContext<T, M>.respo
 /**
  * Extracts all links from a string using various detection methods.
  *
- * This function uses LinksDetektor with different options to extract links from various
+ * This function uses LinksDetektor with all available options to extract links from various
  * contexts including plain text, brackets, quotes, JSON, JavaScript, XML, and HTML.
  *
  * @return A distinct list of domain names extracted from the string
  */
-fun String.extractLinksFromMessage(): List<String?> {
-    val linksWithDefaultOption = LinksDetektor(this, LinksDetektorOptions.Default).detect().map { it.host }
-    val linksWithBracketMatch = LinksDetektor(this, LinksDetektorOptions.BRACKET_MATCH).detect().map { it.host }
-    val linksWithQuoteMatch = LinksDetektor(this, LinksDetektorOptions.QUOTE_MATCH).detect().map { it.host }
-    val linksWithSingleQuoteMatch =
-        LinksDetektor(this, LinksDetektorOptions.SINGLE_QUOTE_MATCH).detect().map { it.host }
-    val linksWithJsonMatch = LinksDetektor(this, LinksDetektorOptions.JSON).detect().map { it.host }
-    val linksWithJavascriptMatch = LinksDetektor(this, LinksDetektorOptions.JAVASCRIPT).detect().map { it.host }
-    val linksWithXmlMatch = LinksDetektor(this, LinksDetektorOptions.XML).detect().map { it.host }
-    val linksWithHtmlMatch = LinksDetektor(this, LinksDetektorOptions.HTML).detect().map { it.host }
-
-    val finalList = mutableListOf<String?>().apply {
-        addAll(linksWithDefaultOption)
-        addAll(linksWithBracketMatch)
-        addAll(linksWithQuoteMatch)
-        addAll(linksWithSingleQuoteMatch)
-        addAll(linksWithJsonMatch)
-        addAll(linksWithJavascriptMatch)
-        addAll(linksWithXmlMatch)
-        addAll(linksWithHtmlMatch)
-    }.distinct()
-
-    return finalList
+fun String.extractLinksFromMessage(): List<String> {
+    // Use all available options
+    // Use sequence for more efficient processing
+    return LinksDetektorOptions.values().asSequence()
+        .flatMap { option ->
+            LinksDetektor(this, option).detect().asSequence().mapNotNull { it.host }
+        }
+        .distinct()
+        .toList()
 }
 
 /**
@@ -232,14 +239,17 @@ fun String.extractLinksFromMessage(): List<String?> {
  *
  * @return A formatted string with numbered and italicized domain entries, or an empty string if the collection is empty
  */
-fun Collection<String?>.buildFormattedDomainList(): String {
+fun Collection<String>.buildFormattedDomainList(): String {
     if (isEmpty()) return ""
 
-    return buildString {
-        filterNotNull().forEachIndexed { index, domain ->
-            append("${index + 1}. $domain\n".italic())
-        }
+    // Use a StringBuilder for efficient string building
+    val result = StringBuilder()
+    forEachIndexed { index, domain ->
+        // Format each line with italic markdown (asterisks)
+        result.append("*${index + 1}. $domain*\n")
     }
+
+    return result.toString()
 }
 
 /**

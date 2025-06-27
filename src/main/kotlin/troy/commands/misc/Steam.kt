@@ -9,16 +9,19 @@ import dev.kordex.core.commands.converters.impl.coalescingString
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import org.koin.core.component.inject
 import troy.apiModels.SteamGameModel
 import troy.apiModels.SteamSearchModel
-import troy.utils.*
+import troy.utils.encodeQuery
+import troy.utils.getEmbedFooter
+import troy.utils.httpClient
+import troy.utils.requestAndCatchResponse
 
 class Steam : Extension() {
 
@@ -36,55 +39,104 @@ class Steam : Extension() {
         }
     }
 
+    /**
+     * Fetches the Steam search model for the given game name.
+     *
+     * @param gameName The name of the game to search for
+     * @param respondWithError Function to respond with an error message
+     * @return The Steam search model, or null if not found
+     */
+    private suspend fun fetchSteamSearchModel(
+        gameName: String,
+        respondWithError: suspend (String) -> Unit
+    ): SteamSearchModel? {
+        val url = "https://store.steampowered.com/api/storesearch?cc=us&l=en&term=${gameName.encodeQuery()}"
+
+        return httpClient.requestAndCatchResponse(
+            block = { get(url).body() },
+            notFoundHandler = {
+                respondWithError(dataNotFound)
+                null
+            },
+            logPrefix = "Failed to fetch Steam search results"
+        )
+    }
+
+    /**
+     * Fetches the Steam game details for the given game ID.
+     *
+     * @param gameId The ID of the game to fetch details for
+     * @param respondWithError Function to respond with an error message
+     * @return The JSON object containing the game details, or null if not found
+     */
+    private suspend fun fetchSteamGameDetails(
+        gameId: Int,
+        respondWithError: suspend (String) -> Unit
+    ): JsonObject? {
+        val steamGameUrl = "https://store.steampowered.com/api/appdetails?appids=$gameId"
+
+        return httpClient.requestAndCatchResponse(
+            block = { get(steamGameUrl).body() },
+            notFoundHandler = {
+                respondWithError(dataNotFound)
+                null
+            },
+            logPrefix = "Failed to fetch Steam game details"
+        )
+    }
+
+    /**
+     * Extracts the game data from the Steam game JSON object.
+     *
+     * @param steamGameJsonObject The JSON object containing the game details
+     * @return The game data as a JsonElement, or null if not found
+     */
+    private fun extractGameData(steamGameJsonObject: JsonObject?): JsonElement? {
+        return steamGameJsonObject?.let { jsonObj ->
+            val key = jsonObj.entries.firstOrNull()?.key
+            if (key != null) {
+                (jsonObj[key] as? JsonObject)?.get("data")
+            } else {
+                null
+            }
+        }
+    }
+
     override suspend fun setup() {
         publicSlashCommand(Steam::SteamSearchArguments) {
             name = "steam".toKey()
             description = "Searches Steam for your query.".toKey()
             action {
-                var steamSearchModel: SteamSearchModel? = null
-                var steamGameJsonObject: JsonObject? = null
-                val url = "https://store.steampowered.com/api/storesearch?cc=us&l=en&term=${arguments.gameName.encodeQuery()}"
-                httpClient.requestAndCatch(
-                    {
-                        steamSearchModel = get(url).body()
-                    },
-                    {
-                        when (response.status) {
-                            HttpStatusCode.BadRequest -> commonLogger.error { localizedMessage }
-                            HttpStatusCode.NotFound -> this@action.respond { content = dataNotFound }
-                            else -> commonLogger.error { localizedMessage }
-                        }
-                    },
-                )
-                if (steamSearchModel?.gameItems == null ||
-                    steamSearchModel?.gameItems?.isEmpty() != false
-                ) {
-                    respond { content = dataNotFound }
+                // Function to respond with an error message
+                val respondWithError: suspend (String) -> Unit = { errorMessage ->
+                    respond { content = errorMessage }
+                }
+
+                // Fetch the Steam search model
+                val steamSearchModel = fetchSteamSearchModel(arguments.gameName, respondWithError)
+
+                // Check if the search model has any game items
+                if (steamSearchModel?.gameItems == null || steamSearchModel.gameItems.isEmpty()) {
+                    respondWithError(dataNotFound)
                     return@action
                 }
-                steamSearchModel?.gameItems?.get(0)?.let {
-                    if (it.id == null) {
-                        respond { content = dataNotFound }
-                        return@action
-                    }
-                    httpClient.requestAndCatch(
-                        {
-                            val steamGameUrl = "https://store.steampowered.com/api/appdetails?appids=${it.id}"
-                            steamGameJsonObject = get(steamGameUrl).body()
-                        },
-                        {
-                            when (response.status) {
-                                HttpStatusCode.BadRequest -> commonLogger.error { localizedMessage }
-                                HttpStatusCode.NotFound -> this@action.respond { content = dataNotFound }
-                                else -> commonLogger.error { localizedMessage }
-                            }
-                        },
-                    )
+
+                // Get the first game item
+                val gameItem = steamSearchModel.gameItems[0]
+                if (gameItem.id == null) {
+                    respondWithError(dataNotFound)
+                    return@action
                 }
-                val steamGameJsonString =
-                    (steamGameJsonObject?.get(steamGameJsonObject?.entries?.first()?.key) as JsonObject)["troy/data/data"]
-                if (steamGameJsonString != null) {
-                    jsonSerializer.decodeFromString<SteamGameModel?>(steamGameJsonString.toString())
+
+                // Fetch the game details
+                val steamGameJsonObject = fetchSteamGameDetails(gameItem.id, respondWithError)
+
+                // Extract the game data
+                val gameData = extractGameData(steamGameJsonObject)
+
+                // If game data is found, decode it and respond with the embed
+                if (gameData != null) {
+                    jsonSerializer.decodeFromString<SteamGameModel?>(gameData.toString())
                         ?.let { steamGameModel ->
                             respond {
                                 embed {
