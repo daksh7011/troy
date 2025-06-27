@@ -13,6 +13,10 @@ unleash = "11.0.0"
 kmongo-coroutine = "5.2.1"
 links-detektor = "1.0.1"
 
+# Testing dependencies
+junit = "5.10.2"
+mockk = "1.13.10"
+
 [libraries]
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 groovy = { module = "org.codehaus.groovy:groovy", version.ref = "groovy" }
@@ -27,3 +31,8 @@ unleash = { module = "io.getunleash:unleash-client-java", version.ref = "unleash
 kmongo-coroutine = { module = "org.litote.kmongo:kmongo-coroutine", version.ref = "kmongo-coroutine" }
 links-detektor = { module = "com.gitlab.technowolf:links-detektor", version.ref = "links-detektor" }
 
+# Testing libraries
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }

@@ -9,6 +9,7 @@ import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import dev.kordex.core.utils.env
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.withTimeoutOrNull
@@ -51,8 +52,12 @@ class Dictionary : Extension() {
                         }
                         true
                     }, {
-                        if (response.status == HttpStatusCode.NotFound) {
-                            respond { content = "No results found for ${arguments.word}" }
+                        if (this is ResponseException) {
+                            if (response.status == HttpStatusCode.NotFound) {
+                                respond { content = "No results found for ${arguments.word}" }
+                            } else {
+                                commonLogger.error { "Failed to fetch dictionary definition: $localizedMessage" }
+                            }
                         } else {
                             commonLogger.error { "Failed to fetch dictionary definition: $localizedMessage" }
                         }

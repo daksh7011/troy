@@ -9,6 +9,7 @@ import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.withTimeoutOrNull
@@ -46,9 +47,13 @@ class UrbanDictionary : Extension() {
                         urbanDictModel = get("$URBAN_API_URL=$search").body()
                         true
                     }, {
-                        if (response.status == HttpStatusCode.NotFound) {
-                            this@action.respond {
-                                content = "${NOT_FOUND_MESSAGE}${arguments.search}"
+                        if (this is ResponseException) {
+                            if (response.status == HttpStatusCode.NotFound) {
+                                this@action.respond {
+                                    content = "${NOT_FOUND_MESSAGE}${arguments.search}"
+                                }
+                            } else {
+                                commonLogger.error { "Failed to fetch urban dictionary definition: $localizedMessage" }
                             }
                         } else {
                             commonLogger.error { "Failed to fetch urban dictionary definition: $localizedMessage" }

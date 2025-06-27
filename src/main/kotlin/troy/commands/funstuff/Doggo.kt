@@ -8,6 +8,7 @@ import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.withTimeoutOrNull
@@ -56,8 +57,12 @@ class Doggo : Extension() {
                             true
                         },
                         {
-                            if (response.status == HttpStatusCode.NotFound) {
-                                this@action.respond { content = NO_PHOTO_MESSAGE }
+                            if (this is ResponseException) {
+                                if (response.status == HttpStatusCode.NotFound) {
+                                    this@action.respond { content = NO_PHOTO_MESSAGE }
+                                } else {
+                                    commonLogger.error { "Failed to fetch doggo image: $localizedMessage" }
+                                }
                             } else {
                                 commonLogger.error { "Failed to fetch doggo image: $localizedMessage" }
                             }

@@ -10,5 +10,6 @@
   to Kotlin when applicable.
 - The project does not allow warnings or deprecated APIs in the codebase, ensure.
 - Follow the project's coding style and conventions.
+- Always check detekt and verify we are passing the lint when we make any change. This **ALWAYS** should be the very last step in the process.
 - Double bangs (!!) are NOT allowed in any condition, Even when a null check is present before using double bang. Always
   use null checks for defensive programming 
