@@ -36,10 +36,8 @@ import troy.commands.nsfw.Rule34
 import troy.di.mongoModule
 import troy.di.repositoryModule
 import troy.utils.Environment
-import troy.utils.unleashClient
 
 suspend fun getTroy(): ExtensibleBot {
-    val unleash = unleashClient
     val troy = ExtensibleBot(env(Environment.TOKEN)) {
         chatCommands {
             defaultPrefix = env(Environment.PREFIX)
@@ -82,15 +80,11 @@ suspend fun getTroy(): ExtensibleBot {
             add(::InviteLink)
             add(::Dictionary)
             add(::Fact)
-            if (unleash.isEnabled("steam")) add(::Steam)
-            if (unleash.isEnabled("nudes")) {
-                add(::Nudes)
-                add(::Rule34)
-            }
-            if (unleash.isEnabled("warn")) {
-                add(::Warn)
-                add(::ResetWarnings)
-            }
+            add(::Steam)
+            add(::Nudes)
+            add(::Rule34)
+            add(::Warn)
+            add(::ResetWarnings)
             add(::Pun)
         }
         presence {

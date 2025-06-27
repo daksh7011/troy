@@ -4,8 +4,8 @@ import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.MessageChannelBehavior
 import dev.kordex.core.utils.env
 import dev.kordex.core.utils.scheduling.Scheduler
-import io.ktor.client.call.*
-import io.ktor.client.request.*
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import org.koin.core.component.KoinComponent
@@ -43,7 +43,7 @@ object GreetingsHelper : KoinComponent {
     }
 
     private suspend fun requestForWeather(
-        ayodhyaWeatherUrl: String
+        ayodhyaWeatherUrl: String,
     ): OpenWeatherModel? {
         return httpClient.requestAndCatchResponse(
             identifier = "pollForAyodhyaWeather",

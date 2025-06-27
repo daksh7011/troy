@@ -8,14 +8,19 @@ import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import dev.kordex.core.utils.env
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.http.HttpHeaders
+import io.ktor.http.headers
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.apiModels.OwlDictModel
-import troy.utils.*
+import troy.utils.Environment
+import troy.utils.commonLogger
+import troy.utils.getEmbedFooter
+import troy.utils.httpClient
+import troy.utils.requestAndCatchResponse
 
 class Dictionary : Extension() {
 
