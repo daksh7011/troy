@@ -32,7 +32,6 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.kx.ser)
     implementation(libs.kord.emoji)
-    implementation(libs.unleash)
     implementation(libs.kmongo.coroutine)
     implementation(libs.links.detektor)
 

@@ -5,8 +5,8 @@ import dev.kord.rest.builder.message.embed
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
-import io.ktor.client.call.*
-import io.ktor.client.request.*
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject

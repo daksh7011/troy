@@ -8,14 +8,19 @@ import dev.kordex.core.commands.converters.impl.string
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
-import io.ktor.client.call.*
-import io.ktor.client.request.*
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.apiModels.UrbanDictItem
 import troy.apiModels.UrbanDictModel
-import troy.utils.*
+import troy.utils.commonLogger
+import troy.utils.encodeQuery
+import troy.utils.getEmbedFooter
+import troy.utils.httpClient
+import troy.utils.isNotNullNorEmpty
+import troy.utils.requestAndCatchResponse
 
 class UrbanDictionary : Extension() {
 

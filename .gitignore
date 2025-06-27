@@ -164,3 +164,6 @@ gradle-app.setting
 /src/main/resources/noods.json
 /.idea/ktor.xml
 .idea
+
+# ignore kordex data collection toml file
+/data/kordex/

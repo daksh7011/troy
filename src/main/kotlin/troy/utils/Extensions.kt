@@ -10,15 +10,12 @@ import dev.kordex.core.components.forms.ModalForm
 import dev.kordex.core.utils.env
 import `in`.technowolf.linksDetekt.detector.LinksDetektor
 import `in`.technowolf.linksDetekt.detector.LinksDetektorOptions
-import io.getunleash.DefaultUnleash
-import io.getunleash.Unleash
-import io.getunleash.util.UnleashConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.client.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import java.net.URLEncoder
 import kotlin.contracts.ExperimentalContracts
@@ -214,23 +211,6 @@ fun getTestGuildSnowflake(): Snowflake {
 }
 
 /**
- * Provides a configured Unleash client for feature flag management.
- *
- * The client is configured with the application name "Troy" and
- * instance ID and API URL from environment variables.
- *
- * The client is lazily initialized to improve performance.
- */
-val unleashClient: Unleash by lazy {
-    val config = UnleashConfig.builder()
-        .appName("Troy")
-        .instanceId(env(Environment.UNLEASH_INSTANCE_ID))
-        .unleashAPI(env(Environment.UNLEASH_URL))
-        .build()
-    DefaultUnleash(config)
-}
-
-/**
  * Formats a nullable string with Discord's bold markdown syntax.
  *
  * @return A string surrounded by "**" for Discord bold formatting, or an empty string if the input is null
@@ -281,7 +261,7 @@ suspend fun <T : Arguments, M : ModalForm> PublicSlashCommandContext<T, M>.respo
 fun String.extractLinksFromMessage(): List<String> {
     // Use all available options
     // Use sequence for more efficient processing
-    return LinksDetektorOptions.values().asSequence()
+    return LinksDetektorOptions.entries.asSequence()
         .flatMap { option ->
             LinksDetektor(this, option).detect().asSequence().mapNotNull { it.host }
         }
@@ -316,7 +296,7 @@ fun Collection<String>.buildFormattedDomainList(): String {
  * This client is configured with ContentNegotiation and JSON serialization settings
  * for consistent HTTP requests throughout the application.
  */
-val httpClient = HttpClient {
+val httpClient: HttpClient = HttpClient {
     install(ContentNegotiation) {
         json(
             Json {
