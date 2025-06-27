@@ -9,6 +9,7 @@ import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.withTimeoutOrNull
@@ -17,6 +18,7 @@ import org.koin.core.component.inject
 import troy.apiModels.UrbanDictItem
 import troy.apiModels.UrbanDictModel
 import troy.utils.*
+import troy.utils.requestAndCatchResponse
 
 class UrbanDictionary : Extension() {
 
@@ -40,40 +42,42 @@ class UrbanDictionary : Extension() {
                 var urbanDictModel: UrbanDictModel? = null
                 val search = arguments.search.encodeQuery()
 
-                // Add timeout to HTTP request to prevent hanging
+                // Add timeout to an HTTP request to prevent hanging
                 val success = withTimeoutOrNull(REQUEST_TIMEOUT_MS) {
-                    httpClient.requestAndCatch({
-                        urbanDictModel = get("$URBAN_API_URL=$search").body()
-                        true
-                    }, {
-                        if (response.status == HttpStatusCode.NotFound) {
+                    val result = httpClient.requestAndCatchResponse(
+                        block = {
+                            urbanDictModel = get("$URBAN_API_URL=$search").body()
+                            true
+                        },
+                        notFoundHandler = {
                             this@action.respond {
                                 content = "${NOT_FOUND_MESSAGE}${arguments.search}"
                             }
-                        } else {
-                            commonLogger.error { "Failed to fetch urban dictionary definition: $localizedMessage" }
-                        }
-                        false
-                    })
+                            false
+                        },
+                        logPrefix = "Failed to fetch urban dictionary definition"
+                    )
+                    result ?: false
                 } ?: run {
                     commonLogger.error { "Timeout occurred while fetching urban dictionary definition for: ${arguments.search}" }
                     false
                 }
 
-                if (success && urbanDictModel != null && urbanDictModel!!.list.isNotEmpty()) {
-                    val urbanDictItem = urbanDictModel!!.list.first()
-                    val definitionCount = urbanDictItem.definition.count()
-                    val exampleCount = urbanDictItem.example.count()
-                    val authorCount = urbanDictItem.author.count()
+                if (success && urbanDictModel?.list.isNotNullNorEmpty()) {
+                    urbanDictModel?.list?.firstOrNull()?.let { urbanDictItem ->
+                        val definitionCount = urbanDictItem.definition.count()
+                        val exampleCount = urbanDictItem.example.count()
+                        val authorCount = urbanDictItem.author.count()
 
-                    if (definitionCount + exampleCount + authorCount > MAX_CHARS) {
-                        respond {
-                            content = "$TOO_LONG_MESSAGE${urbanDictItem.permalink}"
-                        }
-                    } else {
-                        respond {
-                            embed {
-                                setupUrbanDictEmbed(arguments, urbanDictItem)
+                        if (definitionCount + exampleCount + authorCount > MAX_CHARS) {
+                            respond {
+                                content = "$TOO_LONG_MESSAGE${urbanDictItem.permalink}"
+                            }
+                        } else {
+                            respond {
+                                embed {
+                                    setupUrbanDictEmbed(arguments, urbanDictItem)
+                                }
                             }
                         }
                     }
