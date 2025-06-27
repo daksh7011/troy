@@ -1,4 +1,9 @@
-import dev.kordex.gradle.plugins.docker.file.*
+import dev.kordex.gradle.plugins.docker.file.copy
+import dev.kordex.gradle.plugins.docker.file.emptyLine
+import dev.kordex.gradle.plugins.docker.file.entryPointExec
+import dev.kordex.gradle.plugins.docker.file.from
+import dev.kordex.gradle.plugins.docker.file.runShell
+import dev.kordex.gradle.plugins.docker.file.workdir
 import dev.kordex.gradle.plugins.kordex.DataCollection
 
 plugins {
