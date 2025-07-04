@@ -13,7 +13,7 @@ kmongo-coroutine = "5.2.1"
 links-detektor = "1.0.1"
 
 # Testing dependencies
-junit = "5.13.2"
+junit = "5.13.3"
 mockk = "1.14.4"
 
 [libraries]
