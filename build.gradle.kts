@@ -10,7 +10,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
 
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
     id("io.gitlab.arturbosch.detekt")
 
     id("dev.kordex.gradle.docker")
@@ -73,6 +73,10 @@ detekt {
     buildUponDefaultConfig = true
     autoCorrect = true
     config.from(rootProject.files("detekt.yml"))
+}
+
+tasks.shadowJar {
+    mustRunAfter(tasks.compileTestJava)
 }
 
 // Automatically generate a Dockerfile. Set `generateOnBuild` to `false` if you'd prefer to manually run the

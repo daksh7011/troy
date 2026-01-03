@@ -7,7 +7,6 @@ import dev.kordex.core.commands.converters.impl.defaultingString
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
-import kotlinx.datetime.Clock
 import net.dean.jraw.models.SubredditSort
 import org.koin.core.component.inject
 import troy.apiModels.NoodsModel
@@ -15,6 +14,7 @@ import troy.utils.DataProvider
 import troy.utils.RedditClient
 import troy.utils.getEmbedFooter
 import kotlin.math.floor
+import kotlin.time.Clock
 
 class Nudes : Extension() {
 
