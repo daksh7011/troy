@@ -14,7 +14,6 @@ import dev.kordex.core.commands.events.PublicSlashCommandInvocationEvent
 import dev.kordex.core.commands.events.PublicSlashCommandSucceededEvent
 import dev.kordex.core.utils.env
 import kotlinx.coroutines.flow.count
-import kotlinx.datetime.Clock
 import troy.core.getTroy
 import troy.data.repository.GlobalGuildRepository
 import troy.utils.Environment
@@ -29,6 +28,7 @@ import troy.utils.containsTableFlip
 import troy.utils.extractLinksFromMessage
 import troy.utils.getEmbedFooter
 import troy.utils.isNotBot
+import kotlin.time.Clock
 
 /**
  * Check for phishing domains in a message and send a warning if found.

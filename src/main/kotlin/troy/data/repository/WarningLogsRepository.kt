@@ -1,10 +1,10 @@
 package troy.data.repository
 
 import dev.kord.core.entity.User
-import kotlinx.datetime.Clock
 import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.eq
 import troy.data.models.WarningLogs
+import kotlin.time.Clock
 
 class WarningLogsRepository(private val warningCollection: CoroutineCollection<WarningLogs>) {
     suspend fun insertUserWarning(user: User, warningReason: String, moderator: String) {

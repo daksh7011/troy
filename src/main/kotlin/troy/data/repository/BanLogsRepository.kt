@@ -1,9 +1,9 @@
 package troy.data.repository
 
 import dev.kord.core.entity.User
-import kotlinx.datetime.Clock
 import org.litote.kmongo.coroutine.CoroutineCollection
 import troy.data.models.BanLogs
+import kotlin.time.Clock
 
 class BanLogsRepository(private val bansCollection: CoroutineCollection<BanLogs>) {
     suspend fun insertBanLog(user: User, banReason: String, moderator: String) {
