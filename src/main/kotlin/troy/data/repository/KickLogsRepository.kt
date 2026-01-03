@@ -1,9 +1,9 @@
 package troy.data.repository
 
 import dev.kord.core.entity.User
-import kotlinx.datetime.Clock
 import org.litote.kmongo.coroutine.CoroutineCollection
 import troy.data.models.KickLogs
+import kotlin.time.Clock
 
 class KickLogsRepository(private val kicksCollection: CoroutineCollection<KickLogs>) {
     suspend fun insertKickLog(user: User, kickReason: String, moderator: String) {

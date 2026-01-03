@@ -10,13 +10,13 @@ import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.apiModels.DoggoModel
 import troy.utils.commonLogger
 import troy.utils.getEmbedFooter
 import troy.utils.httpClient
 import troy.utils.requestAndCatchResponse
+import kotlin.time.Clock
 
 class Doggo : Extension() {
 

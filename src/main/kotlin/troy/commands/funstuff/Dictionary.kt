@@ -13,7 +13,6 @@ import io.ktor.client.request.get
 import io.ktor.http.HttpHeaders
 import io.ktor.http.headers
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.apiModels.OwlDictModel
 import troy.utils.Environment
@@ -21,6 +20,7 @@ import troy.utils.commonLogger
 import troy.utils.getEmbedFooter
 import troy.utils.httpClient
 import troy.utils.requestAndCatchResponse
+import kotlin.time.Clock
 
 class Dictionary : Extension() {
 
