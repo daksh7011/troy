@@ -14,7 +14,7 @@ links-detektor = "1.0.1"
 
 # Testing dependencies
 junit = "5.13.4"
-mockk = "1.14.5"
+mockk = "1.14.7"
 
 [libraries]
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
