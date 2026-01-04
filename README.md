@@ -44,11 +44,9 @@ interactions, moderation tools, and utility commands.
 
 Troy is actively maintained and regularly updated with new features and improvements.
 
-## 📚 Documentation
+## 📚 Docs
 
-- **[Command Reference](docs/commands.md)**: Comprehensive documentation of all available commands, their usage, and examples
 - **[Contributing Guidelines](CONTRIBUTING.md)**: Guide for contributing to the project
-- **[Improvement Plan](docs/plan.md)**: Roadmap for future improvements and features
 
 ## 📨 Invite
 

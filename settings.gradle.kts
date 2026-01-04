@@ -1,17 +1,17 @@
 pluginManagement {
     plugins {
         // Update this in libs.version.toml when you change it here.
-        kotlin("jvm") version "2.2.0"
-        kotlin("plugin.serialization") version "2.2.0"
+        kotlin("jvm") version "2.3.0"
+        kotlin("plugin.serialization") version "2.3.0"
 
         // Update this in libs.version.toml when you change it here.
         id("io.gitlab.arturbosch.detekt") version "1.23.8"
 
         id("com.github.jakemarsden.git-hooks") version "0.0.2"
-        id("com.github.johnrengelman.shadow") version "8.1.1"
+        id("com.gradleup.shadow") version "9.3.0"
 
-        id("dev.kordex.gradle.docker") version "1.7.1"
-        id("dev.kordex.gradle.kordex") version "1.7.1"
+        id("dev.kordex.gradle.docker") version "1.9.0"
+        id("dev.kordex.gradle.kordex") version "1.9.0"
     }
 
     repositories {

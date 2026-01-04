@@ -66,14 +66,14 @@ fun Message.containsBs(): Boolean = content.lowercase().contains("bullshit")
 /**
  * Checks if the Snowflake ID represents the bot owner.
  *
- * @return true if the Snowflake ID matches the owner ID from environment, false otherwise
+ * @return true if the Snowflake ID matches the owner ID from the environment, false otherwise
  */
 fun Snowflake.isOwner(): Boolean = toString() == env(Environment.OWNER_ID)
 
 /**
  * Checks if the Snowflake ID represents the bot owner's girlfriend.
  *
- * @return true if the Snowflake ID matches the girlfriend ID from environment, false otherwise
+ * @return true if the Snowflake ID matches the girlfriend ID from the environment, false otherwise
  */
 fun Snowflake.isGirlfriend(): Boolean = toString() == env(Environment.GIRLFRIEND_ID)
 
@@ -211,14 +211,14 @@ fun getTestGuildSnowflake(): Snowflake {
 }
 
 /**
- * Formats a nullable string with Discord's bold markdown syntax.
+ * Formats a nullable string with Discord's bold Markdown syntax.
  *
  * @return A string surrounded by "**" for Discord bold formatting, or an empty string if the input is null
  */
 fun String?.bold(): String = if (this != null) "**$this**" else ""
 
 /**
- * Formats a nullable string with Discord's italic markdown syntax.
+ * Formats a nullable string with Discord's italic Markdown syntax.
  *
  * @return A string surrounded by "*" for Discord italic formatting, or an empty string if the input is null
  */
@@ -260,7 +260,7 @@ suspend fun <T : Arguments, M : ModalForm> PublicSlashCommandContext<T, M>.respo
  */
 fun String.extractLinksFromMessage(): List<String> {
     // Use all available options
-    // Use sequence for more efficient processing
+    // Use a sequence for more efficient processing
     return LinksDetektorOptions.entries.asSequence()
         .flatMap { option ->
             LinksDetektor(this, option).detect().asSequence().mapNotNull { it.host }
@@ -283,7 +283,7 @@ fun Collection<String>.buildFormattedDomainList(): String {
     // Use a StringBuilder for efficient string building
     val result = StringBuilder()
     forEachIndexed { index, domain ->
-        // Format each line with italic markdown (asterisks)
+        // Format each line with italic Markdown (asterisks)
         result.append("*${index + 1}. $domain*\n")
     }
 

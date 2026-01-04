@@ -7,9 +7,9 @@ import dev.kordex.core.commands.converters.impl.optionalUser
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
-import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.utils.getEmbedFooter
+import kotlin.time.Clock
 
 class Avatar : Extension() {
 

@@ -12,7 +12,6 @@ import dev.kordex.core.commands.converters.impl.user
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
-import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.commands.mod.Ban.Companion.setupBannedEmbed
 import troy.commands.mod.Kick.Companion.setupKickedEmbed
@@ -23,6 +22,7 @@ import troy.data.repository.KickLogsRepository
 import troy.data.repository.WarningLogsRepository
 import troy.utils.getEmbedFooter
 import troy.utils.isOwner
+import kotlin.time.Clock
 
 class Warn : Extension() {
 
@@ -178,7 +178,7 @@ class Warn : Extension() {
         private const val WARNED_BY_FIELD = "Warned by"
         private const val WARNINGS_FIELD = "Warnings"
         private const val NONE_WARNING_MODE_DESCRIPTION = "exceeded maximum warnings but warning mode is set to **None** for this guild. " +
-            "Hence no action is taken. To modify this behaviour, Please change the warning mode for automated " +
-            "Kick or Bans when user exceeds max number of warnings."
+                "Hence no action is taken. To modify this behaviour, Please change the warning mode for automated " +
+                "Kick or Bans when user exceeds max number of warnings."
     }
 }

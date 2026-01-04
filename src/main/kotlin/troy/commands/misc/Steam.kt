@@ -11,7 +11,6 @@ import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -22,6 +21,7 @@ import troy.utils.encodeQuery
 import troy.utils.getEmbedFooter
 import troy.utils.httpClient
 import troy.utils.requestAndCatchResponse
+import kotlin.time.Clock
 
 class Steam : Extension() {
 

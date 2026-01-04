@@ -11,11 +11,11 @@ import dev.kordex.core.commands.converters.impl.user
 import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.publicSlashCommand
 import dev.kordex.core.i18n.toKey
-import kotlinx.datetime.Clock
 import org.koin.core.component.inject
 import troy.data.repository.KickLogsRepository
 import troy.utils.getEmbedFooter
 import troy.utils.isOwner
+import kotlin.time.Clock
 
 class Kick : Extension() {
 
