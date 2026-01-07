@@ -8,7 +8,7 @@ pluginManagement {
         id("io.gitlab.arturbosch.detekt") version "1.23.8"
 
         id("com.github.jakemarsden.git-hooks") version "0.0.2"
-        id("com.gradleup.shadow") version "9.3.0"
+        id("com.gradleup.shadow") version "9.3.1"
 
         id("dev.kordex.gradle.docker") version "1.9.0"
         id("dev.kordex.gradle.kordex") version "1.9.0"
