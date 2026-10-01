@@ -1,6 +1,95 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "helpers:pinGitHubActionDigestsToSemver"
+  ],
+  "schedule": ["before 6am on monday"],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "rebaseWhen": "conflicted",
+  "minimumReleaseAge": "3 days",
+  "internalChecksFilter": "strict",
+  "labels": ["dependency"],
+  "platformAutomerge": true,
+  "automergeType": "pr",
+  "packageRules": [
+    {
+      "description": "Automerge low-risk updates (non-0.x minor/patch, digest and pin updates) once required checks pass",
+      "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest"],
+      "matchCurrentVersion": "!/^v?0[.]/",
+      "automerge": true
+    },
+    {
+      "description": "Majors wait for approval on the Dependency Dashboard to avoid PR pile-up",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "GitHub Actions: one grouped PR for all non-major updates (SHA + version comment)",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest"],
+      "groupName": "GitHub Actions (non-major)",
+      "groupSlug": "github-actions-non-major",
+      "addLabels": ["ci"]
+    },
+    {
+      "description": "GitHub Actions majors: label only, still one PR per action family",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["major"],
+      "addLabels": ["ci"],
+      "dependencyDashboardApproval": false
+    },
+    {
+      "description": "Pin Docker base images to digests too",
+      "matchManagers": ["dockerfile"],
+      "pinDigests": true
+    },
+    {
+      "description": "Kotlin toolchain: compiler/plugins, serialization and detekt must move together (versions duplicated in settings.gradle.kts and libs.versions.toml)",
+      "matchPackageNames": [
+        "/^org[.]jetbrains[.]kotlin/",
+        "/^org[.]jetbrains[.]kotlinx:kotlinx-serialization/",
+        "/^io[.]gitlab[.]arturbosch[.]detekt/"
+      ],
+      "groupName": "Kotlin toolchain",
+      "groupSlug": "kotlin-toolchain",
+      "automerge": false
+    },
+    {
+      "description": "Gradle wrapper: separate PR, never automerged",
+      "matchManagers": ["gradle-wrapper"],
+      "groupName": "Gradle wrapper",
+      "groupSlug": "gradle-wrapper",
+      "automerge": false
+    },
+    {
+      "description": "Gradle build plugins (shadow, kordex, git-hooks)",
+      "matchPackageNames": [
+        "/^com[.]gradleup[.]shadow/",
+        "/^dev[.]kordex[.]gradle/",
+        "/^com[.]github[.]jakemarsden[.]git-hooks/"
+      ],
+      "groupName": "Gradle build plugins",
+      "groupSlug": "gradle-build-plugins"
+    },
+    {
+      "description": "Test libraries",
+      "matchPackageNames": ["/^org[.]junit/", "io.mockk:mockk"],
+      "groupName": "Test libraries",
+      "groupSlug": "test-libs"
+    },
+    {
+      "description": "Logging stack",
+      "matchPackageNames": [
+        "/^ch[.]qos[.]logback/",
+        "io.github.oshai:kotlin-logging",
+        "io.github.virtualdogbert:logback-groovy-config",
+        "org.codehaus.groovy:groovy",
+        "org.fusesource.jansi:jansi"
+      ],
+      "groupName": "Logging",
+      "groupSlug": "logging"
+    }
   ]
 }
