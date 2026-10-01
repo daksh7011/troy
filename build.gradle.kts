@@ -37,6 +37,7 @@ dependencies {
 
     // TODO: fix this by forking original repo and fixing critical CVEs.
     implementation(files("libs/JRAW-1.1.0.jar"))
+    implementation(libs.moshi) // JRAW runtime dep; the vendored jar has no POM.
 
     // Logging dependencies
     implementation(libs.groovy)
@@ -61,6 +62,10 @@ tasks.test {
 
 kordEx {
     ignoreIncompatibleKotlinVersion = true
+
+    // Pin to a release instead of the latest snapshot. Kord itself is still 0.19.0-SNAPSHOT (no release yet).
+    kordExVersion = "2.6.0"
+
     bot {
         // See https://docs.kordex.dev/data-collection.html
         dataCollection(DataCollection.None)
@@ -88,7 +93,7 @@ docker {
         // Each function (aside from comment/emptyLine) corresponds to a Dockerfile instruction.
         // See: https://docs.docker.com/reference/dockerfile/
 
-        from("openjdk:21-jdk-slim")
+        from("eclipse-temurin:25-jre")
 
         emptyLine()
 

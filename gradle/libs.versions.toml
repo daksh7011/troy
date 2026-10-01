@@ -11,6 +11,7 @@ logging = "8.0.4"
 kord-emoji = "0.5.0"
 kmongo-coroutine = "5.5.1"
 links-detektor = "1.0.1"
+moshi = "1.15.2"
 
 # Testing dependencies
 junit = "6.0.2"
@@ -28,6 +29,7 @@ logging = { module = "io.github.oshai:kotlin-logging", version.ref = "logging" }
 kord-emoji = { module = "dev.kord.x:emoji", version.ref = "kord-emoji" }
 kmongo-coroutine = { module = "org.litote.kmongo:kmongo-coroutine", version.ref = "kmongo-coroutine" }
 links-detektor = { module = "com.gitlab.technowolf:links-detektor", version.ref = "links-detektor" }
+moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
 
 # Testing libraries
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
